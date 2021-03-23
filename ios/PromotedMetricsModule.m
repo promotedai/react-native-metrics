@@ -1,7 +1,7 @@
 #import "React/RCTBridgeModule.h"
 
 /** See PromotedLoggerModule.swift for method docs. */
-@interface RCT_EXTERN_MODULE(PromotedMetrics, NSObject)
+@interface RCT_EXTERN_REMAP_MODULE(PromotedMetrics, PromotedMetricsModule, NSObject)
 
 #pragma mark - Starting new sessions
 RCT_EXTERN_METHOD(startSessionAndLogUser:(NSString *)userID)

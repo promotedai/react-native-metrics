@@ -7,8 +7,8 @@ import PromotedAIMetricsSDK
  as `MetricsLogger` and `ImpressionLogger`, but delegates those methods to
  instances of those loggers.
  */
-@objc(PromotedMetrics)
-public class PromotedMetrics: NSObject {
+@objc(PromotedMetricsModule)
+public class PromotedMetricsModule: NSObject {
   
   public static let defaultNameKeys = ["name"]
   public static let defaultContentIDKeys = ["content_id", "contentId", "_id"]
@@ -96,7 +96,7 @@ public class PromotedMetrics: NSObject {
   }
 }
 
-public extension PromotedMetrics {
+public extension PromotedMetricsModule {
   // MARK: - Starting new sessions
   @objc(startSessionAndLogUser:)
   func startSessionAndLogUser(userID: String) {
@@ -162,7 +162,7 @@ public extension PromotedMetrics {
 }
 
 // MARK: - ImpressionLogger
-public extension PromotedMetrics {
+public extension PromotedMetricsModule {
 
   /// Begins tracking session for given collection view.
   /// Can be called multiple times in succession, such as when a collection
