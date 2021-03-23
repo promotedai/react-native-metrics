@@ -1,0 +1,38 @@
+name: ios-react-native-metrics-sdk
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        macos: [macos-latest]
+        xcode: ['12.4']
+        exclude:
+          - macos: macos-10.15
+            xcode: '12.4'
+    runs-on: ${{ matrix.macos }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: sinoru/actions-setup-xcode@v1.1.2
+      with:
+        xcode-version: ${{ matrix.xcode }}
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v1.4.4
+      with:
+        node-version: '10.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: NPM install
+      run: npm install
+      working-directory: BuildProject
+    - name: Cocoapod install
+      run: pod install
+      working-directory: BuildProject/ios
+    - name: Build
+      run: xcodebuild -workspace BuildProject.xcworkspace -configuration Debug -scheme BuildProject -destination 'platform=iOS Simulator,name=iPhone 11'
+      working-directory: BuildProject/ios
+
