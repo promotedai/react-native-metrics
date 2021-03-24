@@ -21,7 +21,7 @@ class PromotedMetricsModule(reactContext: ReactApplicationContext) : ReactContex
   fun logImpression(content: Map<String, Any>) {}
   
   @ReactMethod
-  fun logClickToLike(content: Map<String, Any>, didLike: Bool) {}
+  fun logClickToLike(content: Map<String, Any>, didLike: Boolean) {}
   
   @ReactMethod
   fun logClickToShow(screenName: String) {}
