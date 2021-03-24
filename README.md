@@ -51,7 +51,9 @@ const _onUnmount = useCallback(
   },
   []
 );
+
 PromotedMetrics.collectionViewDidLoad("MyListIdentifier");
+
 return (
   <FlatList
     onUnmount={_onUnmount}
@@ -69,7 +71,7 @@ In many cases, the Typescript library expects `Object`s as arguments to represen
 2. (Optional) `insertion_id`, or `insertionId` should contain the insertion ID as provided by Promoted for inserted content.
 3. (Optional) `name` can contain a human-readable name for the content, and can be used for debugging purposes. This field is not sent to backends.
 
-If your content objects contain additional data, we recommend filtering out all content except the above:
+If your content objects contain additional data, we recommend filtering out all data except the above:
 
 ~~~js
 const contentList = myViewableItems.map(i => ({ 
