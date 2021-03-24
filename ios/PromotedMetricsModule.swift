@@ -141,12 +141,14 @@ public extension PromotedMetricsModule {
     metricsLogger.logClickToPurchase(item: itemFor(item))
   }
   
-  @objc func logClick(actionName: String) {
-    metricsLogger.logClick(actionName: actionName)
+  @objc(logAction:)
+  func logAction(name: String) {
+    metricsLogger.logClick(actionName: name)
   }
   
-  @objc func logClick(actionName: String, content: ReactNativeDictionary?) {
-    metricsLogger.logClick(actionName: actionName, content: contentFor(content))
+  @objc(logActionWithContent:content:)
+  func logAction(name: String, content: ReactNativeDictionary?) {
+    metricsLogger.logClick(actionName: name, content: contentFor(content))
   }
   
   // MARK: - Views
