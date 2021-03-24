@@ -1,6 +1,6 @@
 #import "React/RCTBridgeModule.h"
 
-/** See PromotedLoggerModule.swift for method docs. */
+/** See src/index.tsx for method docs. */
 @interface RCT_EXTERN_REMAP_MODULE(PromotedMetrics, PromotedMetricsModule, NSObject)
 
 #pragma mark - Starting new sessions
@@ -28,10 +28,10 @@ RCT_EXTERN_METHOD(logClickToSignUp:(NSString *)userID)
 /// @param item (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logClickToPurchase:(nullable NSDictionary *)item)
 
-RCT_EXTERN_METHOD(logClickWithActionName:(NSString *)action)
+RCT_EXTERN_METHOD(logAction:(NSString *)name)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logClickWithActionName:(NSString *)action
+RCT_EXTERN_METHOD(logActionWithContent:(NSString *)name
                   content:(nullable NSDictionary *)content)
 
 #pragma mark - Views
