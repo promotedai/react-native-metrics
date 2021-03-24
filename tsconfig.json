@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-promoted-metrics": ["./src/index"]
+      "react-native-metrics": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

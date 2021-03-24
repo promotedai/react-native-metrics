@@ -1,17 +1,17 @@
-# react-native-promoted-metrics
+# react-native-metrics
 
 Promoted metrics logging library for React Native.
 
 ## Installation
 
 ```sh
-npm install react-native-promoted-metrics
+npm install react-native-metrics
 ```
 
 ## Usage
 
 ```js
-import PromotedMetrics from "react-native-promoted-metrics";
+import PromotedMetrics from "react-native-metrics";
 
 // ...
 
