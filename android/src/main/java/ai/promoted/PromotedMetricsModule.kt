@@ -3,54 +3,57 @@ package ai.promoted
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Promise
 
-class PromotedMetricsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class PromotedMetricsModule(reactContext: ReactApplicationContext) :
+    ReactContextBaseJavaModule(reactContext) {
 
   override fun getName(): String {
     return "PromotedMetrics"
   }
 
-  @ReactMethod
-  fun startSessionAndLogUser(userID: String) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun startSessionAndLogUser(userId: String) {}
 
   @ReactMethod
   fun startSessionAndLogSignedOutUser() {}
   
-  @ReactMethod
-  fun logImpression(content: Map<String, Any>) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logImpression(content: ReadableMap) {}
   
-  @ReactMethod
-  fun logClickToLike(content: Map<String, Any>, didLike: Boolean) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logClickToLike(content: ReadableMap, didLike: Boolean) {}
   
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logClickToShow(screenName: String) {}
   
-  @ReactMethod
-  fun logClickToShow(screenName: String, content: Map<String, Any>) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logClickToShow(screenName: String, content: ReadableMap) {}
   
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logClickToSignUp(userId: String) {}
   
-  @ReactMethod
-  fun logClickToPurchase(item: Map<String, Any>) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logClickToPurchase(item: ReadableMap) {}
   
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logAction(name: String) {}
   
-  @ReactMethod
-  fun logActionWithContent(name: String, content: Map<String, Any>) {}
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logActionWithContent(name: String, content: ReadableMap) {}
   
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logView(screenName: String) {}
   
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun collectionViewDidLoad(collectionViewName: String) {}
   
-  @ReactMethod
-  fun collectionViewDidChange(visibleContent: Array<Map<String,Any>>, 
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun collectionViewDidChange(visibleContent: ReadableArray,
                               collectionViewName: String) {}
 
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun collectionViewDidUnmount(collectionViewName: String) {}
 }
