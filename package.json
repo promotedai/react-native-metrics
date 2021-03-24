@@ -1,5 +1,5 @@
 {
-  "name": "react-native-promoted-metrics",
+  "name": "@promotedai/react-native-metrics",
   "version": "0.1.0",
   "description": "Promoted metrics logging library for React Native.",
   "main": "lib/commonjs/index",
@@ -13,7 +13,7 @@
     "android",
     "ios",
     "cpp",
-    "react-native-promoted-metrics.podspec",
+    "react-native-metrics.podspec",
     "!lib/typescript/example",
     "!android/build",
     "!ios/build",
@@ -26,13 +26,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/promotedai/react-native-promoted-metrics",
+  "repository": "https://github.com/promotedai/react-native-metrics",
   "author": "Yu-Hong Wang <yu-hong@promoted.ai> (https://github.com/rockapot)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/promotedai/react-native-promoted-metrics/issues"
+    "url": "https://github.com/promotedai/react-native-metrics/issues"
   },
-  "homepage": "https://github.com/promotedai/react-native-promoted-metrics#readme",
+  "homepage": "https://github.com/promotedai/react-native-metrics#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
