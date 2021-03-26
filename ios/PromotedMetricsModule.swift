@@ -115,21 +115,16 @@ public extension PromotedMetricsModule {
   }
   
   // MARK: - Clicks
-  @objc(logClickToShow:)
-  func logClickToShow(screenName: String) {
-    metricsLogger.logClickToShow(screenName: screenName)
+  @objc(logNavigateAction:)
+  func logNavigateAction(screenName: String) {
+    metricsLogger.logNavigateAction(screenName: screenName)
   }
   
-  @objc(logClickToShowWithContent:forContent:)
-  func logClickToShow(screenName: String,
-                      forContent content: ReactNativeDictionary?) {
-    metricsLogger.logClickToShow(screenName: screenName,
-                                 forContent: contentFor(content))
-  }
-  
-  @objc(logClickToSignUp:)
-  func logClickToSignUp(userID: String) {
-    metricsLogger.logClickToSignUp(userID: userID)
+  @objc(logNavigateActionWithContent:forContent:)
+  func logNavigateAction(screenName: String,
+                         forContent content: ReactNativeDictionary?) {
+    metricsLogger.logNavigateAction(screenName: screenName,
+                                    forContent: contentFor(content))
   }
 
   @objc(logPurchaseAction:)
