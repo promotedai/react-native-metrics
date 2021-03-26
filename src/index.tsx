@@ -1,5 +1,16 @@
 import { NativeModules } from 'react-native';
 
+enum ActionType {
+  Unknown = 0,
+  Custom = 1,
+  Click = 2,
+  Purchase = 3,
+  AddToCart = 4,
+  Share = 5,
+  Like = 6,
+  Comment = 7
+};
+
 type PromotedMetricsType = {
   startSessionAndLogUser(userId: string): void;
   startSessionAndLogSignedOutUser(): void;
@@ -9,14 +20,18 @@ type PromotedMetricsType = {
   logImpression(content: Object): void;
 
   // Click logging
-
-  logClickToLike(content: Object, didLike: boolean): void;
+  
   logClickToShow(screenName: string): void;
-  logClickToShow(screenName: string, content: Object): void;
+  logClickToShowWithContent(screenName: string, content: Object): void;
   logClickToSignUp(userId: string): void;
-  logClickToPurchase(item: Object): void;
+  logPurchaseAction(item: Object): void;
+  logAddToCartAction(item: Object): void;
+  logShareAction(content: Object): void;
+  logLikeAction(content: Object, didLike: boolean): void;
+  logCommentAction(content: Object): void;
   logAction(name: string): void;
-  logActionWithContent(name: string, content: Object): void;
+  logActionWithType(name: string, type: ActionType): void;
+  logActionWithContent(name: string, type: ActionType, content: Object): void;
 
   // View logging
 
@@ -56,3 +71,4 @@ type PromotedMetricsType = {
 const { PromotedMetrics } = NativeModules;
 
 export default PromotedMetrics as PromotedMetricsType;
+export { ActionType };

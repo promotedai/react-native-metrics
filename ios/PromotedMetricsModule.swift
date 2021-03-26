@@ -103,7 +103,8 @@ public extension PromotedMetricsModule {
     metricsLogger.startSessionAndLogUser(userID: userID)
   }
   
-  @objc func startSessionAndLogSignedOutUser() {
+  @objc(startSessionAndLogSignedOutUser)
+  func startSessionAndLogSignedOutUser() {
     metricsLogger.startSessionAndLogSignedOutUser()
   }
   
@@ -114,17 +115,12 @@ public extension PromotedMetricsModule {
   }
   
   // MARK: - Clicks
-  @objc(logClickToLike:didLike:)
-  func logClickToLike(content: ReactNativeDictionary?, didLike: Bool) {
-    metricsLogger.logClickToLike(content: contentFor(content), didLike: didLike)
-  }
-  
   @objc(logClickToShow:)
   func logClickToShow(screenName: String) {
     metricsLogger.logClickToShow(screenName: screenName)
   }
   
-  @objc(logClickToShow:forContent:)
+  @objc(logClickToShowWithContent:forContent:)
   func logClickToShow(screenName: String,
                       forContent content: ReactNativeDictionary?) {
     metricsLogger.logClickToShow(screenName: screenName,
@@ -135,20 +131,49 @@ public extension PromotedMetricsModule {
   func logClickToSignUp(userID: String) {
     metricsLogger.logClickToSignUp(userID: userID)
   }
-    
-  @objc(logClickToPurchase:)
-  func logClickToPurchase(item: ReactNativeDictionary?) {
-    metricsLogger.logClickToPurchase(item: itemFor(item))
+
+  @objc(logPurchaseAction:)
+  func logPurchaseAction(item: ReactNativeDictionary?) {
+    metricsLogger.logPurchaseAction(item: itemFor(item))
+  }
+  
+  @objc(logAddToCartAction:)
+  func logAddToCartAction(item: ReactNativeDictionary?) {
+    metricsLogger.logAddToCartAction(item: itemFor(item))
+  }
+  
+  @objc(logShareAction:)
+  func logShareAction(content: ReactNativeDictionary?) {
+    metricsLogger.logShareAction(content: contentFor(content))
+  }
+  
+  @objc(logLikeAction:didLike:)
+  func logLikeAction(content: ReactNativeDictionary?, didLike: Bool) {
+    metricsLogger.logLikeAction(content: contentFor(content), didLike: didLike)
+  }
+  
+  @objc(logCommentAction:)
+  func logCommentAction(content: ReactNativeDictionary?) {
+    metricsLogger.logCommentAction(content: contentFor(content))
   }
   
   @objc(logAction:)
   func logAction(name: String) {
-    metricsLogger.logClick(actionName: name)
+    metricsLogger.logAction(name: name)
   }
   
-  @objc(logActionWithContent:content:)
-  func logAction(name: String, content: ReactNativeDictionary?) {
-    metricsLogger.logClick(actionName: name, content: contentFor(content))
+  @objc(logActionWithType:type:)
+  func logAction(name: String, type: Int) {
+    if let actionType = ActionType(rawValue: type) {
+      metricsLogger.logAction(name: name, type: actionType)
+    }
+  }
+  
+  @objc(logActionWithContent:type:content:)
+  func logAction(name: String, type: Int, content: ReactNativeDictionary?) {
+    if let actionType = ActionType(rawValue: type) {
+      metricsLogger.logAction(name: name, type: actionType, content: contentFor(content))
+    }
   }
   
   // MARK: - Views
@@ -157,9 +182,11 @@ public extension PromotedMetricsModule {
     metricsLogger.logView(screenName: screenName)
   }
   
-  @objc(logView:useCase:)
-  func logView(screenName: String, useCase: UseCase) {
-    metricsLogger.logView(screenName: screenName, useCase: useCase)
+  @objc(logViewWithUseCase:useCase:)
+  func logView(screenName: String, useCase: Int) {
+    if let u = UseCase(rawValue: useCase) {
+      metricsLogger.logView(screenName: screenName, useCase: u)
+    }
   }
 }
 
