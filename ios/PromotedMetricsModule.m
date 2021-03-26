@@ -14,13 +14,11 @@ RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)content)
 
 #pragma mark - Clicks
 
-RCT_EXTERN_METHOD(logClickToShow:(NSString *)screenName)
+RCT_EXTERN_METHOD(logNavigateAction:(NSString *)screenName)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logClickToShowWithContent:(NSString *)screenName
+RCT_EXTERN_METHOD(logNavigateActionWithContent:(NSString *)screenName
                   forContent:(nullable NSDictionary *)content)
-
-RCT_EXTERN_METHOD(logClickToSignUp:(NSString *)userID)
 
 /// @param item (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logPurchaseAction:(nullable NSDictionary *)item)
