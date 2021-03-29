@@ -23,7 +23,6 @@ type PromotedMetricsType = {
   
   logNavigateAction(screenName: string): void;
   logNavigateActionWithContent(screenName: string, content: Object): void;
-  logClickToSignUp(userId: string): void;
   logPurchaseAction(item: Object): void;
   logAddToCartAction(item: Object): void;
   logShareAction(content: Object): void;
