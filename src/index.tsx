@@ -21,8 +21,8 @@ type PromotedMetricsType = {
 
   // Click logging
   
-  logClickToShow(screenName: string): void;
-  logClickToShowWithContent(screenName: string, content: Object): void;
+  logNavigateAction(screenName: string): void;
+  logNavigateActionWithContent(screenName: string, content: Object): void;
   logClickToSignUp(userId: string): void;
   logPurchaseAction(item: Object): void;
   logAddToCartAction(item: Object): void;
