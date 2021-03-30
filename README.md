@@ -27,36 +27,18 @@ PromotedMetrics.logView("Sign up");
 Impression tracking is possible for any kind of content. Here is an example using `SectionList` or `FlatList` using `onViewableItemsChanged`.
 
 ~~~js
-const _viewabilityConfig = {
-  waitForInteraction: false,
-  minimumViewTime: 1000,
-  itemVisiblePercentThreshold: 50
-}
+import PromotedMetrics, { useImpressionLogger } from "@promotedai/react-native-metrics";
 
-const _onViewableItemsChanged = useCallback(
-  ({viewableItems, changed}) => {
-    const contentList = viewableItems.map(i => ({ 
-      content_id: i.my_content_id,
-      insertion_id: i.promoted_insertion_id,
-      name: i.my_content_name
-    }));
-    PromotedMetrics.collectionViewDidChange(contentList, "MyListIdentifier");
-  },
-  []
-);
-
-const _onUnmount = useCallback(
-  () => {
-    PromotedMetrics.collectionViewDidUnmount("MyListIdentifier");
-  },
-  []
-);
-
-PromotedMetrics.collectionViewDidLoad("MyListIdentifier");
+const { _viewabilityConfig, _onViewableItemsChanged } = useImpressionLogger(
+  "MyListIdentifier",
+  (viewToken) => ({ 
+      content_id: viewToken.item.my_content_id,
+      insertion_id: viewToken.item.promoted_insertion_id,
+      name: viewToken.item.my_content_name
+  }));
 
 return (
   <FlatList
-    onUnmount={_onUnmount}
     onViewableItemsChanged={_onViewableItemsChanged}
     viewabilityConfig={_viewabilityConfig}
     ...
