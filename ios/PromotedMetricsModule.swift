@@ -169,7 +169,7 @@ public extension PromotedMetricsModule {
   
   @objc(logMakeOfferAction:)
   func logMakeOfferAction(item: ReactNativeDictionary?) {
-    metricsLogger.logMakeOfferAction(content: contentFor(content))
+    metricsLogger.logMakeOfferAction(content: itemFor(item))
   }
   
   @objc(logAskQuestionAction:)
