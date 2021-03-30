@@ -21,20 +21,40 @@ RCT_EXTERN_METHOD(logNavigateActionWithContent:(NSString *)screenName
                   forContent:(nullable NSDictionary *)content)
 
 /// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logPurchaseAction:(nullable NSDictionary *)item)
+RCT_EXTERN_METHOD(logAddToCartAction:(nullable NSDictionary *)item)
 
 /// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logAddToCartAction:(nullable NSDictionary *)item)
+RCT_EXTERN_METHOD(logRemoveFromCartAction:(nullable NSDictionary *)item)
+
+RCT_EXTERN_METHOD(logCheckoutAction)
+
+/// @param item (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logPurchaseAction:(nullable NSDictionary *)item)
 
 /// @param content (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logShareAction:(nullable NSDictionary *)content)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logLikeAction:(nullable NSDictionary *)content
-                  didLike:(BOOL)didLike)
+RCT_EXTERN_METHOD(logLikeAction:(nullable NSDictionary *)content)
+
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logUnlikeAction:(nullable NSDictionary *)content)
 
 /// @param content (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logCommentAction:(nullable NSDictionary *)content)
+
+/// @param item (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logMakeOfferAction:(nullable NSDictionary *)item)
+
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logAskQuestionAction:(nullable NSDictionary *)content)
+
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logAnswerQuestionAction:(nullable NSDictionary *)content)
+
+RCT_EXTERN_METHOD(logCompleteSignIn)
+
+RCT_EXTERN_METHOD(logCompleteSignUp)
 
 RCT_EXTERN_METHOD(logAction:(NSString *)name)
 
