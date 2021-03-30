@@ -117,3 +117,4 @@ const { PromotedMetrics } = NativeModules;
 
 export default PromotedMetrics as PromotedMetricsType;
 export { ActionType };
+export { useImpressionLogger } from './useImpressionLogger';
