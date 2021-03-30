@@ -1,4 +1,4 @@
-name: ios-react-native-metrics-sdk
+name: react-native-metrics
 
 on:
   push:
