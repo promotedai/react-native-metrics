@@ -24,25 +24,58 @@ class PromotedMetricsModule(reactContext: ReactApplicationContext) :
   fun logImpression(content: ReadableMap) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logClickToLike(content: ReadableMap, didLike: Boolean) {}
+  fun logNavigateAction(screenName: String) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logClickToShow(screenName: String) {}
+  fun logNavigateActionWithContent(screenName: String, content: ReadableMap) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logClickToShow(screenName: String, content: ReadableMap) {}
+  fun logAddToCartAction(item: ReadableMap) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logClickToSignUp(userId: String) {}
+  fun logRemoveFromCartAction(item: ReadableMap) {}
+  
+  @ReactMethod
+  fun logCheckoutAction() {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logClickToPurchase(item: ReadableMap) {}
+  fun logPurchaseAction(item: ReadableMap) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logShareAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logLikeAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logUnlikeAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logCommentAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logMakeOfferAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logAskQuestionAction(content: ReadableMap) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logAnswerQuestionAction(content: ReadableMap) {}
+  
+  @ReactMethod
+  fun logCompleteSignInAction() {}
+  
+  @ReactMethod
+  fun logCompleteSignUpAction() {}
+  
+  @ReactMethod
   fun logAction(name: String) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
-  fun logActionWithContent(name: String, content: ReadableMap) {}
+  fun logActionWithType(name: String, type: Int) {}
+  
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun logActionWithContent(name: String, type: Int, content: ReadableMap) {}
   
   @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logView(screenName: String) {}
