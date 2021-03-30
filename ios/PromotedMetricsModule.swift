@@ -126,25 +126,40 @@ public extension PromotedMetricsModule {
     metricsLogger.logNavigateAction(screenName: screenName,
                                     forContent: contentFor(content))
   }
-
-  @objc(logPurchaseAction:)
-  func logPurchaseAction(item: ReactNativeDictionary?) {
-    metricsLogger.logPurchaseAction(item: itemFor(item))
-  }
   
   @objc(logAddToCartAction:)
   func logAddToCartAction(item: ReactNativeDictionary?) {
     metricsLogger.logAddToCartAction(item: itemFor(item))
   }
   
+  @objc(logRemoveFromCartAction:)
+  func logRemoveFromCartAction(item: ReactNativeDictionary?) {
+    metricsLogger.logRemoveFromCartAction(item: itemFor(item))
+  }
+
+  @objc(logCheckoutAction)
+  func logCheckoutAction() {
+    metricsLogger.logCheckoutAction()
+  }
+
+  @objc(logPurchaseAction:)
+  func logPurchaseAction(item: ReactNativeDictionary?) {
+    metricsLogger.logPurchaseAction(item: itemFor(item))
+  }
+  
   @objc(logShareAction:)
   func logShareAction(content: ReactNativeDictionary?) {
     metricsLogger.logShareAction(content: contentFor(content))
   }
+
+  @objc(logLikeAction:)
+  func logLikeAction(content: ReactNativeDictionary?) {
+    metricsLogger.logLikeAction(content: contentFor(content))
+  }
   
-  @objc(logLikeAction:didLike:)
-  func logLikeAction(content: ReactNativeDictionary?, didLike: Bool) {
-    metricsLogger.logLikeAction(content: contentFor(content), didLike: didLike)
+  @objc(logUnlikeAction:)
+  func logUnlikeAction(content: ReactNativeDictionary?) {
+    metricsLogger.logUnlikeAction(content: contentFor(content))
   }
   
   @objc(logCommentAction:)
@@ -152,6 +167,31 @@ public extension PromotedMetricsModule {
     metricsLogger.logCommentAction(content: contentFor(content))
   }
   
+  @objc(logMakeOfferAction:)
+  func logMakeOfferAction(item: ReactNativeDictionary?) {
+    metricsLogger.logMakeOfferAction(content: contentFor(content))
+  }
+  
+  @objc(logAskQuestionAction:)
+  func logAskQuestionAction(content: ReactNativeDictionary?) {
+    metricsLogger.logAskQuestionAction(content: contentFor(content))
+  }
+  
+  @objc(logAnswerQuestionAction:)
+  func logAnswerQuestionAction(content: ReactNativeDictionary?) {
+    metricsLogger.logAnswerQuestionAction(content: contentFor(content))
+  }
+  
+  @objc(logCompleteSignInAction)
+  func logCompleteSignInAction() {
+    metricsLogger.logCompleteSignInAction()
+  }
+  
+  @objc(logCompleteSignUpAction)
+  func logCompleteSignUpAction() {
+    metricsLogger.logCompleteSignUpAction()
+  }
+
   @objc(logAction:)
   func logAction(name: String) {
     metricsLogger.logAction(name: name)
