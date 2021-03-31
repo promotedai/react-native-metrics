@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm i && npm config set access public
 
-      - name: Build
-        run: npm run build
-
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
