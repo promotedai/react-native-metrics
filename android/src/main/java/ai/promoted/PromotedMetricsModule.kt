@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.WritableMap
 
 class PromotedMetricsModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
@@ -89,4 +90,13 @@ class PromotedMetricsModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun collectionViewDidUnmount(collectionViewName: String) {}
+
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
+  fun getLoggingSessionInfo(promise: Promise) {
+    WritableMap result = WritableMap();
+    map.putString("logUserId", "");
+    map.putString("sessionId", "");
+    map.putString("viewId", "");
+    promise(map);
+  }
 }
