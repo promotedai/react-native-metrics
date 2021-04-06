@@ -21,6 +21,10 @@
     "!**/__fixtures__",
     "!**/__mocks__"
   ],
+  "scripts": {
+    "prepublishOnly": "git clean -d -x -f ./android && git clean -d -x -f ./ios",
+    "prepare": "bob build"
+  },
   "keywords": [
     "react-native",
     "ios",
