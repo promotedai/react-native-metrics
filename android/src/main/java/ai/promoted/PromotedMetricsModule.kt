@@ -63,7 +63,7 @@ class PromotedMetricsModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun logCompleteSignUpAction() {}
 
-  @ReactMethod
+  @ReactMethod @Suppress("UNUSED_PARAMETER")
   fun logAction(name: String) {}
 
   @ReactMethod @Suppress("UNUSED_PARAMETER")
