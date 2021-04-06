@@ -81,4 +81,8 @@ RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
 
 RCT_EXTERN_METHOD(collectionViewDidUnmount:(NSString *)collectionViewName)
 
+#pragma mark - Session information
+RCT_EXTERN_METHOD(getLoggingSessionInfo:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
 @end
