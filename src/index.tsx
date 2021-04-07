@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 
-enum ActionType {
+export enum ActionType {
   UnknownActionType = 0,
 
   /** Action that doesn't correspond to any of the below. */
@@ -49,6 +49,11 @@ enum ActionType {
   CompleteSignUp = 15
 };
 
+export interface LoggingSessionInfo {
+  logUserId?: string;
+  sessionId?: string;
+};
+
 type PromotedMetricsType = {
   startSessionAndLogUser(userId: string): void;
   startSessionAndLogSignedOutUser(): void;
@@ -57,7 +62,7 @@ type PromotedMetricsType = {
 
   logImpression(content: Object): void;
 
-  // Click logging
+  // Action logging
   
   logNavigateAction(screenName: string): void;
   logNavigateActionWithContent(screenName: string, content: Object): void;
@@ -111,10 +116,13 @@ type PromotedMetricsType = {
    * @param collectionViewName identifier for collection view to track
    */
   collectionViewDidUnmount(collectionViewName: string): void;
+  
+  // Session information
+  
+  getLoggingSessionInfo(): Promise<LoggingSessionInfo>;
 };
 
 const { PromotedMetrics } = NativeModules;
 
 export default PromotedMetrics as PromotedMetricsType;
-export { ActionType };
 export { useImpressionLogger } from './useImpressionLogger';

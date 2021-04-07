@@ -273,3 +273,16 @@ public extension PromotedMetricsModule {
     }
   }
 }
+
+// MARK: - Session information
+public extension PromotedMetricsModule {
+  @objc(getLoggingSessionInfo:rejecter:)
+  func loggingSessionInfo(resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+    let sessionInfo = [
+      "logUserId": metricsLogger.logUserID,
+      "sessionId": metricsLogger.sessionID,
+      "viewId": metricsLogger.viewID,
+    ]
+    resolver(sessionInfo)
+  }
+}
