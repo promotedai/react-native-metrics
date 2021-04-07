@@ -1,6 +1,6 @@
 import PromotedMetrics from ".";
 import { useCallback, useEffect } from "react";
-import { ViewToken } from "react-native";
+import type { ViewToken } from "react-native";
 
 /**
  * Returns handlers for use with onViewableItemsChanged and
