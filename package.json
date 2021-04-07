@@ -50,6 +50,10 @@
       ["typescript", {"project": "tsconfig.build.json"}]
     ]
   },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-native": "^0.63.4"
+  },
   "devDependencies": {
     "react-native-builder-bob": "^0.18.1"
   }
