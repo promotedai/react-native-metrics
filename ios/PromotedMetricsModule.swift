@@ -212,15 +212,15 @@ public extension PromotedMetricsModule {
   }
   
   // MARK: - Views
-  @objc(logView:)
-  func logView(screenName: String) {
-    metricsLogger.logView(screenName: screenName)
+  @objc(logView:key:)
+  func logView(screenName: String, key: String) {
+    metricsLogger.logView(screenName: screenName, key: key)
   }
   
-  @objc(logViewWithUseCase:useCase:)
-  func logView(screenName: String, useCase: Int) {
+  @objc(logViewWithUseCase:key:useCase:)
+  func logView(screenName: String, key: String, useCase: Int) {
     if let u = UseCase(rawValue: useCase) {
-      metricsLogger.logView(screenName: screenName, useCase: u)
+      metricsLogger.logView(screenName: screenName, key: key, useCase: u)
     }
   }
 }
