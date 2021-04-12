@@ -35,7 +35,7 @@ public class PromotedMetricsModule: NSObject {
   /// Uses local reference if present, shared service otherwise.
   private var service: MetricsLoggerService {
     if let s = memberService { return s }
-    return MetricsLoggerService.sharedService
+    return MetricsLoggerService.shared
   }
 
   private var metricsLogger: MetricsLogger {
