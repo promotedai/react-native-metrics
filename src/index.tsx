@@ -106,10 +106,16 @@ type PromotedMetricsType = {
   // View logging
 
   /**
-   * Logs a screen view. Use with NavigationContainers to provide the
-   * name and key from the current navigation route.
+   * Logs a screen view. Use with NavigationContainer's onReady handler
+   * to provide the name and key from the current navigation route.
    */
-  logView(routeName: string, routeKey: string): void;
+  logViewReady(routeName: string, routeKey: string): void;
+
+  /**
+   * Logs a screen view. Use with NavigationContainer's onChange handler
+   * to provide the name and key from the current navigation route.
+   */
+  logViewChange(routeName: string, routeKey: string): void;
 
   // Impression logging
 
