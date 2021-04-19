@@ -1,6 +1,8 @@
-import PromotedMetrics from '.';
 import { useCallback, useEffect } from 'react';
+import { NativeModules } from 'react-native';
 import type { ViewToken } from 'react-native';
+
+const { PromotedMetrics } = NativeModules;
 
 /**
  * Returns handlers for use with onViewableItemsChanged and
@@ -17,7 +19,7 @@ export const useImpressionLogger = (
   }
 
   const _onViewableItemsChanged = useCallback(
-    ({viewableItems}) => {
+    ({viewableItems, changed}) => {
       const contentList = viewableItems.map(contentCreator);
       PromotedMetrics.collectionViewDidChange(contentList, collectionViewName);
     }, []);
