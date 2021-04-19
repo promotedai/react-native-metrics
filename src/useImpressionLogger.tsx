@@ -1,6 +1,8 @@
-import PromotedMetrics from ".";
-import { useCallback, useEffect } from "react";
-import type { ViewToken } from "react-native";
+import { useCallback, useEffect } from 'react';
+import { NativeModules } from 'react-native';
+import type { ViewToken } from 'react-native';
+
+const { PromotedMetrics } = NativeModules;
 
 /**
  * Returns handlers for use with onViewableItemsChanged and
@@ -24,9 +26,6 @@ export const useImpressionLogger = (
 
   useEffect(() => {
     PromotedMetrics.collectionViewDidLoad(collectionViewName);
-  }, []);
-
-  useEffect(() => {
     return () => {
       PromotedMetrics.collectionViewDidUnmount(collectionViewName);
     }
