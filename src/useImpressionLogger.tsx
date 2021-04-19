@@ -19,7 +19,7 @@ export const useImpressionLogger = (
   }
 
   const _onViewableItemsChanged = useCallback(
-    ({viewableItems, changed}) => {
+    ({viewableItems}) => {
       const contentList = viewableItems.map(contentCreator);
       PromotedMetrics.collectionViewDidChange(contentList, collectionViewName);
     }, []);
