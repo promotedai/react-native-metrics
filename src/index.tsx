@@ -49,21 +49,41 @@ export enum ActionType {
   CompleteSignUp = 15
 };
 
+/** Provides session context for Promoted integration points. */
 export interface LoggingSessionInfo {
   logUserId?: string;
   sessionId?: string;
+  viewId?: string;
 };
 
+/** Logging interface. */
 type PromotedMetricsType = {
+  /**
+   * Call when sign-in completes with specified user ID.
+   * Starts logging session with the provided user and logs a
+   * user event.
+   */
   startSessionAndLogUser(userId: string): void;
+
+  /**
+   * Call when sign-in completes with no user.
+   * Starts logging session with signed-out user and logs a
+   * user event.
+   */
   startSessionAndLogSignedOutUser(): void;
 
   // Impression logging
 
+  /**
+   * Logs an impression for given content.
+   * Typically, you would call useImpressionLogger() for use with
+   * SectionLists and FlatLists. This method should only be used
+   * outside of those components.
+   */
   logImpression(content: Object): void;
 
   // Action logging
-  
+
   logNavigateAction(screenName: string): void;
   logNavigateActionWithContent(screenName: string, content: Object): void;
   logAddToCartAction(item: Object): void;
@@ -85,7 +105,17 @@ type PromotedMetricsType = {
 
   // View logging
 
-  logView(screenName: string): void;
+  /**
+   * Logs a screen view. Use with NavigationContainer's onReady handler
+   * to provide the name and key from the current navigation route.
+   */
+  logViewReady(routeName: string, routeKey: string): void;
+
+  /**
+   * Logs a screen view. Use with NavigationContainer's onChange handler
+   * to provide the name and key from the current navigation route.
+   */
+  logViewChange(routeName: string, routeKey: string): void;
 
   // Impression logging
 
@@ -98,7 +128,7 @@ type PromotedMetricsType = {
    * @param collectionViewName identifier for collection view to track
    */
   collectionViewDidLoad(collectionViewName: string): void;
-  
+
   /**
    * Logs impressions for changed content.
    * Call this method with currently visible content and the underlying
@@ -112,13 +142,14 @@ type PromotedMetricsType = {
   /**
    * Ends tracking session for given collection view.
    * Drops all associated impression logging state.
-   * 
+   *
    * @param collectionViewName identifier for collection view to track
    */
   collectionViewDidUnmount(collectionViewName: string): void;
-  
+
   // Session information
-  
+
+  /** Returns logging session context for Promoted integration points. */
   getLoggingSessionInfo(): Promise<LoggingSessionInfo>;
 };
 

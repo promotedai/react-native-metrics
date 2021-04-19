@@ -67,9 +67,18 @@ RCT_EXTERN_METHOD(logActionWithContent:(NSString *)name
                   content:(nullable NSDictionary *)content)
 
 #pragma mark - Views
-RCT_EXTERN_METHOD(logView:(NSString *)screenName)
+RCT_EXTERN_METHOD(logViewReady:(NSString *)routeName
+                  routeKey:(NSString *)routeKey)
 
-RCT_EXTERN_METHOD(logViewWithUseCase:(NSString *)screenName
+RCT_EXTERN_METHOD(logViewReadyWithUseCase:(NSString *)routeName
+                  routeKey:(NSString *)routeKey
+                  useCase:(NSInteger)useCase)
+
+RCT_EXTERN_METHOD(logViewChange:(NSString *)routeName
+                  routeKey:(NSString *)routeKey)
+
+RCT_EXTERN_METHOD(logViewChangeWithUseCase:(NSString *)routeName
+                  routeKey:(NSString *)routeKey
                   useCase:(NSInteger)useCase)
 
 #pragma mark - ImpressionLogger

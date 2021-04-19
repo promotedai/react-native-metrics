@@ -212,15 +212,27 @@ public extension PromotedMetricsModule {
   }
   
   // MARK: - Views
-  @objc(logView:)
-  func logView(screenName: String) {
-    metricsLogger.logView(screenName: screenName)
+  @objc(logViewReady:routeKey:)
+  func logViewReady(routeName: String, routeKey: String) {
+    metricsLogger.logViewReady(routeName: routeName, routeKey: routeKey)
   }
   
-  @objc(logViewWithUseCase:useCase:)
-  func logView(screenName: String, useCase: Int) {
+  @objc(logViewReadyWithUseCase:routeKey:useCase:)
+  func logViewReady(routeName: String, routeKey: String, useCase: Int) {
     if let u = UseCase(rawValue: useCase) {
-      metricsLogger.logView(screenName: screenName, useCase: u)
+      metricsLogger.logViewReady(routeName: routeName, routeKey: routeKey, useCase: u)
+    }
+  }
+  
+  @objc(logViewChange:routeKey:)
+  func logViewChange(routeName: String, routeKey: String) {
+    metricsLogger.logViewChange(routeName: routeName, routeKey: routeKey)
+  }
+  
+  @objc(logViewChangeWithUseCase:routeKey:useCase:)
+  func logViewChange(routeName: String, routeKey: String, useCase: Int) {
+    if let u = UseCase(rawValue: useCase) {
+      metricsLogger.logViewChange(routeName: routeName, routeKey: routeKey, useCase: u)
     }
   }
 }
