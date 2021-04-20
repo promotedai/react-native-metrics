@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import { PromotedMetricsType } from './PromotedMetricsType';
+import type { PromotedMetricsType } from './PromotedMetricsType';
 
 const { PromotedMetrics } = NativeModules;
 

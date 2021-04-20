@@ -1,5 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { NativeModules } from 'react-native';
 
 const { PromotedMetrics } = NativeModules;
@@ -8,7 +7,7 @@ const { PromotedMetrics } = NativeModules;
  * Returns handlers for use with onReady and onStateChange for
  * NavigationContainers.
  */
-export const useViewTracker = (navigationRef: MutableRefObject<NavigationContainer>) => {
+export const useViewTracker = (navigationRef: MutableRefObject) => {
 
   const _onReady = async () => {
     const currentRoute = navigationRef.current?.getCurrentRoute();
