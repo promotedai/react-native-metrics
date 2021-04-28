@@ -39,9 +39,6 @@ public class PromotedMetricsModule: NSObject {
   }
 
   private var metricsLogger: MetricsLogger? { service.metricsLogger }
-  
-  private var config: ClientConfig { service.config }
-    
   private var nameToImpressionLogger: [String: ImpressionLogger]
   
   @objc public override convenience init() {
