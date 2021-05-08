@@ -11,9 +11,7 @@ class PromotedMetricsModule(
 ) :
   ReactContextBaseJavaModule(reactContext) {
 
-  init {
-    PromotedAi.initialize(application, config)
-  }
+  init { PromotedAi.initialize(application, config) }
 
   override fun getName(): String {
     return "PromotedMetrics"
@@ -21,8 +19,9 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun startSessionAndLogUser(userId: String) {
-    PromotedAi.startSession(userId)
+  fun startSessionAndLogUser(userId: String?) {
+    val nullSafeUserId = userId ?: ""
+    PromotedAi.startSession(nullSafeUserId)
   }
 
   @ReactMethod
@@ -128,24 +127,40 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logView(screenName: String) {
+  fun logView(screenName: String?) {
+    screenName ?: return
     PromotedAi.onViewVisible(screenName)
   }
 
   @ReactMethod
   @Suppress("Unused", "UNUSED_PARAMETER")
-  fun collectionViewDidLoad(collectionViewName: String) {
+  fun collectionViewDidLoad(collectionViewName: String?) {
+    collectionViewName ?: return
+    PromotedAi.onCollectionVisible(collectionViewName, emptyList())
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun collectionViewDidChange(visibleContent: ReadableArray,
-                              collectionViewName: String) {
+  @Suppress("Unused")
+  fun collectionViewDidChange(visibleContent: ReadableArray?,
+                              collectionViewName: String?) {
+    collectionViewName ?: return
+    visibleContent ?: return
+
+    val visibleContentForSdk =
+      visibleContent
+        .toArrayList()
+        .mapNotNull { arrayItem ->
+          (arrayItem as? ReadableMap)?.toContent()
+        }
+
+    PromotedAi.onCollectionUpdated(collectionViewName, visibleContentForSdk)
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun collectionViewDidUnmount(collectionViewName: String) {
+  @Suppress("Unused")
+  fun collectionViewDidUnmount(collectionViewName: String?) {
+    collectionViewName ?: return
+    PromotedAi.onCollectionHidden(collectionViewName)
   }
 
   @ReactMethod
@@ -156,5 +171,26 @@ class PromotedMetricsModule(
     map.putString("sessionId", "")
     map.putString("viewId", "")
     promise.resolve(map)
+  }
+
+  /**
+   * Convert an RN [ReadableMap] to an [AbstractContent.Content].
+   */
+  private fun ReadableMap?.toContent(): AbstractContent.Content? {
+    this ?: return null
+    val insertionId =
+      getString("insertion-id")
+        ?: getString("insertionId")
+
+    val contentId =
+      getString("content-id")
+        ?: getString("contentId")
+        ?: getString("_id")
+
+    return AbstractContent.Content(
+      name = getString("name") ?: "",
+      insertionId = insertionId,
+      contentId = contentId
+    )
   }
 }
