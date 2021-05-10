@@ -129,5 +129,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation "ai.promoted:android-metrics-sdk:0.0.5"
+  implementation "ai.promoted:android-metrics-sdk:0.0.6"
 }
