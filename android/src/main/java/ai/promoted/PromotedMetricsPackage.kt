@@ -7,12 +7,24 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 
-class PromotedMetricsPackage(
-  private val application: Application,
-  private val config: ClientConfig
-) : ReactPackage {
+class PromotedMetricsPackage : ReactPackage {
+  constructor() {
+    configDependencies = null
+  }
+
+  constructor(application: Application, clientConfig: ClientConfig) {
+    configDependencies = ConfigDependencies(application, clientConfig)
+  }
+
+  data class ConfigDependencies(
+    val application: Application,
+    val clientConfig: ClientConfig
+  )
+
+  private val configDependencies: ConfigDependencies?
+
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(PromotedMetricsModule(application, config, reactContext))
+    return listOf(PromotedMetricsModule(configDependencies, reactContext))
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
