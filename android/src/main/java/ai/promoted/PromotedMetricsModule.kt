@@ -1,17 +1,16 @@
 package ai.promoted
 
-import android.app.Application
 import com.facebook.react.bridge.*
 
 class PromotedMetricsModule(
-  // TODO - pass in custom configuration
-  application: Application,
-  config: ClientConfig,
+  configDependencies: PromotedMetricsPackage.ConfigDependencies?,
   reactContext: ReactApplicationContext
 ) :
   ReactContextBaseJavaModule(reactContext) {
 
-  init { PromotedAi.initialize(application, config) }
+  init {
+    configDependencies?.let { PromotedAi.initialize(it.application, it.clientConfig) }
+  }
 
   override fun getName(): String {
     return "PromotedMetrics"
@@ -133,7 +132,7 @@ class PromotedMetricsModule(
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
+  @Suppress("Unused")
   fun collectionViewDidLoad(collectionViewName: String?) {
     collectionViewName ?: return
     PromotedAi.onCollectionVisible(collectionViewName, emptyList())
