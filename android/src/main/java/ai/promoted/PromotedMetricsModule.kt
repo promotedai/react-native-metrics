@@ -1,5 +1,6 @@
 package ai.promoted
 
+import ai.promoted.proto.event.ActionType
 import com.facebook.react.bridge.*
 
 class PromotedMetricsModule(
@@ -30,98 +31,102 @@ class PromotedMetricsModule(
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logImpression(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logNavigateAction(screenName: String) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logNavigateActionWithContent(screenName: String, content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logAddToCartAction(item: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logRemoveFromCartAction(item: ReadableMap) {
-  }
+  @Suppress("Unused")
+  fun logImpression(content: ReadableMap?) =
+    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
 
   @ReactMethod
   @Suppress("Unused")
-  fun logCheckoutAction() {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logPurchaseAction(item: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logShareAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logLikeAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logUnlikeAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logCommentAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logMakeOfferAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logAskQuestionAction(content: ReadableMap) {
-  }
-
-  @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logAnswerQuestionAction(content: ReadableMap) {
-  }
+  fun logNavigateAction(screenName: String) =
+    PromotedAi.onAction(screenName, ActionType.NAVIGATE) {}
 
   @ReactMethod
   @Suppress("Unused")
-  fun logCompleteSignInAction() {
-  }
+  fun logNavigateActionWithContent(screenName: String, content: ReadableMap) =
+    PromotedAi.onAction(screenName, ActionType.NAVIGATE, content.toActionData())
 
   @ReactMethod
   @Suppress("Unused")
-  fun logCompleteSignUpAction() {
-  }
+  fun logAddToCartAction(item: ReadableMap) =
+    PromotedAi.onAction("add-to-cart", ActionType.ADD_TO_CART, item.toActionData())
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
-  fun logAction(name: String) {
-  }
+  @Suppress("Unused")
+  fun logRemoveFromCartAction(item: ReadableMap) =
+    PromotedAi.onAction("remove-from-cart", ActionType.REMOVE_FROM_CART, item.toActionData())
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
+  @Suppress("Unused")
+  fun logCheckoutAction() =
+    PromotedAi.onAction("checkout", ActionType.CHECKOUT) {}
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logPurchaseAction(item: ReadableMap) =
+    PromotedAi.onAction("purchase", ActionType.PURCHASE, item.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logShareAction(content: ReadableMap) =
+    PromotedAi.onAction("share", ActionType.SHARE, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logLikeAction(content: ReadableMap) =
+    PromotedAi.onAction("like", ActionType.LIKE, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logUnlikeAction(content: ReadableMap) =
+    PromotedAi.onAction("unlike", ActionType.UNLIKE, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logCommentAction(content: ReadableMap) =
+    PromotedAi.onAction("comment", ActionType.COMMENT, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logMakeOfferAction(content: ReadableMap) =
+    PromotedAi.onAction("make-offer", ActionType.MAKE_OFFER, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logAskQuestionAction(content: ReadableMap) =
+    PromotedAi.onAction("ask-question", ActionType.ASK_QUESTION, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logAnswerQuestionAction(content: ReadableMap) =
+    PromotedAi.onAction("answer-question", ActionType.ANSWER_QUESTION, content.toActionData())
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logCompleteSignInAction() =
+    PromotedAi.onAction("sign-in", ActionType.COMPLETE_SIGN_IN) {}
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logCompleteSignUpAction() =
+    PromotedAi.onAction("sign-up", ActionType.COMPLETE_SIGN_UP) {}
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logAction(name: String) =
+    PromotedAi.onAction(name, ActionType.CUSTOM_ACTION_TYPE) {}
+
+  @ReactMethod
+  @Suppress("Unused")
   fun logActionWithType(name: String, type: Int) {
+    val actionType = ActionType.forNumber(type) ?: return
+    PromotedAi.onAction(name, actionType) {}
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
+  @Suppress("Unused")
   fun logActionWithContent(name: String, type: Int, content: ReadableMap) {
+    val actionType = ActionType.forNumber(type) ?: return
+    PromotedAi.onAction(name, actionType, content.toActionData())
   }
 
   @ReactMethod
@@ -163,13 +168,16 @@ class PromotedMetricsModule(
   }
 
   @ReactMethod
-  @Suppress("Unused", "UNUSED_PARAMETER")
+  @Suppress("Unused")
   fun getLoggingSessionInfo(promise: Promise) {
-    val map = Arguments.createMap()
-    map.putString("logUserId", "")
-    map.putString("sessionId", "")
-    map.putString("viewId", "")
-    promise.resolve(map)
+    val currentSessionInfo = PromotedAi.currentSessionInfo
+    promise.resolve(
+      Arguments.createMap().apply {
+        putString("logUserId", currentSessionInfo.logUserId)
+        putString("sessionId", currentSessionInfo.sessionId)
+        putString("viewId", currentSessionInfo.viewId)
+      }
+    )
   }
 
   /**
@@ -191,5 +199,45 @@ class PromotedMetricsModule(
       insertionId = insertionId,
       contentId = contentId
     )
+  }
+
+  /**
+   * Convert an RN [ReadableMap] to an [ActionData].
+   */
+  private fun ReadableMap?.toActionData(): ActionData {
+    this ?: return ActionData.Builder().build()
+    val insertionId =
+      getString("insertion-id")
+        ?: getString("insertionId")
+
+    val contentId =
+      getString("content-id")
+        ?: getString("contentId")
+        ?: getString("_id")
+
+    return ActionData.Builder().apply {
+      this.insertionId = insertionId
+      this.contentId = contentId
+    }.build()
+  }
+
+  /**
+   * Convert an RN [ReadableMap] to an [ActionData].
+   */
+  private fun ReadableMap?.toImpressionData(): ImpressionData? {
+    this ?: return null
+    val insertionId =
+      getString("insertion-id")
+        ?: getString("insertionId")
+
+    val contentId =
+      getString("content-id")
+        ?: getString("contentId")
+        ?: getString("_id")
+
+    return ImpressionData.Builder().apply {
+      this.insertionId = insertionId
+      this.contentId = contentId
+    }.build()
   }
 }
