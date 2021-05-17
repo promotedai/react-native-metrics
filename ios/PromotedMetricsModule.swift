@@ -1,5 +1,6 @@
 import Foundation
 import PromotedAIMetricsSDK
+import os.log
 
 // MARK: -
 /**
@@ -29,26 +30,23 @@ public class PromotedMetricsModule: NSObject {
   /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
   private let insertionIDKeys: [String]
   
-  /// Local reference to `MetricsLoggerService`, if any.
-  private let memberService: MetricsLoggerService?
- 
-  /// Uses local reference if present, shared service otherwise.
-  private var service: MetricsLoggerService {
-    if let s = memberService { return s }
-    return MetricsLoggerService.shared
-  }
-
-  private var metricsLogger: MetricsLogger? { service.metricsLogger }
+  private let service: MetricsLoggerService?
+  private var metricsLogger: MetricsLogger? { service?.metricsLogger }
   private var nameToImpressionLogger: [String: ImpressionLogger]
-  
+
   @objc public override convenience init() {
+    // Log a debug message instead of throwing an error so that clients
+    // can integrate the build dependency without adding configuration
+    // in the same change.
+    let log = OSLog(subsystem: "ai.promoted", category: "PromotedMetricsModule")
+    os_log("PromotedMetricsModule not configured", log: log, type: .debug)
     self.init(optionalMetricsLoggerService: nil)
   }
-  
+
   @objc public convenience init(metricsLoggerService: MetricsLoggerService) {
     self.init(optionalMetricsLoggerService: metricsLoggerService)
   }
-  
+
   public convenience init(metricsLoggerService: MetricsLoggerService,
                           nameKeys: [String]? = defaultNameKeys,
                           contentIDKeys: [String]? = defaultContentIDKeys,
@@ -63,20 +61,16 @@ public class PromotedMetricsModule: NSObject {
                nameKeys: [String]? = defaultNameKeys,
                contentIDKeys: [String]? = defaultContentIDKeys,
                insertionIDKeys: [String]? = defaultInsertionIDKeys) {
-    self.memberService = optionalMetricsLoggerService
+    self.service = optionalMetricsLoggerService
     self.nameKeys = nameKeys!
     self.contentIDKeys = contentIDKeys!
     self.insertionIDKeys = insertionIDKeys!
     self.nameToImpressionLogger = [:]
   }
 
-  @objc public var methodQueue: DispatchQueue {
-    return DispatchQueue.main
-  }
+  @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
   
-  @objc public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
+  @objc public static func requiresMainQueueSetup() -> Bool { true }
   
   private func contentFor(_ dictionary: ReactNativeDictionary?) -> Content {
     return Content(properties: dictionary,
@@ -248,7 +242,7 @@ public extension PromotedMetricsModule {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = nameToImpressionLogger[collectionViewName] { return }
-    if let logger = service.impressionLogger() {
+    if let logger = service?.impressionLogger() {
       nameToImpressionLogger[collectionViewName] = logger
     }
   }
