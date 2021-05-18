@@ -17,4 +17,9 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "PromotedAIMetricsSDK", "~> 0.3.1"
+
+  # If the app pulls in PromotedAIMetricsSDK/FirebaseAnalytics,
+  # then we need to pull this in too. If the app doesn't pull in
+  # that dependency, then this is ignored.
+  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/Firebase/CoreOnly/Sources"' }
 end
