@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
-  s.dependency "PromotedAIMetricsSDK", "~> 0.4.0"
+  s.dependency "PromotedAIMetricsSDK", "~> 0.4.2"
 
   # If the app pulls in PromotedAIMetricsSDK/FirebaseAnalytics,
   # then we need to pull this in too. If the app doesn't pull in
