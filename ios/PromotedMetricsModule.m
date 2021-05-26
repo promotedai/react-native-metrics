@@ -52,9 +52,9 @@ RCT_EXTERN_METHOD(logAskQuestionAction:(nullable NSDictionary *)content)
 /// @param content (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logAnswerQuestionAction:(nullable NSDictionary *)content)
 
-RCT_EXTERN_METHOD(logCompleteSignIn)
+RCT_EXTERN_METHOD(logCompleteSignInAction)
 
-RCT_EXTERN_METHOD(logCompleteSignUp)
+RCT_EXTERN_METHOD(logCompleteSignUpAction)
 
 RCT_EXTERN_METHOD(logAction:(NSString *)name)
 
