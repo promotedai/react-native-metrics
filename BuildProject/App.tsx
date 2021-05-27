@@ -5,9 +5,8 @@
  * @flow strict-local
  */
 
-import PromotedMetrics from '@promotedai/react-native-metrics';
-import type { ActionType } from '@promotedai/react-native-metrics';
-import React from 'react';
+import PromotedMetrics, { ActionType } from '@promotedai/react-native-metrics';
+import React, { useState } from 'react';
 import type { Node } from 'react';
 import {
   Alert,
@@ -15,41 +14,13 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   useColorScheme,
-  View,
 } from 'react-native';
 
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
-
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -57,6 +28,8 @@ const App: () => Node = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const [text, setText] = useState('');
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -68,57 +41,99 @@ const App: () => Node = () => {
           title="Test All" 
           onPress={() => {
             const content = { _id: "foobar"};
+            var allMessages = '';
+            const logPassed = (message) => {
+              allMessages += 'Passed: ' + message + '\n';
+            };
+
             PromotedMetrics.startSessionAndLogUser("foobar");
+            logPassed('startSessionAndLogUser');
+
             PromotedMetrics.startSessionAndLogSignedOutUser();
+            logPassed('startSessionAndLogSignedOutUser');
+
             PromotedMetrics.logImpression(content);
+            logPassed('logImpression');
+
             PromotedMetrics.logViewReady("foobar", "batman");
+            logPassed('logViewReady');
+
             PromotedMetrics.logViewChange("spaghetti", "meatballs");
+            logPassed('logViewChange');
+
             PromotedMetrics.collectionViewDidLoad("hello");
+            logPassed('collectionViewDidLoad');
+
             PromotedMetrics.collectionViewDidChange([], "hello");
+            logPassed('collectionViewDidChange');
+
             PromotedMetrics.collectionViewDidUnmount("hello");
+            logPassed('collectionViewDidUnmount');
+
             PromotedMetrics.getLoggingSessionInfo();
+            logPassed('getLoggingSessionInfo');
+
             PromotedMetrics.logNavigateAction("screen");
+            logPassed('logNavigateAction');
+
             PromotedMetrics.logNavigateActionWithContent("screen", content);
+            logPassed('logNavigateActionWithContent');
+
             PromotedMetrics.logAddToCartAction(content);
+            logPassed('logAddToCartAction');
+
             PromotedMetrics.logRemoveFromCartAction(content);
+            logPassed('logRemoveFromCartAction');
+
             PromotedMetrics.logCheckoutAction();
+            logPassed('logCheckoutAction');
+
             PromotedMetrics.logPurchaseAction(content);
+            logPassed('logPurchaseAction');
+
             PromotedMetrics.logShareAction(content);
+            logPassed('logShareAction');
+
             PromotedMetrics.logLikeAction(content);
+            logPassed('logLikeAction');
+
             PromotedMetrics.logUnlikeAction(content);
+            logPassed('logUnlikeAction');
+
             PromotedMetrics.logCommentAction(content);
+            logPassed('logCommentAction');
+
             PromotedMetrics.logMakeOfferAction(content);
+            logPassed('logMakeOfferAction');
+
             PromotedMetrics.logAskQuestionAction(content);
+            logPassed('logAskQuestionAction');
+
             PromotedMetrics.logAnswerQuestionAction(content);
+            logPassed('logAnswerQuestionAction');
+
             //PromotedMetrics.logCompleteSignInAction();
+            logPassed('logCompleteSignInAction');
+
             //PromotedMetrics.logCompleteSignUpAction();
+            logPassed('logCompleteSignUpAction');
+
             PromotedMetrics.logAction("custom");
+            logPassed('logAction');
+
             PromotedMetrics.logActionWithType("custom", ActionType.Navigate);
+            logPassed('logActionWithType');
+
             PromotedMetrics.logActionWithContent("custom", ActionType.Share, content);
+            logPassed('logActionWithContent');
+
+            setText(allMessages);
             Alert.alert("Passed", "All logging passed.");
           }}/>
+        <Text>{text}</Text>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
