@@ -112,10 +112,10 @@ const App: () => Node = () => {
             PromotedMetrics.logAnswerQuestionAction(content);
             logPassed('logAnswerQuestionAction');
 
-            //PromotedMetrics.logCompleteSignInAction();
+            PromotedMetrics.logCompleteSignInAction();
             logPassed('logCompleteSignInAction');
 
-            //PromotedMetrics.logCompleteSignUpAction();
+            PromotedMetrics.logCompleteSignUpAction();
             logPassed('logCompleteSignUpAction');
 
             PromotedMetrics.logAction("custom");
