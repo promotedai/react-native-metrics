@@ -4,6 +4,7 @@ import type { PromotedMetricsType } from './PromotedMetricsType';
 const { PromotedMetrics } = NativeModules;
 
 export default PromotedMetrics as PromotedMetricsType;
-export type { ActionType, LoggingSessionInfo } from './PromotedMetricsType';
+export type { LoggingSessionInfo } from './PromotedMetricsType';
+export { ActionType } from './ActionType';
 export { useImpressionLogger } from './useImpressionLogger';
 export { useViewTracker } from './useViewTracker';
