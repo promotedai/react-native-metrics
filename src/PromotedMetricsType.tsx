@@ -7,6 +7,9 @@ export interface LoggingSessionInfo {
   viewId?: string;
 };
 
+// IF YOU CHANGE THIS FILE, also update BuildProject/App.tsx
+// to include a test for your change.
+
 /** Logging interface. */
 export type PromotedMetricsType = {
   /**
