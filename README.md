@@ -1,8 +1,6 @@
 # react-native-metrics
 
-Promoted metrics logging library for React Native.
-
-Currently released for iOS and stubbed out on Android. You can make `PromotedMetrics` calls directly in shared Typescript/Javascript without platform checks. These calls will log on iOS and do nothing on Android.
+Promoted metrics logging library for React Native. Released for iOS and Android.
 
 ## Installation
 
