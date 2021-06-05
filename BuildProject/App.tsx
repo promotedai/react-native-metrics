@@ -53,14 +53,14 @@ const App: () => Node = () => {
     PromotedMetrics.logViewChange("spaghetti", "meatballs");
     logPassed('logViewChange');
 
-    PromotedMetrics.collectionViewDidLoad("hello");
-    logPassed('collectionViewDidLoad');
+    PromotedMetrics.collectionViewDidMount("hello");
+    logPassed('collectionViewDidMount');
 
     PromotedMetrics.collectionViewDidChange([], "hello");
     logPassed('collectionViewDidChange');
 
-    PromotedMetrics.collectionViewDidUnmount("hello");
-    logPassed('collectionViewDidUnmount');
+    PromotedMetrics.collectionViewWillUnmount("hello");
+    logPassed('collectionViewWillUnmount');
 
     PromotedMetrics.getCurrentOrPendingAncestorIds();
     logPassed('getCurrentOrPendingAncestorIds');

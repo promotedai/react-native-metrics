@@ -27,9 +27,9 @@ export const useImpressionLogger = (
     }, []);
 
   useEffect(() => {
-    PromotedMetrics.collectionViewDidLoad(collectionViewName);
+    PromotedMetrics.collectionViewDidMount(collectionViewName);
     return () => {
-      PromotedMetrics.collectionViewDidUnmount(collectionViewName);
+      PromotedMetrics.collectionViewWillUnmount(collectionViewName);
     }
   }, []);
 

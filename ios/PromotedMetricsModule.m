@@ -82,13 +82,13 @@ RCT_EXTERN_METHOD(logViewChangeWithUseCase:(NSString *)routeName
                   useCase:(NSInteger)useCase)
 
 #pragma mark - ImpressionLogger
-RCT_EXTERN_METHOD(collectionViewDidLoad:(NSString *)collectionViewName)
+RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionViewName)
 
 /// @param visibleContent (`NSArray<NSDictionary<String, id>>`)
 RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
                   collectionViewName:(NSString *)collectionViewName)
 
-RCT_EXTERN_METHOD(collectionViewDidUnmount:(NSString *)collectionViewName)
+RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionViewName)
 
 #pragma mark - Pending ancestor IDs
 RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolver

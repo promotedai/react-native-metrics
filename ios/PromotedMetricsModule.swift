@@ -237,8 +237,8 @@ public extension PromotedMetricsModule {
   /// from the previous session will persist.
   ///
   /// - Parameter collectionViewName: Identifier for collection view to track.
-  @objc(collectionViewDidLoad:)
-  func collectionViewDidLoad(collectionViewName: String) {
+  @objc(collectionViewDidMount:)
+  func collectionViewDidMount(collectionViewName: String) {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = nameToImpressionLogger[collectionViewName] { return }
@@ -270,8 +270,8 @@ public extension PromotedMetricsModule {
   /// Drops all associated impression logging state.
   ///
   /// - Parameter collectionViewName: Identifier for collection view to track.
-  @objc(collectionViewDidUnmount:)
-  func collectionViewDidUnmount(collectionViewName: String) {
+  @objc(collectionViewWillUnmount:)
+  func collectionViewWillUnmount(collectionViewName: String) {
     if let logger = nameToImpressionLogger.removeValue(forKey: collectionViewName) {
       logger.collectionViewDidHideAllContent()
     }

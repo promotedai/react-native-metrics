@@ -138,7 +138,7 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidLoad(collectionViewName: String?) {
+  fun collectionViewDidMount(collectionViewName: String?) {
     collectionViewName ?: return
     PromotedAi.onCollectionVisible(collectionViewName, emptyList())
   }
@@ -162,7 +162,7 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidUnmount(collectionViewName: String?) {
+  fun collectionViewWillUnmount(collectionViewName: String?) {
     collectionViewName ?: return
     PromotedAi.onCollectionHidden(collectionViewName)
   }

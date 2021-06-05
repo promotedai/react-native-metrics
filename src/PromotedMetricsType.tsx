@@ -81,7 +81,7 @@ export type PromotedMetricsType = {
    *
    * @param collectionViewName identifier for collection view to track
    */
-  collectionViewDidLoad(collectionViewName: string): void;
+  collectionViewDidMount(collectionViewName: string): void;
 
   /**
    * Logs impressions for changed content.
@@ -99,7 +99,7 @@ export type PromotedMetricsType = {
    *
    * @param collectionViewName identifier for collection view to track
    */
-  collectionViewDidUnmount(collectionViewName: string): void;
+  collectionViewWillUnmount(collectionViewName: string): void;
 
   // Session information
 
