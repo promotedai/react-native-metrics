@@ -10,18 +10,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, RCTBridgeDelegate {
   var window: UIWindow?
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    let bridge = RCTBridge(delegate: self, launchOptions: launchOptions)
-    let rootView = RCTRootView(bridge: bridge!, moduleName: "BuildProject", initialProperties: nil)
+    guard let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) else { return false }
+    let rootView = RCTRootView(bridge: bridge, moduleName: "BuildProject", initialProperties: nil)
     if #available(iOS 13.0, *) {
       rootView.backgroundColor = UIColor.systemBackground
     } else {
       rootView.backgroundColor = UIColor.white
     }
-    window = UIWindow(frame: UIScreen.main.bounds)
+    let window = UIWindow(frame: UIScreen.main.bounds)
     let rootViewController = UIViewController()
     rootViewController.view = rootView
-    window!.rootViewController = rootViewController
-    window!.makeKeyAndVisible()
+    window.rootViewController = rootViewController
+    window.makeKeyAndVisible()
+    self.window = window
     return true
   }
 
