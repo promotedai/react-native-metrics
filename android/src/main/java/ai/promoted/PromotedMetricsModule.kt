@@ -169,7 +169,7 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun getLoggingSessionInfo(promise: Promise) {
+  fun getCurrentOrPendingAncestorIds(promise: Promise) {
     val currentSessionInfo = PromotedAi.currentSessionInfo
     promise.resolve(
       Arguments.createMap().apply {

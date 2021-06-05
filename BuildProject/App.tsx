@@ -62,8 +62,8 @@ const App: () => Node = () => {
     PromotedMetrics.collectionViewDidUnmount("hello");
     logPassed('collectionViewDidUnmount');
 
-    PromotedMetrics.getLoggingSessionInfo();
-    logPassed('getLoggingSessionInfo');
+    PromotedMetrics.getCurrentOrPendingAncestorIds();
+    logPassed('getCurrentOrPendingAncestorIds');
 
     PromotedMetrics.logNavigateAction("screen");
     logPassed('logNavigateAction');
@@ -129,8 +129,8 @@ const App: () => Node = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Button 
-          title="Test All" 
+        <Button
+          title="Test All"
           onPress={handleTestAll}/>
         <Text>{text}</Text>
       </ScrollView>

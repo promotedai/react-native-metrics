@@ -1,7 +1,7 @@
 import type { ActionType } from './ActionType';
 
 /** Provides session context for Promoted integration points. */
-export interface LoggingSessionInfo {
+export interface AncestorIds {
   logUserId?: string;
   sessionId?: string;
   viewId?: string;
@@ -103,6 +103,6 @@ export type PromotedMetricsType = {
 
   // Session information
 
-  /** Returns logging session context for Promoted integration points. */
-  getLoggingSessionInfo(): Promise<LoggingSessionInfo>;
+  /** Returns ancestor IDs that will be used for initial values. */
+  getCurrentOrPendingAncestorIds(): Promise<AncestorIds>;
 };

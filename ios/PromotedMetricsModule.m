@@ -90,8 +90,8 @@ RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
 
 RCT_EXTERN_METHOD(collectionViewDidUnmount:(NSString *)collectionViewName)
 
-#pragma mark - Session information
-RCT_EXTERN_METHOD(getLoggingSessionInfo:(RCTPromiseResolveBlock)resolver
+#pragma mark - Pending ancestor IDs
+RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolver
                   rejecter:(RCTPromiseRejectBlock)rejecter)
 
 @end
