@@ -6,6 +6,7 @@
  */
 
 import PromotedMetrics, { ActionType } from '@promotedai/react-native-metrics';
+import type { AncestorIds } from '@promotedai/react-native-metrics';
 import React, { useState } from 'react';
 import type { Node } from 'react';
 import {
@@ -32,13 +33,13 @@ const App: () => Node = () => {
   const [text, setText] = useState('');
 
   const handleTestAll = () => {
-    const content = { _id: "foobar"};
+    const content = { _id: 'foobar'};
     var allMessages = '';
     const logPassed = (message) => {
       allMessages += 'Passed: ' + message + '\n';
     };
 
-    PromotedMetrics.startSessionAndLogUser("foobar");
+    PromotedMetrics.startSessionAndLogUser('foobar');
     logPassed('startSessionAndLogUser');
 
     PromotedMetrics.startSessionAndLogSignedOutUser();
@@ -47,28 +48,25 @@ const App: () => Node = () => {
     PromotedMetrics.logImpression(content);
     logPassed('logImpression');
 
-    PromotedMetrics.logViewReady("foobar", "batman");
+    PromotedMetrics.logViewReady('foobar', 'batman');
     logPassed('logViewReady');
 
-    PromotedMetrics.logViewChange("spaghetti", "meatballs");
+    PromotedMetrics.logViewChange('spaghetti', 'meatballs');
     logPassed('logViewChange');
 
-    PromotedMetrics.collectionViewDidMount("hello");
+    PromotedMetrics.collectionViewDidMount('hello');
     logPassed('collectionViewDidMount');
 
-    PromotedMetrics.collectionViewDidChange([], "hello");
+    PromotedMetrics.collectionViewDidChange([], 'hello');
     logPassed('collectionViewDidChange');
 
-    PromotedMetrics.collectionViewWillUnmount("hello");
+    PromotedMetrics.collectionViewWillUnmount('hello');
     logPassed('collectionViewWillUnmount');
 
-    PromotedMetrics.getCurrentOrPendingAncestorIds();
-    logPassed('getCurrentOrPendingAncestorIds');
-
-    PromotedMetrics.logNavigateAction("screen");
+    PromotedMetrics.logNavigateAction('screen');
     logPassed('logNavigateAction');
 
-    PromotedMetrics.logNavigateActionWithContent("screen", content);
+    PromotedMetrics.logNavigateActionWithContent('screen', content);
     logPassed('logNavigateActionWithContent');
 
     PromotedMetrics.logAddToCartAction(content);
@@ -110,27 +108,38 @@ const App: () => Node = () => {
     PromotedMetrics.logCompleteSignUpAction();
     logPassed('logCompleteSignUpAction');
 
-    PromotedMetrics.logAction("custom");
+    PromotedMetrics.logAction('custom');
     logPassed('logAction');
 
-    PromotedMetrics.logActionWithType("custom", ActionType.Navigate);
+    PromotedMetrics.logActionWithType('custom', ActionType.Navigate);
     logPassed('logActionWithType');
 
-    PromotedMetrics.logActionWithContent("custom", ActionType.Share, content);
+    PromotedMetrics.logActionWithContent('custom', ActionType.Share, content);
     logPassed('logActionWithContent');
 
+    PromotedMetrics.getCurrentOrPendingAncestorIds();
+    logPassed('getCurrentOrPendingAncestorIds');
+
+    const ancestorIds = {
+      logUserId: 'batman',
+      sessionId: 'gotham',
+      viewId: 'joker'
+    } as AncestorIds;
+    PromotedMetrics.setAncestorIds(ancestorIds);
+    logPassed('setAncestorIds');
+
     setText(allMessages);
-    Alert.alert("Passed", "All logging passed.");
+    Alert.alert('Passed', 'All logging passed.');
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior='automatic'
         style={backgroundStyle}>
         <Button
-          title="Test All"
+          title='Test All'
           onPress={handleTestAll}/>
         <Text>{text}</Text>
       </ScrollView>

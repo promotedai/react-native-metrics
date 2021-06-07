@@ -298,13 +298,13 @@ public extension PromotedMetricsModule {
   @objc(setAncestorIds:)
   func setAncestorIDs(_ ancestorIDs: ReactNativeDictionary?) {
     guard let metricsLogger = metricsLogger else { return }
-    if let logUserID = ancestorIDs["logUserId"] as? String {
+    if let logUserID = ancestorIDs?["logUserId"] as? String {
       metricsLogger.logUserID = logUserID
     }
-    if let sessionID = ancestorIDs["sessionId"] as? String {
+    if let sessionID = ancestorIDs?["sessionId"] as? String {
       metricsLogger.sessionID = sessionID
     }
-    if let viewID = ancestorIDs["viewId"] as? String {
+    if let viewID = ancestorIDs?["viewId"] as? String {
       metricsLogger.viewID = viewID
     }
   }
