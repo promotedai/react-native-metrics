@@ -278,7 +278,7 @@ public extension PromotedMetricsModule {
   }
 }
 
-// MARK: - Pending ancestor IDs
+// MARK: - Ancestor IDs
 public extension PromotedMetricsModule {
   @objc(getCurrentOrPendingAncestorIds:rejecter:)
   func currentOrPendingAncestorIDs(resolver: RCTPromiseResolveBlock,
@@ -293,5 +293,19 @@ public extension PromotedMetricsModule {
       "viewId": metricsLogger.currentOrPendingViewID,
     ]
     resolver(sessionInfo)
+  }
+
+  @objc(setAncestorIds:)
+  func setAncestorIDs(_ ancestorIDs: ReactNativeDictionary?) {
+    guard let metricsLogger = metricsLogger else { return }
+    if let logUserID = ancestorIDs["logUserId"] as? String {
+      metricsLogger.logUserID = logUserID
+    }
+    if let sessionID = ancestorIDs["sessionId"] as? String {
+      metricsLogger.sessionID = sessionID
+    }
+    if let viewID = ancestorIDs["viewId"] as? String {
+      metricsLogger.viewID = viewID
+    }
   }
 }

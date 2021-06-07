@@ -90,8 +90,10 @@ RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
 
 RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionViewName)
 
-#pragma mark - Pending ancestor IDs
+#pragma mark - Ancestor IDs
 RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolver
                   rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(setAncestorIds:(nullable NSDictionary *)ancestorIDs)
 
 @end

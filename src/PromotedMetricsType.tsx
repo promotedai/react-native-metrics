@@ -101,8 +101,11 @@ export type PromotedMetricsType = {
    */
   collectionViewWillUnmount(collectionViewName: string): void;
 
-  // Session information
+  // Ancestor IDs
 
   /** Returns ancestor IDs that will be used for initial values. */
   getCurrentOrPendingAncestorIds(): Promise<AncestorIds>;
+
+  /** Sets external ancestor IDs in logger. */
+  setAncestorIds(ancestorIds: AncestorIds): void;
 };
