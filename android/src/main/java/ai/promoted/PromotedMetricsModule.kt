@@ -180,6 +180,12 @@ class PromotedMetricsModule(
     )
   }
 
+  @ReactMethod
+  @Suppress("Unused")
+  fun setAncestorIds(ancestorIds: ReadableMap) {
+    // TODO: Implement.
+  }
+
   /**
    * Convert an RN [ReadableMap] to an [AbstractContent.Content].
    */
