@@ -138,7 +138,7 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidLoad(collectionViewName: String?) {
+  fun collectionViewDidMount(collectionViewName: String?) {
     collectionViewName ?: return
     PromotedAi.onCollectionVisible(collectionViewName, emptyList())
   }
@@ -162,14 +162,14 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidUnmount(collectionViewName: String?) {
+  fun collectionViewWillUnmount(collectionViewName: String?) {
     collectionViewName ?: return
     PromotedAi.onCollectionHidden(collectionViewName)
   }
 
   @ReactMethod
   @Suppress("Unused")
-  fun getLoggingSessionInfo(promise: Promise) {
+  fun getCurrentOrPendingAncestorIds(promise: Promise) {
     val currentSessionInfo = PromotedAi.currentSessionInfo
     promise.resolve(
       Arguments.createMap().apply {
@@ -178,6 +178,12 @@ class PromotedMetricsModule(
         putString("viewId", currentSessionInfo.viewId)
       }
     )
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun setAncestorIds(ancestorIds: ReadableMap) {
+    // TODO: Implement.
   }
 
   /**

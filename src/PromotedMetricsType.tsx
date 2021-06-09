@@ -1,7 +1,7 @@
 import type { ActionType } from './ActionType';
 
 /** Provides session context for Promoted integration points. */
-export interface LoggingSessionInfo {
+export interface AncestorIds {
   logUserId?: string;
   sessionId?: string;
   viewId?: string;
@@ -81,7 +81,7 @@ export type PromotedMetricsType = {
    *
    * @param collectionViewName identifier for collection view to track
    */
-  collectionViewDidLoad(collectionViewName: string): void;
+  collectionViewDidMount(collectionViewName: string): void;
 
   /**
    * Logs impressions for changed content.
@@ -99,10 +99,13 @@ export type PromotedMetricsType = {
    *
    * @param collectionViewName identifier for collection view to track
    */
-  collectionViewDidUnmount(collectionViewName: string): void;
+  collectionViewWillUnmount(collectionViewName: string): void;
 
-  // Session information
+  // Ancestor IDs
 
-  /** Returns logging session context for Promoted integration points. */
-  getLoggingSessionInfo(): Promise<LoggingSessionInfo>;
+  /** Returns ancestor IDs that will be used for initial values. */
+  getCurrentOrPendingAncestorIds(): Promise<AncestorIds>;
+
+  /** Sets external ancestor IDs in logger. */
+  setAncestorIds(ancestorIds: AncestorIds): void;
 };

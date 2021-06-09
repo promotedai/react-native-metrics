@@ -10,18 +10,18 @@ import os.log
  */
 @objc(PromotedMetricsModule)
 public class PromotedMetricsModule: NSObject {
-  
+
   public static let defaultNameKeys = ["name"]
   public static let defaultContentIDKeys = ["content_id", "contentId", "_id"]
   public static let defaultInsertionIDKeys = ["insertion_id", "insertionId"]
-  
+
   /// Dictionary objects that represent content as expected from React Native.
   public typealias ReactNativeDictionary = [String: Any]
-  
+
   /// List of keys for content name as used in
   /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
   private let nameKeys: [String]
-  
+
   /// List of keys for content IDs as used in
   /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
   private let contentIDKeys: [String]
@@ -29,7 +29,7 @@ public class PromotedMetricsModule: NSObject {
   /// List of keys for insertion IDs as used in
   /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
   private let insertionIDKeys: [String]
-  
+
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
   private var nameToImpressionLogger: [String: ImpressionLogger]
@@ -69,16 +69,16 @@ public class PromotedMetricsModule: NSObject {
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
-  
+
   @objc public static func requiresMainQueueSetup() -> Bool { true }
-  
+
   private func contentFor(_ dictionary: ReactNativeDictionary?) -> Content {
     return Content(properties: dictionary,
                    nameKeys: nameKeys,
                    contentIDKeys: contentIDKeys,
                    insertionIDKeys: insertionIDKeys)
   }
-  
+
   private func itemFor(_ dictionary: ReactNativeDictionary?) -> Item {
     return Item(properties: dictionary,
                 nameKeys: nameKeys,
@@ -93,36 +93,36 @@ public extension PromotedMetricsModule {
   func startSessionAndLogUser(userID: String) {
     metricsLogger?.startSessionAndLogUser(userID: userID)
   }
-  
+
   @objc(startSessionAndLogSignedOutUser)
   func startSessionAndLogSignedOutUser() {
     metricsLogger?.startSessionAndLogSignedOutUser()
   }
-  
+
   // MARK: - Impressions
   @objc(logImpression:)
   func logImpression(content: ReactNativeDictionary?) {
     metricsLogger?.logImpression(content: contentFor(content))
   }
-  
+
   // MARK: - Clicks
   @objc(logNavigateAction:)
   func logNavigateAction(screenName: String) {
     metricsLogger?.logNavigateAction(screenName: screenName)
   }
-  
+
   @objc(logNavigateActionWithContent:forContent:)
   func logNavigateAction(screenName: String,
                          forContent content: ReactNativeDictionary?) {
     metricsLogger?.logNavigateAction(screenName: screenName,
                                      forContent: contentFor(content))
   }
-  
+
   @objc(logAddToCartAction:)
   func logAddToCartAction(item: ReactNativeDictionary?) {
     metricsLogger?.logAddToCartAction(item: itemFor(item))
   }
-  
+
   @objc(logRemoveFromCartAction:)
   func logRemoveFromCartAction(item: ReactNativeDictionary?) {
     metricsLogger?.logRemoveFromCartAction(item: itemFor(item))
@@ -137,7 +137,7 @@ public extension PromotedMetricsModule {
   func logPurchaseAction(item: ReactNativeDictionary?) {
     metricsLogger?.logPurchaseAction(item: itemFor(item))
   }
-  
+
   @objc(logShareAction:)
   func logShareAction(content: ReactNativeDictionary?) {
     metricsLogger?.logShareAction(content: contentFor(content))
@@ -147,37 +147,37 @@ public extension PromotedMetricsModule {
   func logLikeAction(content: ReactNativeDictionary?) {
     metricsLogger?.logLikeAction(content: contentFor(content))
   }
-  
+
   @objc(logUnlikeAction:)
   func logUnlikeAction(content: ReactNativeDictionary?) {
     metricsLogger?.logUnlikeAction(content: contentFor(content))
   }
-  
+
   @objc(logCommentAction:)
   func logCommentAction(content: ReactNativeDictionary?) {
     metricsLogger?.logCommentAction(content: contentFor(content))
   }
-  
+
   @objc(logMakeOfferAction:)
   func logMakeOfferAction(item: ReactNativeDictionary?) {
     metricsLogger?.logMakeOfferAction(item: itemFor(item))
   }
-  
+
   @objc(logAskQuestionAction:)
   func logAskQuestionAction(content: ReactNativeDictionary?) {
     metricsLogger?.logAskQuestionAction(content: contentFor(content))
   }
-  
+
   @objc(logAnswerQuestionAction:)
   func logAnswerQuestionAction(content: ReactNativeDictionary?) {
     metricsLogger?.logAnswerQuestionAction(content: contentFor(content))
   }
-  
+
   @objc(logCompleteSignInAction)
   func logCompleteSignInAction() {
     metricsLogger?.logCompleteSignInAction()
   }
-  
+
   @objc(logCompleteSignUpAction)
   func logCompleteSignUpAction() {
     metricsLogger?.logCompleteSignUpAction()
@@ -237,8 +237,8 @@ public extension PromotedMetricsModule {
   /// from the previous session will persist.
   ///
   /// - Parameter collectionViewName: Identifier for collection view to track.
-  @objc(collectionViewDidLoad:)
-  func collectionViewDidLoad(collectionViewName: String) {
+  @objc(collectionViewDidMount:)
+  func collectionViewDidMount(collectionViewName: String) {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = nameToImpressionLogger[collectionViewName] { return }
@@ -265,32 +265,47 @@ public extension PromotedMetricsModule {
     }
     logger.collectionViewDidChangeVisibleContent(contentList)
   }
-  
+
   /// Ends tracking session for given collection view.
   /// Drops all associated impression logging state.
   ///
   /// - Parameter collectionViewName: Identifier for collection view to track.
-  @objc(collectionViewDidUnmount:)
-  func collectionViewDidUnmount(collectionViewName: String) {
+  @objc(collectionViewWillUnmount:)
+  func collectionViewWillUnmount(collectionViewName: String) {
     if let logger = nameToImpressionLogger.removeValue(forKey: collectionViewName) {
       logger.collectionViewDidHideAllContent()
     }
   }
 }
 
-// MARK: - Session information
+// MARK: - Ancestor IDs
 public extension PromotedMetricsModule {
-  @objc(getLoggingSessionInfo:rejecter:)
-  func loggingSessionInfo(resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
+  @objc(getCurrentOrPendingAncestorIds:rejecter:)
+  func currentOrPendingAncestorIDs(resolver: RCTPromiseResolveBlock,
+                                   rejecter: RCTPromiseRejectBlock) {
     guard let metricsLogger = metricsLogger else {
       resolver([:])
       return
     }
     let sessionInfo = [
-      "logUserId": metricsLogger.logUserID,
-      "sessionId": metricsLogger.sessionID,
-      "viewId": metricsLogger.viewID,
+      "logUserId": metricsLogger.currentOrPendingLogUserID,
+      "sessionId": metricsLogger.currentOrPendingSessionID,
+      "viewId": metricsLogger.currentOrPendingViewID,
     ]
     resolver(sessionInfo)
+  }
+
+  @objc(setAncestorIds:)
+  func setAncestorIDs(_ ancestorIDs: ReactNativeDictionary?) {
+    guard let metricsLogger = metricsLogger else { return }
+    if let logUserID = ancestorIDs?["logUserId"] as? String {
+      metricsLogger.logUserID = logUserID
+    }
+    if let sessionID = ancestorIDs?["sessionId"] as? String {
+      metricsLogger.sessionID = sessionID
+    }
+    if let viewID = ancestorIDs?["viewId"] as? String {
+      metricsLogger.viewID = viewID
+    }
   }
 }
