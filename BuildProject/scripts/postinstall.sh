@@ -7,4 +7,5 @@ cp -R ../lib node_modules/@promotedai/react-native-metrics
 cp -R ../src node_modules/@promotedai/react-native-metrics
 cp ../package.json node_modules/@promotedai/react-native-metrics
 echo "$0: Overwrote package @promotedai/react-native-metrics with local copy.\n"
-
+pwd
+ls -lR node_modules/@promotedai/react-native-metrics
