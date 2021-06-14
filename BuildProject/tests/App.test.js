@@ -5,7 +5,7 @@ const PORT = 4723;
 
 const config = {
   platformName: "iOS",
-  platformVersion: "14.5",
+  platformVersion: "14.4",
   deviceName: "iPhone 11",
   app: "build/BuildProject.ipa",
   automationName: "XCUITest",
@@ -16,7 +16,6 @@ const driver = wd.promiseChainRemote('localhost', PORT);
 beforeAll(async () => {
   await driver.init(config);
 })
-
 
 test('Test All Promoted Logging Calls', async () => {
   const testAllButton = await driver.elementByAccessibilityId('test-all-button');

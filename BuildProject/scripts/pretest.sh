@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+pwd
+ls -lR node_modules/@promotedai/react-native-metrics
+
 echo "$0: Creating build dir\n"
 mkdir -p build/Payload
 
