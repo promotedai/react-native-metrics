@@ -10,10 +10,8 @@ import type { AncestorIds } from '@promotedai/react-native-metrics';
 import React, { useState } from 'react';
 import type { Node } from 'react';
 import {
-  Alert,
   Button,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   Text,
   useColorScheme,
@@ -32,93 +30,95 @@ const App: () => Node = () => {
 
   const [text, setText] = useState('');
 
-  const handleTestAll = () => {
-    const content = { _id: 'foobar'};
-    var allMessages = '';
-    const logPassed = (message) => {
-      allMessages += 'Passed: ' + message + '\n';
-    };
-
+  const testStartSession = (recordTestPassed) => {
     PromotedMetrics.startSessionAndLogUser('foobar');
-    logPassed('startSessionAndLogUser');
+    recordTestPassed('startSessionAndLogUser');
 
     PromotedMetrics.startSessionAndLogSignedOutUser();
-    logPassed('startSessionAndLogSignedOutUser');
+    recordTestPassed('startSessionAndLogSignedOutUser');
+  }
+
+  const testLogEvents = (recordTestPassed) => {
+    const content = { _id: 'foobar'};
 
     PromotedMetrics.logImpression(content);
-    logPassed('logImpression');
+    recordTestPassed('logImpression');
 
     PromotedMetrics.logViewReady('foobar', 'batman');
-    logPassed('logViewReady');
+    recordTestPassed('logViewReady');
 
     PromotedMetrics.logViewChange('spaghetti', 'meatballs');
-    logPassed('logViewChange');
-
-    PromotedMetrics.collectionViewDidMount('hello');
-    logPassed('collectionViewDidMount');
-
-    PromotedMetrics.collectionViewDidChange([], 'hello');
-    logPassed('collectionViewDidChange');
-
-    PromotedMetrics.collectionViewWillUnmount('hello');
-    logPassed('collectionViewWillUnmount');
+    recordTestPassed('logViewChange');
 
     PromotedMetrics.logNavigateAction('screen');
-    logPassed('logNavigateAction');
+    recordTestPassed('logNavigateAction');
 
     PromotedMetrics.logNavigateActionWithContent('screen', content);
-    logPassed('logNavigateActionWithContent');
+    recordTestPassed('logNavigateActionWithContent');
 
     PromotedMetrics.logAddToCartAction(content);
-    logPassed('logAddToCartAction');
+    recordTestPassed('logAddToCartAction');
 
     PromotedMetrics.logRemoveFromCartAction(content);
-    logPassed('logRemoveFromCartAction');
+    recordTestPassed('logRemoveFromCartAction');
 
     PromotedMetrics.logCheckoutAction();
-    logPassed('logCheckoutAction');
+    recordTestPassed('logCheckoutAction');
 
     PromotedMetrics.logPurchaseAction(content);
-    logPassed('logPurchaseAction');
+    recordTestPassed('logPurchaseAction');
 
     PromotedMetrics.logShareAction(content);
-    logPassed('logShareAction');
+    recordTestPassed('logShareAction');
 
     PromotedMetrics.logLikeAction(content);
-    logPassed('logLikeAction');
+    recordTestPassed('logLikeAction');
 
     PromotedMetrics.logUnlikeAction(content);
-    logPassed('logUnlikeAction');
+    recordTestPassed('logUnlikeAction');
 
     PromotedMetrics.logCommentAction(content);
-    logPassed('logCommentAction');
+    recordTestPassed('logCommentAction');
 
     PromotedMetrics.logMakeOfferAction(content);
-    logPassed('logMakeOfferAction');
+    recordTestPassed('logMakeOfferAction');
 
     PromotedMetrics.logAskQuestionAction(content);
-    logPassed('logAskQuestionAction');
+    recordTestPassed('logAskQuestionAction');
 
     PromotedMetrics.logAnswerQuestionAction(content);
-    logPassed('logAnswerQuestionAction');
+    recordTestPassed('logAnswerQuestionAction');
 
     PromotedMetrics.logCompleteSignInAction();
-    logPassed('logCompleteSignInAction');
+    recordTestPassed('logCompleteSignInAction');
 
     PromotedMetrics.logCompleteSignUpAction();
-    logPassed('logCompleteSignUpAction');
+    recordTestPassed('logCompleteSignUpAction');
 
     PromotedMetrics.logAction('custom');
-    logPassed('logAction');
+    recordTestPassed('logAction');
 
     PromotedMetrics.logActionWithType('custom', ActionType.Navigate);
-    logPassed('logActionWithType');
+    recordTestPassed('logActionWithType');
 
     PromotedMetrics.logActionWithContent('custom', ActionType.Share, content);
-    logPassed('logActionWithContent');
+    recordTestPassed('logActionWithContent');
+  }
 
+  const testCollectionView = (recordTestPassed) => {
+    PromotedMetrics.collectionViewDidMount('hello');
+    recordTestPassed('collectionViewDidMount');
+
+    PromotedMetrics.collectionViewDidChange([], 'hello');
+    recordTestPassed('collectionViewDidChange');
+
+    PromotedMetrics.collectionViewWillUnmount('hello');
+    recordTestPassed('collectionViewWillUnmount');
+  }
+
+  const testAncestorIds = (recordTestPassed) => {
     PromotedMetrics.getCurrentOrPendingAncestorIds();
-    logPassed('getCurrentOrPendingAncestorIds');
+    recordTestPassed('getCurrentOrPendingAncestorIds');
 
     const ancestorIds = {
       logUserId: 'batman',
@@ -126,23 +126,35 @@ const App: () => Node = () => {
       viewId: 'joker'
     } as AncestorIds;
     PromotedMetrics.setAncestorIds(ancestorIds);
-    logPassed('setAncestorIds');
+    recordTestPassed('setAncestorIds');
+  }
 
-    setText(allMessages);
-    Alert.alert('Passed', 'All logging passed.');
+  const handleTestAll = () => {
+    var allMessages = '';
+    const recordTestPassed = (message) => {
+      allMessages += 'Passed: ' + message + '\n';
+    };
+
+    try {
+      testStartSession(recordTestPassed);
+      testLogEvents(recordTestPassed);
+      testCollectionView(recordTestPassed);
+      testAncestorIds(recordTestPassed);
+      allMessages += 'All logging passed';
+      setText(allMessages);
+    } catch (err) {
+      setText(err.message);
+    }
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior='automatic'
-        style={backgroundStyle}>
-        <Button
-          title='Test All'
-          onPress={handleTestAll}/>
-        <Text>{text}</Text>
-      </ScrollView>
+      <Button
+        title='Test All'
+        onPress={handleTestAll}
+        testID='test-all-button'/>
+      <Text testID='messages-text'>{text}</Text>
     </SafeAreaView>
   );
 };
