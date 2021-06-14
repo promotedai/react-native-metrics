@@ -34,5 +34,5 @@ jobs:
       working-directory: BuildProject/ios
     - name: npm run test
       run: npm run test
-      working-directory: BuildProject/ios
+      working-directory: BuildProject
 
