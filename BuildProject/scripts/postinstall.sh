@@ -7,3 +7,4 @@ cp -R ../ios node_modules/@promotedai/react-native-metrics
 cp -R ../lib node_modules/@promotedai/react-native-metrics
 cp -R ../src node_modules/@promotedai/react-native-metrics
 cp ../package.json node_modules/@promotedai/react-native-metrics
+cp ../react-native-metrics.podspec node_modules/@promotedai/react-native-metrics
