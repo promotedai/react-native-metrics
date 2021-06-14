@@ -26,13 +26,13 @@ jobs:
       with:
         node-version: '10.x'
         registry-url: 'https://registry.npmjs.org'
-    - name: NPM install
+    - name: npm install
       run: npm install
       working-directory: BuildProject
     - name: Cocoapod install
       run: pod install
       working-directory: BuildProject/ios
-    - name: Build
-      run: xcodebuild -workspace BuildProject.xcworkspace -configuration Debug -scheme BuildProject -destination 'platform=iOS Simulator,name=iPhone 11'
+    - name: npm run test
+      run: npm run test
       working-directory: BuildProject/ios
 
