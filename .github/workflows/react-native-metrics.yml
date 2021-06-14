@@ -26,13 +26,20 @@ jobs:
       with:
         node-version: '10.x'
         registry-url: 'https://registry.npmjs.org'
-    - name: npm install
+    - name: npm install (react-native-metrics)
+      run: npm install
+    - name: npm install (BuildProject)
       run: npm install
       working-directory: BuildProject
     - name: Cocoapod install
       run: pod install
       working-directory: BuildProject/ios
+    - name: npm install appium
+      run: npm install appium
+      working-directory: BuildProject
+    - name: Run Appium
+      run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
+      working-directory: BuildProject
     - name: npm run test
       run: npm run test
       working-directory: BuildProject
-
