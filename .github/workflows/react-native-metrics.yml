@@ -12,9 +12,6 @@ jobs:
       matrix:
         macos: [macos-latest]
         xcode: ['12.4']
-        exclude:
-          - macos: macos-10.15
-            xcode: '12.4'
     runs-on: ${{ matrix.macos }}
     steps:
     - uses: actions/checkout@v2
@@ -36,9 +33,6 @@ jobs:
       working-directory: BuildProject/ios
     - name: Run Appium
       run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
-      working-directory: BuildProject
-    - name: ls
-      run: ls -lR node_modules/@promotedai/react-native-metrics
       working-directory: BuildProject
     - name: npm run test
       run: npm run test
