@@ -20,7 +20,7 @@ beforeAll(async () => {
 
 test('Test All Promoted Logging Calls', async () => {
   const testAllButton = await driver.elementByAccessibilityId('test-all-button');
-  // Need to tap twice for this to appear.
+  // Need to tap twice for this to work. No comment.
   await driver.tapElement(testAllButton);
   await driver.tapElement(testAllButton);
   const messagesText = await driver.elementByAccessibilityId('messages-text');
