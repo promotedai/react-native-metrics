@@ -5,7 +5,7 @@ const PORT = 4723;
 
 const config = {
   platformName: "iOS",
-  platformVersion: "14.5",
+  platformVersion: "14.4",
   deviceName: "iPhone 11",
   app: "build/BuildProject.ipa",
   automationName: "XCUITest",
