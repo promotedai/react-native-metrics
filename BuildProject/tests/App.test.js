@@ -11,6 +11,7 @@ const config = {
   automationName: "XCUITest",
 };
 
+var retry = require('webdriverjs-retry');
 const driver = wd.promiseChainRemote('localhost', PORT);
 
 beforeAll(async () => {
@@ -18,19 +19,25 @@ beforeAll(async () => {
 })
 
 test('Test All Promoted Logging Calls', async () => {
-  const testAllButton = await driver.elementByAccessibilityId('test-all-button');
-  const messagesText = await driver.elementByAccessibilityId('messages-text');
-  const tries = 10;
-  for (var i = 0; i < tries; i++) {
-    await driver.sleep(1000);
-    await driver.tapElement(testAllButton);
-    const s = await messagesText.text();
-    if (!s) { continue; }  // No result yet.
-    if (s.endsWith('All logging passed')) {
-      return;  // Got the right message, test passes.
-    } else {
-      fail(s);
+
+  class EmptyResultTextError extends Error {
+    constructor() {
+      super('Test produced no result text');
+      this.name = 'EmptyResultTextError';
     }
   }
-  fail(`Test produced no output after ${tries} tries`);
+
+  // Ignore Webdriver code 7 (element not found) and empty result.
+  await retry.ignoring(7).ignoring(EmptyResultTextError).run(async () => {
+    const testAllButton = await driver.elementByAccessibilityId('test-all-button');
+    await driver.tapElement(testAllButton);
+    const messagesText = await driver.elementByAccessibilityId('messages-text');
+    const s = await messagesText.text();
+    // Text not yet available. Cause a retry (or failure).
+    if (!s) { throw new EmptyResultTextError(); }
+    // Text is available. Check that it contains what we expect.
+    if (!s.endsWith('All logging passed')) {
+      fail(s);
+    }
+  }, /*timeout=*/10000, /*sleep=*/1000);
 });
