@@ -30,6 +30,24 @@ const App: () => Node = () => {
 
   const [text, setText] = useState('');
 
+  const handleTestAll = () => {
+    var allMessages = '';
+    const recordTestPassed = (message) => {
+      allMessages += 'Passed: ' + message + '\n';
+    };
+
+    try {
+      testStartSession(recordTestPassed);
+      testLogEvents(recordTestPassed);
+      testCollectionView(recordTestPassed);
+      testAncestorIds(recordTestPassed);
+      allMessages += 'All logging passed';
+      setText(allMessages);
+    } catch (err) {
+      setText(err.message);
+    }
+  };
+
   const testStartSession = (recordTestPassed) => {
     PromotedMetrics.startSessionAndLogUser('foobar');
     recordTestPassed('startSessionAndLogUser');
@@ -128,24 +146,6 @@ const App: () => Node = () => {
     PromotedMetrics.setAncestorIds(ancestorIds);
     recordTestPassed('setAncestorIds');
   }
-
-  const handleTestAll = () => {
-    var allMessages = '';
-    const recordTestPassed = (message) => {
-      allMessages += 'Passed: ' + message + '\n';
-    };
-
-    try {
-      testStartSession(recordTestPassed);
-      testLogEvents(recordTestPassed);
-      testCollectionView(recordTestPassed);
-      testAncestorIds(recordTestPassed);
-      allMessages += 'All logging passed';
-      setText(allMessages);
-    } catch (err) {
-      setText(err.message);
-    }
-  };
 
   return (
     <SafeAreaView style={backgroundStyle}>
