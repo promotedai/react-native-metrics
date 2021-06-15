@@ -15,3 +15,4 @@ cp -R build/ReactNativeMetricsBuildProject.xcarchive/Products/Applications/Build
 echo "$0: Creating IPA\n"
 zip -r -X build/BuildProject.ipa build/Payload
 
+echo "$0: Success\n"
