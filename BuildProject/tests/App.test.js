@@ -5,7 +5,7 @@ const PORT = 4723;
 
 const config = {
   platformName: "iOS",
-  platformVersion: "14.5",
+  platformVersion: "14.4",
   deviceName: "iPhone 11",
   app: "build/BuildProject.ipa",
   automationName: "XCUITest",
@@ -21,7 +21,8 @@ test('Test All Promoted Logging Calls', async () => {
   const testAllButton = await driver.elementByAccessibilityId('test-all-button');
   const messagesText = await driver.elementByAccessibilityId('messages-text');
   const tries = 10;
-  for (var i = 0; i < tries; i++) {
+  var i;
+  for (i = 0; i < tries; i++) {
     await driver.sleep(1000);
     await driver.tapElement(testAllButton);
     const s = await messagesText.text();
@@ -32,5 +33,5 @@ test('Test All Promoted Logging Calls', async () => {
       fail(s);
     }
   }
-  fail(`Test produced no output after ${tries} tries`);
+  fail('Test produced no output after ' + tries + ' tries');
 });
