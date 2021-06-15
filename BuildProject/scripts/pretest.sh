@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+echo "$0: Removing existing build dir\n"
+rm -rf build
+
 echo "$0: Creating build dir\n"
 mkdir -p build/Payload
 
