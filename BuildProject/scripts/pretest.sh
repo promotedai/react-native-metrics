@@ -1,4 +1,5 @@
 #!/bin/zsh
+set -e
 
 echo "$0: Removing existing build dir\n"
 rm -rf build

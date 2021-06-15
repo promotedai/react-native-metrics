@@ -1,4 +1,5 @@
 #!/bin/zsh
+set -e
 
 echo "$0: Overwriting package @promotedai/react-native-metrics with local copy\n"
 rm node_modules/@promotedai/react-native-metrics
