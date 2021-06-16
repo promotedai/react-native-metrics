@@ -1,4 +1,5 @@
 import wd from 'wd';
+import { retry } from './retry.js';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 const PORT = 4723;
@@ -11,7 +12,6 @@ const config = {
   automationName: "XCUITest",
 };
 
-var retry = require('webdriverjs-retry');
 const driver = wd.promiseChainRemote('localhost', PORT);
 
 beforeAll(async () => {
@@ -27,17 +27,14 @@ test('Test All Promoted Logging Calls', async () => {
     }
   }
 
-  // Ignore Webdriver code 7 (element not found) and empty result.
-  await retry.ignoring(7).ignoring(EmptyResultTextError).run(async () => {
+  await retry(async () => {
     const testAllButton = await driver.elementByAccessibilityId('test-all-button');
     await driver.tapElement(testAllButton);
     const messagesText = await driver.elementByAccessibilityId('messages-text');
     const s = await messagesText.text();
     // Text not yet available. Cause a retry (or failure).
-    if (!s) { throw new EmptyResultTextError(); }
+    if (!s) throw new EmptyResultTextError();
     // Text is available. Check that it contains what we expect.
-    if (!s.endsWith('All logging passed')) {
-      fail(s);
-    }
-  }, /*timeout=*/10000, /*sleep=*/1000);
+    if (!s.endsWith('All logging passed')) fail(s);
+  }, /*errorClassesToIgnore=*/[EmptyResultTextError], driver);
 });
