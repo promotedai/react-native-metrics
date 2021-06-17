@@ -34,6 +34,8 @@ jobs:
     - name: Run Appium
       run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
       working-directory: BuildProject
+    - name: xcrun simctl list
+      run: xcrun simctl list
     - name: npm run test
       run: npm run test
       working-directory: BuildProject
