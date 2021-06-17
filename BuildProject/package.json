@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@promotedai/react-native-metrics": "file:../",
-    "appium": "^1.8.1",
+    "appium": "^1.21.0",
     "appium-doctor": "^1.16.0",
     "react": "^17.0.1",
     "react-native": "^0.64.2",
