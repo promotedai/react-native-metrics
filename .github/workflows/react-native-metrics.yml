@@ -19,9 +19,9 @@ jobs:
       with:
         xcode-version: ${{ matrix.xcode }}
     - name: Setup Node.js environment
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v2
       with:
-        node-version: '12.x'
+        node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
     - name: npm install (react-native-metrics)
       run: npm install
@@ -34,6 +34,8 @@ jobs:
     - name: Run Appium
       run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
       working-directory: BuildProject
+    - name: xcrun simctl list
+      run: xcrun simctl list
     - name: npm run test
       run: npm run test
       working-directory: BuildProject
