@@ -5,7 +5,7 @@
  * @flow strict-local
  */
 
-import PromotedMetrics, { ActionType } from '@promotedai/react-native-metrics';
+import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker } from '@promotedai/react-native-metrics';
 import type { AncestorIds } from '@promotedai/react-native-metrics';
 import React, { useState } from 'react';
 import type { Node } from 'react';
@@ -145,6 +145,19 @@ const App: () => Node = () => {
     } as AncestorIds;
     PromotedMetrics.setAncestorIds(ancestorIds);
     recordTestPassed('setAncestorIds');
+  }
+
+  const testUseImpressionTracker = (recordTestPassed) => {
+    useImpressionTracker(
+      (viewToken) => ({
+        contentId: 'foo',
+        insertionId: 'bar',
+        name: 'batman'
+      }),
+      'TestCollectionViewName',
+      ImpressionSourceType.Delivery
+    );
+    recordTestPassed('useImpressionTracker');
   }
 
   return (

@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { NativeModules } from 'react-native';
 import type { ViewToken } from 'react-native';
+import type { ImpressionSourceType } from './ImpressionSourceType';
 
 const { PromotedMetrics } = NativeModules;
 
@@ -14,9 +15,11 @@ export const promotedViewabilityConfig = {
  * Returns handlers for use with onViewableItemsChanged and
  * viewabilityConfig for FlatLists and SectionLists.
  */
-export const useImpressionLogger = (
+export const useImpressionTracker = (
+    contentCreator: (viewToken: ViewToken) => Object,
     collectionViewName: string,
-    contentCreator: (viewToken: ViewToken) => Object) => {
+    sourceType: ImpressionSourceType =
+        ImpressionSourceType.UnknownImpressionSoureType) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
 
@@ -27,7 +30,7 @@ export const useImpressionLogger = (
     }, []);
 
   useEffect(() => {
-    PromotedMetrics.collectionViewDidMount(collectionViewName);
+    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType);
     return () => {
       PromotedMetrics.collectionViewWillUnmount(collectionViewName);
     }
