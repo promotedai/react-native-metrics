@@ -1,6 +1,6 @@
 /** Origin of impressed content. */
 export enum ImpressionSourceType {
-  UnknownImpressionSoureType = 0,
+  UnknownImpressionSourceType = 0,
 
   /** Promoted Delivery API. */
   Delivery = 1,

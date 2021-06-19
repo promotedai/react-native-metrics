@@ -19,7 +19,7 @@ export const useImpressionTracker = (
     contentCreator: (viewToken: ViewToken) => Object,
     collectionViewName: string,
     sourceType: ImpressionSourceType =
-        ImpressionSourceType.UnknownImpressionSoureType) => {
+        ImpressionSourceType.UnknownImpressionSourceType) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
 
