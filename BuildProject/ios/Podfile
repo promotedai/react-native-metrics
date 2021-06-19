@@ -7,7 +7,7 @@ target 'BuildProject' do
   config = use_native_modules!
 
   pod 'GTMSessionFetcher/Core', :modular_headers => true
-  pod 'PromotedAIMetricsSDK', :git => 'https://github.com/promotedai/ios-metrics-sdk.git', :branch => 'ist'
+  pod 'PromotedAIMetricsSDK', :git => 'https://github.com/promotedai/ios-metrics-sdk'
 
   use_react_native!(
     :path => config[:reactNativePath],
