@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { NativeModules } from 'react-native';
 import type { ViewToken } from 'react-native';
-import type { ImpressionSourceType } from './ImpressionSourceType';
+import { ImpressionSourceType } from './ImpressionSourceType';
 
 const { PromotedMetrics } = NativeModules;
 
