@@ -35,7 +35,7 @@ export type PromotedMetricsType = {
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(content: Object): void;
+  logImpression(content: Object, sourceType: ImpressionSourceType): void;
 
   // Action logging
 
