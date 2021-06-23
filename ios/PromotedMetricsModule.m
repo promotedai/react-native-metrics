@@ -10,7 +10,8 @@ RCT_EXTERN_METHOD(startSessionAndLogSignedOutUser)
 
 #pragma mark - Impressions
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)content)
+RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)content,
+                  sourceType:(NSInteger)sourceType)
 
 #pragma mark - Clicks
 
