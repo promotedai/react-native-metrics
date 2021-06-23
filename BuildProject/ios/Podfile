@@ -5,7 +5,7 @@ platform :ios, '11.0'
 
 target 'BuildProject' do
   config = use_native_modules!
-  
+
   pod 'GTMSessionFetcher/Core', :modular_headers => true
   pod 'PromotedAIMetricsSDK', :git => 'https://github.com/promotedai/ios-metrics-sdk'
 

@@ -25,11 +25,11 @@ PromotedMetrics.logView("Sign up");
 Impression tracking is possible for any kind of content. Here is an example using `SectionList` or `FlatList` using `onViewableItemsChanged`.
 
 ~~~js
-import PromotedMetrics, { useImpressionLogger } from "@promotedai/react-native-metrics";
+import PromotedMetrics, { useImpressionTracker } from "@promotedai/react-native-metrics";
 
-const { _viewabilityConfig, _onViewableItemsChanged } = useImpressionLogger(
+const { _viewabilityConfig, _onViewableItemsChanged } = useImpressionTracker(
   "MyListIdentifier",
-  (viewToken) => ({ 
+  (viewToken) => ({
       content_id: viewToken.item.my_content_id,
       insertion_id: viewToken.item.promoted_insertion_id,
       name: viewToken.item.my_content_name
@@ -54,7 +54,7 @@ In many cases, the Typescript library expects `Object`s as arguments to represen
 If your content objects contain additional data, we recommend filtering out all data except the above:
 
 ~~~js
-const contentList = myViewableItems.map(i => ({ 
+const contentList = myViewableItems.map(i => ({
   content_id: i.my_content_id,
   insertion_id: i.promoted_insertion_id,
   name: i.my_content_name

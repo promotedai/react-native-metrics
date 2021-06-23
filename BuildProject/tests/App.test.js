@@ -28,6 +28,15 @@ test('Test All Promoted Logging Calls', async () => {
   }
 
   await retry(async () => {
+    const messagesText = await driver.elementByAccessibilityId('messages-text');
+    const s = await messagesText.text();
+    // Text not yet available. Cause a retry (or failure).
+    if (!s) throw new EmptyResultTextError();
+    // Text is available. Check that it contains what we expect.
+    if (!s.endsWith('All hooks passed')) fail(s);
+  }, /*errorClassesToIgnore=*/[EmptyResultTextError], driver);
+
+  await retry(async () => {
     const testAllButton = await driver.elementByAccessibilityId('test-all-button');
     await driver.tapElement(testAllButton);
     const messagesText = await driver.elementByAccessibilityId('messages-text');
