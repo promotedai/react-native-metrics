@@ -32,7 +32,8 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logImpression(content: ReadableMap?) =
+  // TODO: Support ImpressionSourceType in android-metrics-sdk
+  fun logImpression(content: ReadableMap?, sourceType: Int) =
     content.toImpressionData()?.let { PromotedAi.onImpression(it) }
 
   @ReactMethod
@@ -139,7 +140,7 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun collectionViewDidMount(collectionViewName: String?, sourceType: Int) {
-    // TODO: Support sourceType in android-metrics-sdk
+    // TODO: Support ImpressionSourceType in android-metrics-sdk
     collectionViewName ?: return
     PromotedAi.onCollectionVisible(collectionViewName, emptyList())
   }
