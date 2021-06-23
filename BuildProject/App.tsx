@@ -59,7 +59,7 @@ const App: () => Node = () => {
   const testLogEvents = (recordTestPassed) => {
     const content = { _id: 'foobar'};
 
-    PromotedMetrics.logImpression(content);
+    PromotedMetrics.logImpression(content, ImpressionSourceType.Delivery);
     recordTestPassed('logImpression');
 
     PromotedMetrics.logViewReady('foobar', 'batman');
