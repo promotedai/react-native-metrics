@@ -32,8 +32,13 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
+  fun logImpression(content: ReadableMap?) =
+    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
+
+  @ReactMethod
+  @Suppress("Unused")
   // TODO: Support ImpressionSourceType in android-metrics-sdk
-  fun logImpression(content: ReadableMap?, sourceType: Int) =
+  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) =
     content.toImpressionData()?.let { PromotedAi.onImpression(it) }
 
   @ReactMethod

@@ -100,7 +100,12 @@ public extension PromotedMetricsModule {
   }
 
   // MARK: - Impressions
-  @objc(logImpression:sourceType:)
+  @objc(logImpression:)
+  func logImpression(content: ReactNativeDictionary?) {
+    metricsLogger?.logImpression(content: contentFor(content))
+  }
+
+  @objc(logImpressionWithSourceType:sourceType:)
   func logImpression(content: ReactNativeDictionary?, sourceType: Int) {
     let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
     metricsLogger?.logImpression(content: contentFor(content), sourceType: s)

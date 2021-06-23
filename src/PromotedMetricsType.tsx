@@ -28,6 +28,13 @@ export type PromotedMetricsType = {
   startSessionAndLogSignedOutUser(): void;
 
   // Impression logging
+  /**
+   * Logs an impression for given content.
+   * Typically, you would call useImpressionTracker() for use with
+   * SectionLists and FlatLists. This method should only be used
+   * outside of those components.
+   */
+  logImpression(content: Object): void;
 
   /**
    * Logs an impression for given content.
@@ -35,7 +42,7 @@ export type PromotedMetricsType = {
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(content: Object, sourceType: ImpressionSourceType): void;
+  logImpressionWithSourceType(content: Object, sourceType: ImpressionSourceType): void;
 
   // Action logging
 
