@@ -138,7 +138,8 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidMount(collectionViewName: String?) {
+  fun collectionViewDidMount(collectionViewName: String?, sourceType: Int) {
+    // TODO: Support sourceType in android-metrics-sdk
     collectionViewName ?: return
     PromotedAi.onCollectionVisible(collectionViewName, emptyList())
   }
