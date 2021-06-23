@@ -170,12 +170,11 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun getCurrentOrPendingAncestorIds(promise: Promise) {
-    val currentSessionInfo = PromotedAi.currentSessionInfo
     promise.resolve(
       Arguments.createMap().apply {
-        putString("logUserId", currentSessionInfo.logUserId)
-        putString("sessionId", currentSessionInfo.sessionId)
-        putString("viewId", currentSessionInfo.viewId)
+        putString("logUserId", PromotedAi.logUserId)
+        putString("sessionId", PromotedAi.sessionId)
+        putString("viewId", PromotedAi.viewId)
       }
     )
   }
