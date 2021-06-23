@@ -100,9 +100,10 @@ public extension PromotedMetricsModule {
   }
 
   // MARK: - Impressions
-  @objc(logImpression:)
-  func logImpression(content: ReactNativeDictionary?) {
-    metricsLogger?.logImpression(content: contentFor(content))
+  @objc(logImpression:sourceType:)
+  func logImpression(content: ReactNativeDictionary?, sourceType: Int) {
+    let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
+    metricsLogger?.logImpression(content: contentFor(content), sourceType: s)
   }
 
   // MARK: - Clicks
@@ -190,16 +191,14 @@ public extension PromotedMetricsModule {
 
   @objc(logActionWithType:type:)
   func logAction(name: String, type: Int) {
-    if let actionType = ActionType(rawValue: type) {
-      metricsLogger?.logAction(name: name, type: actionType)
-    }
+    let actionType = ActionType(rawValue: type) ?? .unknownActionType
+    metricsLogger?.logAction(name: name, type: actionType)
   }
 
   @objc(logActionWithContent:type:content:)
   func logAction(name: String, type: Int, content: ReactNativeDictionary?) {
-    if let actionType = ActionType(rawValue: type) {
-      metricsLogger?.logAction(name: name, type: actionType, content: contentFor(content))
-    }
+    let actionType = ActionType(rawValue: type) ?? .unknownActionType
+    metricsLogger?.logAction(name: name, type: actionType, content: contentFor(content))
   }
 
   // MARK: - Views
@@ -210,9 +209,8 @@ public extension PromotedMetricsModule {
 
   @objc(logViewReadyWithUseCase:routeKey:useCase:)
   func logViewReady(routeName: String, routeKey: String, useCase: Int) {
-    if let u = UseCase(rawValue: useCase) {
-      metricsLogger?.logViewReady(routeName: routeName, routeKey: routeKey, useCase: u)
-    }
+    let u = UseCase(rawValue: useCase) ?? .unknown
+    metricsLogger?.logViewReady(routeName: routeName, routeKey: routeKey, useCase: u)
   }
 
   @objc(logViewChange:routeKey:)
@@ -222,9 +220,8 @@ public extension PromotedMetricsModule {
 
   @objc(logViewChangeWithUseCase:routeKey:useCase:)
   func logViewChange(routeName: String, routeKey: String, useCase: Int) {
-    if let u = UseCase(rawValue: useCase) {
-      metricsLogger?.logViewChange(routeName: routeName, routeKey: routeKey, useCase: u)
-    }
+    let u = UseCase(rawValue: useCase) ?? .unknown
+    metricsLogger?.logViewChange(routeName: routeName, routeKey: routeKey, useCase: u)
   }
 }
 
