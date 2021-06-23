@@ -28,6 +28,7 @@ export type PromotedMetricsType = {
   startSessionAndLogSignedOutUser(): void;
 
   // Impression logging
+
   /**
    * Logs an impression for given content.
    * Typically, you would call useImpressionTracker() for use with
