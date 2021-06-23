@@ -239,7 +239,7 @@ public extension PromotedMetricsModule {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = nameToImpressionTracker[collectionViewName] { return }
-    guard let s = ImpressionSourceType(rawValue: sourceType) else { return }
+    let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
     if let logger = service?.impressionTracker()?.with(sourceType: s) {
       nameToImpressionTracker[collectionViewName] = logger
     }
