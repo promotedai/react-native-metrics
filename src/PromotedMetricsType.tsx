@@ -1,4 +1,5 @@
 import type { ActionType } from './ActionType';
+import type { ImpressionSourceType } from './ImpressionSourceType';
 
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
@@ -30,7 +31,7 @@ export type PromotedMetricsType = {
 
   /**
    * Logs an impression for given content.
-   * Typically, you would call useImpressionLogger() for use with
+   * Typically, you would call useImpressionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
@@ -80,8 +81,9 @@ export type PromotedMetricsType = {
    * from the previous session will persist.
    *
    * @param collectionViewName identifier for collection view to track
+   * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(collectionViewName: string): void;
+  collectionViewDidMount(collectionViewName: string, sourceType: ImpressionSourceType): void;
 
   /**
    * Logs impressions for changed content.

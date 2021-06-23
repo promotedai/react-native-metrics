@@ -6,5 +6,6 @@ const { PromotedMetrics } = NativeModules;
 export default PromotedMetrics as PromotedMetricsType;
 export type { AncestorIds } from './PromotedMetricsType';
 export { ActionType } from './ActionType';
-export { useImpressionLogger, promotedViewabilityConfig } from './useImpressionLogger';
+export { ImpressionSourceType } from './ImpressionSourceType';
+export { useImpressionTracker, promotedViewabilityConfig } from './useImpressionTracker';
 export { useViewTracker } from './useViewTracker';

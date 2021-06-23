@@ -5,7 +5,7 @@ import os.log
 // MARK: -
 /**
  `MetricsLogger` methods packaged as a module. Has many of the same methods
- as `MetricsLogger` and `ImpressionLogger`, but delegates those methods to
+ as `MetricsLogger` and `ImpressionTracker`, but delegates those methods to
  instances of those loggers.
  */
 @objc(PromotedMetricsModule)
@@ -32,7 +32,7 @@ public class PromotedMetricsModule: NSObject {
 
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
-  private var nameToImpressionLogger: [String: ImpressionLogger]
+  private var nameToImpressionTracker: [String: ImpressionTracker]
 
   @objc public override convenience init() {
     // Log a debug message instead of throwing an error so that clients
@@ -65,7 +65,7 @@ public class PromotedMetricsModule: NSObject {
     self.nameKeys = nameKeys!
     self.contentIDKeys = contentIDKeys!
     self.insertionIDKeys = insertionIDKeys!
-    self.nameToImpressionLogger = [:]
+    self.nameToImpressionTracker = [:]
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
@@ -228,7 +228,7 @@ public extension PromotedMetricsModule {
   }
 }
 
-// MARK: - ImpressionLogger
+// MARK: - ImpressionTracker
 public extension PromotedMetricsModule {
 
   /// Begins tracking session for given collection view.
@@ -237,26 +237,27 @@ public extension PromotedMetricsModule {
   /// from the previous session will persist.
   ///
   /// - Parameter collectionViewName: Identifier for collection view to track.
-  @objc(collectionViewDidMount:)
-  func collectionViewDidMount(collectionViewName: String) {
+  @objc(collectionViewDidMount:sourceType:)
+  func collectionViewDidMount(collectionViewName: String, sourceType: Int) {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
-    if let _ = nameToImpressionLogger[collectionViewName] { return }
-    if let logger = service?.impressionLogger() {
-      nameToImpressionLogger[collectionViewName] = logger
+    if let _ = nameToImpressionTracker[collectionViewName] { return }
+    guard let s = ImpressionSourceType(rawValue: sourceType) else { return }
+    if let logger = service?.impressionTracker()?.with(sourceType: s) {
+      nameToImpressionTracker[collectionViewName] = logger
     }
   }
 
   /// Logs impressions for changed content.
   /// Call this method with currently visible content and the underlying
-  /// `ImpressionLogger` will calculate deltas and log appropriate events.
+  /// `ImpressionTracker` will calculate deltas and log appropriate events.
   ///
   /// - Parameters:
   ///   - visibleContent: List of currently visible content.
   ///   - collectionViewName: Identifier for collection view to track.
   @objc(collectionViewDidChange:collectionViewName:)
   func collectionViewDidChange(visibleContent: [AnyObject], collectionViewName: String) {
-    guard let logger = nameToImpressionLogger[collectionViewName] else { return }
+    guard let logger = nameToImpressionTracker[collectionViewName] else { return }
     var contentList = [Content]()
     for obj in visibleContent {
       guard let reactDict = obj as? ReactNativeDictionary else { continue }
@@ -272,7 +273,7 @@ public extension PromotedMetricsModule {
   /// - Parameter collectionViewName: Identifier for collection view to track.
   @objc(collectionViewWillUnmount:)
   func collectionViewWillUnmount(collectionViewName: String) {
-    if let logger = nameToImpressionLogger.removeValue(forKey: collectionViewName) {
+    if let logger = nameToImpressionTracker.removeValue(forKey: collectionViewName) {
       logger.collectionViewDidHideAllContent()
     }
   }

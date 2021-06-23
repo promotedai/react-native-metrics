@@ -5,9 +5,9 @@
  * @flow strict-local
  */
 
-import PromotedMetrics, { ActionType } from '@promotedai/react-native-metrics';
+import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker, useViewTracker } from '@promotedai/react-native-metrics';
 import type { AncestorIds } from '@promotedai/react-native-metrics';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Node } from 'react';
 import {
   Button,
@@ -31,7 +31,7 @@ const App: () => Node = () => {
   const [text, setText] = useState('');
 
   const handleTestAll = () => {
-    var allMessages = '';
+    var allMessages = text + '\n';
     const recordTestPassed = (message) => {
       allMessages += 'Passed: ' + message + '\n';
     };
@@ -124,7 +124,7 @@ const App: () => Node = () => {
   }
 
   const testCollectionView = (recordTestPassed) => {
-    PromotedMetrics.collectionViewDidMount('hello');
+    PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend);
     recordTestPassed('collectionViewDidMount');
 
     PromotedMetrics.collectionViewDidChange([], 'hello');
@@ -145,6 +145,28 @@ const App: () => Node = () => {
     } as AncestorIds;
     PromotedMetrics.setAncestorIds(ancestorIds);
     recordTestPassed('setAncestorIds');
+  }
+
+  try {
+    useImpressionTracker(
+      (viewToken) => ({
+        contentId: 'foo',
+        insertionId: 'bar',
+        name: 'batman'
+      }),
+      'TestCollectionViewName',
+      ImpressionSourceType.Delivery
+    );
+    useViewTracker(useRef());
+    useEffect(() => {
+      setText('Passed: useImpressionTracker\n' +
+              'Passed: useViewTracker\n' +
+              'All hooks passed');
+    }, []);
+  } catch (err) {
+    useEffect(() => {
+      setText(err.message);
+    }, []);
   }
 
   return (

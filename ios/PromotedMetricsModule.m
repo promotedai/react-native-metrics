@@ -82,7 +82,8 @@ RCT_EXTERN_METHOD(logViewChangeWithUseCase:(NSString *)routeName
                   useCase:(NSInteger)useCase)
 
 #pragma mark - ImpressionLogger
-RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionViewName)
+RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionViewName
+                  sourceType:(NSInteger)sourceType)
 
 /// @param visibleContent (`NSArray<NSDictionary<String, id>>`)
 RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
