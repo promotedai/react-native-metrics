@@ -32,14 +32,16 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logImpression(content: ReadableMap?) =
-    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
+  fun logImpression(content: ReadableMap?) {
+    PromotedAi.onImpression(content.toImpressionData())
+  }
 
   @ReactMethod
   @Suppress("Unused")
   // TODO: Support ImpressionSourceType in android-metrics-sdk
-  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) =
-    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
+  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) {
+    PromotedAi.onImpression(content.toImpressionData())
+  }
 
   @ReactMethod
   @Suppress("Unused")
@@ -161,7 +163,7 @@ class PromotedMetricsModule(
       visibleContent
         .toArrayList()
         .mapNotNull { arrayItem ->
-          (arrayItem as? ReadableMap)?.toContent()
+          arrayItem.toContent()
         }
 
     PromotedAi.onCollectionUpdated(collectionViewName, visibleContentForSdk)
@@ -189,44 +191,31 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun setAncestorIds(ancestorIds: ReadableMap) {
-    // TODO: Implement.
+    val logUserId = ancestorIds.getString("logUserId")
+    if (logUserId != null) PromotedAi.logUserId = logUserId
+
+    val sessionId = ancestorIds.getString("sessionId")
+    if (sessionId != null) PromotedAi.sessionId = sessionId
+
+    val viewId = ancestorIds.getString("viewId")
+    if (viewId != null) PromotedAi.viewId = viewId
   }
 
   /**
-   * Convert an RN [ReadableMap] to an [AbstractContent.Content].
+   * Convert a [HashMap] to an [AbstractContent.Content].
    */
-  private fun ReadableMap?.toContent(): AbstractContent.Content? {
-    this ?: return null
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
-
-    val contentId =
-      getString("content-id")
-        ?: getString("contentId")
-        ?: getString("_id")
-
-    return AbstractContent.Content(
-      name = getString("name") ?: "",
-      insertionId = insertionId,
-      contentId = contentId
-    )
-  }
+  private fun Any?.toContent(): AbstractContent.Content = AbstractContent.Content(
+    name = name(),
+    insertionId = insertionId(),
+    contentId = contentId()
+  )
 
   /**
    * Convert an RN [ReadableMap] to an [ActionData].
    */
-  private fun ReadableMap?.toActionData(): ActionData {
-    this ?: return ActionData.Builder().build()
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
-
-    val contentId =
-      getString("content-id")
-        ?: getString("contentId")
-        ?: getString("_id")
-
+  private fun Any?.toActionData(): ActionData {
+    val insertionId = insertionId()
+    val contentId = contentId()
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
@@ -236,20 +225,48 @@ class PromotedMetricsModule(
   /**
    * Convert an RN [ReadableMap] to an [ActionData].
    */
-  private fun ReadableMap?.toImpressionData(): ImpressionData? {
-    this ?: return null
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
-
-    val contentId =
-      getString("content-id")
-        ?: getString("contentId")
-        ?: getString("_id")
-
+  private fun Any?.toImpressionData(): ImpressionData {
+    val insertionId = insertionId()
+    val contentId = contentId()
     return ImpressionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
     }.build()
+  }
+
+  private fun Any?.name(): String = when (this) {
+    is ReadableMap -> getString("name") ?: ""
+    is Map<*, *> -> this["name"] as? String? ?: ""
+    else -> ""
+  }
+
+  private fun Any?.insertionId(): String? = when (this) {
+    is ReadableMap -> {
+      getString("insertion_id")
+        ?: getString("insertion-id")
+        ?: getString("insertionId")
+    }
+    is Map<*, *> -> {
+      this["insertion_id"] as? String?
+        ?: this["insertion-id"] as? String?
+        ?: this["insertionId"] as? String?
+    }
+    else -> null
+  }
+
+  private fun Any?.contentId(): String? = when (this) {
+    is ReadableMap -> {
+      getString("content_id")
+        ?: getString("content-id")
+        ?: getString("contentId")
+        ?: getString("_id")
+    }
+    is Map<*, *> -> {
+      this["content_id"] as? String?
+        ?: this["content-id"] as? String?
+        ?: this["contentId"] as? String?
+        ?: this["_id"] as? String?
+    }
+    else -> null
   }
 }
