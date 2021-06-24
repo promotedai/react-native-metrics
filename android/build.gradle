@@ -17,8 +17,6 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-apply from: 'https://raw.githubusercontent.com/promotedai/android-metrics-sdk/packages/plugin.gradle'
-
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['PromotedMetrics_' + name]
 }
@@ -131,5 +129,5 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   // Expose transitive dependency for RN consumers
-  api "ai.promoted:android-metrics-sdk:0.1.5"
+  api "ai.promoted:android-metrics-sdk:0.1.6"
 }
