@@ -189,7 +189,14 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun setAncestorIds(ancestorIds: ReadableMap) {
-    // TODO: Implement.
+    val logUserId = ancestorIds.getString("logUserId")
+    if (logUserId != null) PromotedAi.logUserId = logUserId
+
+    val sessionId = ancestorIds.getString("sessionId")
+    if (sessionId != null) PromotedAi.sessionId = sessionId
+
+    val viewId = ancestorIds.getString("viewId")
+    if (viewId != null) PromotedAi.viewId = viewId
   }
 
   /**
