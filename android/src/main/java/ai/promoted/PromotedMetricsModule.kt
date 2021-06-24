@@ -161,7 +161,7 @@ class PromotedMetricsModule(
       visibleContent
         .toArrayList()
         .mapNotNull { arrayItem ->
-          (arrayItem as? ReadableMap)?.toContent()
+          (arrayItem as? HashMap<String, String>)?.toContent()
         }
 
     PromotedAi.onCollectionUpdated(collectionViewName, visibleContentForSdk)
@@ -200,24 +200,35 @@ class PromotedMetricsModule(
   }
 
   /**
-   * Convert an RN [ReadableMap] to an [AbstractContent.Content].
+   * Convert a [HashMap] to an [AbstractContent.Content].
    */
-  private fun ReadableMap?.toContent(): AbstractContent.Content? {
+  private fun HashMap<String, String>?.toContent(): AbstractContent.Content? {
     this ?: return null
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
+    return AbstractContent.Content(
+      name = get("name") ?: "",
+      insertionId = get("insertion_id")
+        ?: get("insertion-id")
+        ?: get("insertionId"),
+      contentId = get("content_id")
+        ?: get("content-id")
+        ?: get("contentId")
+        ?: get("_id")
+    )
+  }
 
-    val contentId =
-      getString("content-id")
+  private fun ReadableMap?.insertionId(): String? {
+    this ?: return null
+    return getString("insertion_id")
+        ?: getString("insertion-id")
+        ?: getString("insertionId")
+  }
+
+  private fun ReadableMap?.contentId(): String? {
+    this ?: return null
+    return getString("content_id")
+        ?: getString("content-id")
         ?: getString("contentId")
         ?: getString("_id")
-
-    return AbstractContent.Content(
-      name = getString("name") ?: "",
-      insertionId = insertionId,
-      contentId = contentId
-    )
   }
 
   /**
@@ -225,18 +236,9 @@ class PromotedMetricsModule(
    */
   private fun ReadableMap?.toActionData(): ActionData {
     this ?: return ActionData.Builder().build()
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
-
-    val contentId =
-      getString("content-id")
-        ?: getString("contentId")
-        ?: getString("_id")
-
     return ActionData.Builder().apply {
-      this.insertionId = insertionId
-      this.contentId = contentId
+      this.insertionId = insertionId()
+      this.contentId = contentId()
     }.build()
   }
 
@@ -245,18 +247,9 @@ class PromotedMetricsModule(
    */
   private fun ReadableMap?.toImpressionData(): ImpressionData? {
     this ?: return null
-    val insertionId =
-      getString("insertion-id")
-        ?: getString("insertionId")
-
-    val contentId =
-      getString("content-id")
-        ?: getString("contentId")
-        ?: getString("_id")
-
     return ImpressionData.Builder().apply {
-      this.insertionId = insertionId
-      this.contentId = contentId
+      this.insertionId = insertionId()
+      this.contentId = contentId()
     }.build()
   }
 }
