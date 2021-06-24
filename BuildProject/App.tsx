@@ -62,6 +62,9 @@ const App: () => Node = () => {
     PromotedMetrics.logImpression(content);
     recordTestPassed('logImpression');
 
+    PromotedMetrics.logImpressionWithSourceType(content, ImpressionSourceType.Delivery);
+    recordTestPassed('logImpressionWithSourceType');
+
     PromotedMetrics.logViewReady('foobar', 'batman');
     recordTestPassed('logViewReady');
 
