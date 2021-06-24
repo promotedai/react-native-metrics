@@ -32,14 +32,16 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logImpression(content: ReadableMap?) =
-    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
+  fun logImpression(content: ReadableMap?) {
+    PromotedAi.onImpression(content.toImpressionData())
+  }
 
   @ReactMethod
   @Suppress("Unused")
   // TODO: Support ImpressionSourceType in android-metrics-sdk
-  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) =
-    content.toImpressionData()?.let { PromotedAi.onImpression(it) }
+  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) {
+    PromotedAi.onImpression(content.toImpressionData())
+  }
 
   @ReactMethod
   @Suppress("Unused")
@@ -161,7 +163,7 @@ class PromotedMetricsModule(
       visibleContent
         .toArrayList()
         .mapNotNull { arrayItem ->
-          (arrayItem as? HashMap<String, String>)?.toContent()
+          arrayItem.toContent()
         }
 
     PromotedAi.onCollectionUpdated(collectionViewName, visibleContentForSdk)
@@ -202,54 +204,69 @@ class PromotedMetricsModule(
   /**
    * Convert a [HashMap] to an [AbstractContent.Content].
    */
-  private fun HashMap<String, String>?.toContent(): AbstractContent.Content? {
-    this ?: return null
-    return AbstractContent.Content(
-      name = get("name") ?: "",
-      insertionId = get("insertion_id")
-        ?: get("insertion-id")
-        ?: get("insertionId"),
-      contentId = get("content_id")
-        ?: get("content-id")
-        ?: get("contentId")
-        ?: get("_id")
-    )
+  private fun Any?.toContent(): AbstractContent.Content = AbstractContent.Content(
+    name = name(),
+    insertionId = insertionId(),
+    contentId = contentId()
+  )
+
+  /**
+   * Convert an RN [ReadableMap] to an [ActionData].
+   */
+  private fun Any?.toActionData(): ActionData {
+    val insertionId = insertionId()
+    val contentId = contentId()
+    return ActionData.Builder().apply {
+      this.insertionId = insertionId
+      this.contentId = contentId
+    }.build()
   }
 
-  private fun ReadableMap?.insertionId(): String? {
-    this ?: return null
-    return getString("insertion_id")
+  /**
+   * Convert an RN [ReadableMap] to an [ActionData].
+   */
+  private fun Any?.toImpressionData(): ImpressionData {
+    val insertionId = insertionId()
+    val contentId = contentId()
+    return ImpressionData.Builder().apply {
+      this.insertionId = insertionId
+      this.contentId = contentId
+    }.build()
+  }
+
+  private fun Any?.name(): String = when (this) {
+    is ReadableMap -> getString("name") ?: ""
+    is Map<*, *> -> this["name"] as? String? ?: ""
+    else -> ""
+  }
+
+  private fun Any?.insertionId(): String? = when (this) {
+    is ReadableMap -> {
+      getString("insertion_id")
         ?: getString("insertion-id")
         ?: getString("insertionId")
+    }
+    is Map<*, *> -> {
+      this["insertion_id"] as? String?
+        ?: this["insertion-id"] as? String?
+        ?: this["insertionId"] as? String?
+    }
+    else -> null
   }
 
-  private fun ReadableMap?.contentId(): String? {
-    this ?: return null
-    return getString("content_id")
+  private fun Any?.contentId(): String? = when (this) {
+    is ReadableMap -> {
+      getString("content_id")
         ?: getString("content-id")
         ?: getString("contentId")
         ?: getString("_id")
-  }
-
-  /**
-   * Convert an RN [ReadableMap] to an [ActionData].
-   */
-  private fun ReadableMap?.toActionData(): ActionData {
-    this ?: return ActionData.Builder().build()
-    return ActionData.Builder().apply {
-      this.insertionId = insertionId()
-      this.contentId = contentId()
-    }.build()
-  }
-
-  /**
-   * Convert an RN [ReadableMap] to an [ActionData].
-   */
-  private fun ReadableMap?.toImpressionData(): ImpressionData? {
-    this ?: return null
-    return ImpressionData.Builder().apply {
-      this.insertionId = insertionId()
-      this.contentId = contentId()
-    }.build()
+    }
+    is Map<*, *> -> {
+      this["content_id"] as? String?
+        ?: this["content-id"] as? String?
+        ?: this["contentId"] as? String?
+        ?: this["_id"] as? String?
+    }
+    else -> null
   }
 }
