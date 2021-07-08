@@ -35,7 +35,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, RCTBridgeDelegate {
   }
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
-    let config = ClientConfig()
+    var config = ClientConfig()
     config.metricsLoggingURL = "http://fake.promoted.ai/metrics"
     config.metricsLoggingAPIKey = "apikey!"
     do {
