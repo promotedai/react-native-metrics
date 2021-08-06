@@ -26,15 +26,6 @@ export const withCollectionTracker = <
   args: WithCollectionTrackerArgs
 ) => {
   const { contentCreator, sourceType } = args;
-  const trackerId = uuidv4();
-  const {
-    _viewabilityConfig,
-    _onViewableItemsChanged,
-  } = useImpressionTracker(
-    ({ item }) => (contentCreator(item)),
-    trackerId,
-    sourceType,
-  );
 
   const WrappedComponent = (
     {
@@ -45,7 +36,17 @@ export const withCollectionTracker = <
       ...rest
     }: P
   ) : React.ReactElement => {
+    const trackerId = uuidv4();
+
     // Merge existing viewability configs with our own.
+    const {
+      _viewabilityConfig,
+      _onViewableItemsChanged,
+    } = useImpressionTracker(
+      ({ item }) => (contentCreator(item)),
+      trackerId,
+      sourceType,
+    );
     const _viewabilityPairs = [
       ...(viewabilityConfigCallbackPairs || []),
       ...((onViewableItemsChanged && viewabilityConfig)
