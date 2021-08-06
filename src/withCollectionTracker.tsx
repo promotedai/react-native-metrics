@@ -26,6 +26,16 @@ export const withCollectionTracker = <
   args: WithCollectionTrackerArgs
 ) => {
   const { contentCreator, sourceType } = args;
+  const trackerId = uuidv4();
+  const {
+    _viewabilityConfig,
+    _onViewableItemsChanged,
+  } = useImpressionTracker(
+    ({ item }) => (contentCreator(item)),
+    trackerId,
+    sourceType,
+  );
+
   const WrappedComponent = (
     {
       onViewableItemsChanged,
@@ -35,17 +45,7 @@ export const withCollectionTracker = <
       ...rest
     }: P
   ) : React.ReactElement => {
-
-    const trackerId = uuidv4();
-    const {
-      _viewabilityConfig,
-      _onViewableItemsChanged,
-    } = useImpressionTracker(
-      ({ item }) => (contentCreator(item)),
-      trackerId,
-      sourceType,
-    );
-
+    // Merge existing viewability configs with our own.
     const _viewabilityPairs = [
       ...(viewabilityConfigCallbackPairs || []),
       ...((onViewableItemsChanged && viewabilityConfig)
@@ -56,8 +56,8 @@ export const withCollectionTracker = <
         viewabilityConfig: _viewabilityConfig,
       },
     ];
-    const _viewabilityPairsRef = React.useRef(_viewabilityPairs);
 
+    // Wrap the rendered item with an action logger.
     const _renderItem = React.useCallback(
       ({ item }) => {
         return (
@@ -77,13 +77,10 @@ export const withCollectionTracker = <
       [renderItem]
     );
 
-    // TODO: Override renderItem and replace the responder
-    // callbacks there.
-
     return (
       <Component
         renderItem={_renderItem}
-        viewabilityConfigCallbackPairs={_viewabilityPairsRef.current}
+        viewabilityConfigCallbackPairs={_viewabilityPairs}
         {...rest}
       />
     );
