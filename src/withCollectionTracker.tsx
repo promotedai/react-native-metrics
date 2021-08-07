@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { NativeModules, TouchableWithoutFeedback } from 'react-native';
-import { TapGestureHandler } from 'react-native-gesture-handler';
+import { NativeModules, View } from 'react-native';
+import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import { v4 as uuidv4 } from 'uuid';
 import { ImpressionSourceType } from './ImpressionSourceType';
 import { useImpressionTracker } from './useImpressionTracker';
@@ -59,20 +59,24 @@ export const withCollectionTracker = <
     ];
 
     // Wrap the rendered item with an action logger.
+    const _onTapForItem = (item) =>
+      (event) => {
+        console.log('***** onTap ', item.title, event.nativeEvent.state);
+        if (event.nativeEvent.state === State.ACTIVE) {
+          //alert('***** Active');
+        }
+      };
     const _renderItem = React.useCallback(
       ({ item }) => {
         return (
-          <TouchableWithoutFeedback
-            onResponderGrant={(evt) => {
-              console.log(`onResponderGrant ${item}`);
-            }}
-            onResponderReject={(evt) => {
-              console.log(`onResponderReject ${item}`);
-            }}
-            onStartShouldSetResponder={(evt) => true}
-            >
-            {renderItem({ item })}
-          </TouchableWithoutFeedback>
+          <TapGestureHandler
+            onGestureEvent={_onTapForItem(item)}
+            onHandlerStateChange={_onTapForItem(item)}
+          >
+            <View>
+              {renderItem({ item })}
+            </View>
+          </TapGestureHandler>
         );
       },
       [renderItem]
@@ -87,9 +91,9 @@ export const withCollectionTracker = <
     );
   };
 
-  WrappedComponent.displayName = `withCollectionTracker(
-    ${Component.displayName || Component.name}
-  )`;
+  WrappedComponent.displayName = `withCollectionTracker(${
+    Component.displayName || Component.name
+  })`;
 
-  return WrappedComponent;
+  return React.useCallback(WrappedComponent, [contentCreator, sourceType]);
 }
