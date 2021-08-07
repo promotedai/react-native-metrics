@@ -59,27 +59,23 @@ export const withCollectionTracker = <
     ]);
 
     // Wrap the rendered item with an action logger.
-    const _renderItem = React.useCallback(
-      ({ item }) => {
-        const _onTapForItem = (item) => (event) => {
+    const _renderItem = ({ item }) => {
+      const _onTapForItem = (item) => (event) => {
+        if (event.nativeEvent.state === State.ACTIVE) {
           console.log('***** onTap ', item.title, event.nativeEvent.state);
-          if (event.nativeEvent.state === State.ACTIVE) {
-            //alert('***** Active');
-          }
-        };
-        return (
-          <TapGestureHandler
-            onGestureEvent={_onTapForItem(item)}
-            onHandlerStateChange={_onTapForItem(item)}
-          >
-            <View>
-              {renderItem({ item })}
-            </View>
-          </TapGestureHandler>
-        );
-      },
-      [renderItem]
-    );
+        }
+      };
+      return (
+        <TapGestureHandler
+          onGestureEvent={_onTapForItem(item)}
+          onHandlerStateChange={_onTapForItem(item)}
+        >
+          <View>
+            {renderItem({ item })}
+          </View>
+        </TapGestureHandler>
+      );
+    };
 
     return (
       <Component
