@@ -43,11 +43,11 @@ export const withCollectionTracker = <
       _viewabilityConfig,
       _onViewableItemsChanged,
     } = useImpressionTracker(
-      ({ item }) => (contentCreator(item)),
+      ({ item }) => ({ contentId: 'foo' }), //(contentCreator(item)),
       trackerId,
       sourceType,
     );
-    const _viewabilityPairs = [
+    const _viewabilityPairs = React.useRef([
       ...(viewabilityConfigCallbackPairs || []),
       ...((onViewableItemsChanged && viewabilityConfig)
         ? [{ onViewableItemsChanged, viewabilityConfig }]
@@ -56,18 +56,17 @@ export const withCollectionTracker = <
         onViewableItemsChanged: _onViewableItemsChanged,
         viewabilityConfig: _viewabilityConfig,
       },
-    ];
+    ]);
 
     // Wrap the rendered item with an action logger.
-    const _onTapForItem = (item) =>
-      (event) => {
-        console.log('***** onTap ', item.title, event.nativeEvent.state);
-        if (event.nativeEvent.state === State.ACTIVE) {
-          //alert('***** Active');
-        }
-      };
     const _renderItem = React.useCallback(
       ({ item }) => {
+        const _onTapForItem = (item) => (event) => {
+          console.log('***** onTap ', item.title, event.nativeEvent.state);
+          if (event.nativeEvent.state === State.ACTIVE) {
+            //alert('***** Active');
+          }
+        };
         return (
           <TapGestureHandler
             onGestureEvent={_onTapForItem(item)}
@@ -85,7 +84,7 @@ export const withCollectionTracker = <
     return (
       <Component
         renderItem={_renderItem}
-        viewabilityConfigCallbackPairs={_viewabilityPairs}
+        viewabilityConfigCallbackPairs={_viewabilityPairs.current}
         {...rest}
       />
     );
@@ -95,5 +94,5 @@ export const withCollectionTracker = <
     Component.displayName || Component.name
   })`;
 
-  return React.useCallback(WrappedComponent, [contentCreator, sourceType]);
+  return React.useCallback(WrappedComponent, []);
 }
