@@ -43,7 +43,7 @@ export const withCollectionTracker = <
       _viewabilityConfig,
       _onViewableItemsChanged,
     } = useImpressionTracker(
-      ({ item }) => ({ contentId: 'foo' }), //(contentCreator(item)),
+      ({ item }) => contentCreator(item),
       trackerId,
       sourceType,
     );
@@ -62,7 +62,7 @@ export const withCollectionTracker = <
     const _renderItem = ({ item }) => {
       const _onTapForItem = (item) => (event) => {
         if (event.nativeEvent.state === State.ACTIVE) {
-          console.log('***** onTap ', item.title, event.nativeEvent.state);
+          console.log('***** onTap ', contentCreator(item));
         }
       };
       return (
