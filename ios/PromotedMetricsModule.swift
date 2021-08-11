@@ -115,7 +115,7 @@ public extension PromotedMetricsModule {
     metricsLogger?.logImpression(content: contentFor(content))
   }
 
-  @objc(logImpression:sourceType:)
+  @objc(logImpressionWithSourceType:sourceType:)
   func logImpression(content: ReactNativeDictionary?, sourceType: Int) {
     let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
     metricsLogger?.logImpression(content: contentFor(content), sourceType: s)
@@ -127,7 +127,7 @@ public extension PromotedMetricsModule {
     metricsLogger?.logNavigateAction(content: contentFor(content))
   }
 
-  @objc(logNavigateAction:screenName:)
+  @objc(logNavigateActionWithScreenName:screenName:)
   func logNavigateAction(
     content: ReactNativeDictionary?,
     screenName: String
@@ -144,7 +144,7 @@ public extension PromotedMetricsModule {
     metricsLogger?.logAction(type: actionType, content: contentFor(content))
   }
 
-  @objc(logNamedAction:type:name:)
+  @objc(logActionWithName:content:name:)
   func logAction(type: Int, content: ReactNativeDictionary?, name: String) {
     let actionType = ActionType(rawValue: type) ?? .unknown
     metricsLogger?.logAction(
@@ -215,7 +215,7 @@ public extension PromotedMetricsModule {
   /// - Parameters:
   ///   - visibleContent: List of currently visible content.
   ///   - id: Identifier for collection view to track.
-  @objc(collectionViewDidChange:id:)
+  @objc(collectionViewDidChange:collectionID:)
   func collectionViewDidChange(visibleContent: [AnyObject], id: String) {
     guard let tracker = nameToImpressionTracker[id] else { return }
     let contentList = visibleContent.map {
@@ -231,6 +231,7 @@ public extension PromotedMetricsModule {
   ///   - actionType: As defined by `ActionType`.
   ///   - content: Content involved in action
   ///   - id: Identifier for collection view to track.
+  @objc(collectionViewActionDidOccur:content:collectionID:)
   func collectionViewActionDidOccur(
     actionType: Int,
     content: ReactNativeDictionary?,

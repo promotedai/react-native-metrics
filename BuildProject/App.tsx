@@ -85,6 +85,8 @@ const App: () => Node = () => {
   }
 
   const testCollectionView = (recordTestPassed) => {
+    const content = { _id: 'foobar'};
+
     PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend);
     recordTestPassed('collectionViewDidMount');
 

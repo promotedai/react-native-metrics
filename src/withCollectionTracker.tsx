@@ -2,7 +2,8 @@ import * as React from 'react';
 import { NativeModules, View } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import { v4 as uuidv4 } from 'uuid';
-import { ImpressionSourceType } from './ImpressionSourceType';
+import { ActionType } from './ActionType';
+import type { ImpressionSourceType } from './ImpressionSourceType';
 import { useImpressionTracker } from './useImpressionTracker';
 
 const { PromotedMetrics } = NativeModules;
@@ -49,7 +50,7 @@ export const withCollectionTracker = <
     );
     const _viewabilityPairs = React.useRef([
       ...(viewabilityConfigCallbackPairs || []),
-      ...((onViewableItemsChanged && viewabilityConfig)
+      ...((onViewableItemsChanged != null && viewabilityConfig != null)
         ? [{ onViewableItemsChanged, viewabilityConfig }]
         : []),
       {
@@ -63,6 +64,11 @@ export const withCollectionTracker = <
       const _onTapForItem = (item) => (event) => {
         if (event.nativeEvent.state === State.ACTIVE) {
           console.log('***** onTap ', contentCreator(item));
+          PromotedMetrics.collectionViewActionDidOccur(
+            ActionType.Navigate,
+            contentCreator(item),
+            trackerId
+          );
         }
       };
       return (

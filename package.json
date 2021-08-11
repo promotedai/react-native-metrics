@@ -55,7 +55,7 @@
   },
   "peerDependencies": {
     "react": "^16.14.0",
-    "react-native": "^0.64.2"
+    "react-native": "^0.64.2",
     "react-native-gesture-handler": "^1.10.3"
   },
   "devDependencies": {
