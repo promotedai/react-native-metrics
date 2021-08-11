@@ -11,24 +11,8 @@ import os.log
 @objc(PromotedMetricsModule)
 public class PromotedMetricsModule: NSObject {
 
-  public static let defaultNameKeys = ["name"]
-  public static let defaultContentIDKeys = ["content_id", "contentId", "_id"]
-  public static let defaultInsertionIDKeys = ["insertion_id", "insertionId"]
-
   /// Dictionary objects that represent content as expected from React Native.
   public typealias ReactNativeDictionary = [String: Any]
-
-  /// List of keys for content name as used in
-  /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
-  private let nameKeys: [String]
-
-  /// List of keys for content IDs as used in
-  /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
-  private let contentIDKeys: [String]
-
-  /// List of keys for insertion IDs as used in
-  /// `Content(properties:contentIDKeys:insertionIDKeys:)`.
-  private let insertionIDKeys: [String]
 
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
@@ -47,54 +31,16 @@ public class PromotedMetricsModule: NSObject {
     self.init(optionalMetricsLoggerService: metricsLoggerService)
   }
 
-  public convenience init(
-    metricsLoggerService: MetricsLoggerService,
-    nameKeys: [String]? = defaultNameKeys,
-    contentIDKeys: [String]? = defaultContentIDKeys,
-    insertionIDKeys: [String]? = defaultInsertionIDKeys
-  ) {
-    self.init(
-      optionalMetricsLoggerService: metricsLoggerService,
-      nameKeys: nameKeys,
-      contentIDKeys: contentIDKeys,
-      insertionIDKeys: insertionIDKeys
-    )
-  }
-
   private init(
-    optionalMetricsLoggerService: MetricsLoggerService?,
-    nameKeys: [String]? = defaultNameKeys,
-    contentIDKeys: [String]? = defaultContentIDKeys,
-    insertionIDKeys: [String]? = defaultInsertionIDKeys
+    optionalMetricsLoggerService: MetricsLoggerService?
   ) {
     self.service = optionalMetricsLoggerService
-    self.nameKeys = nameKeys!
-    self.contentIDKeys = contentIDKeys!
-    self.insertionIDKeys = insertionIDKeys!
     self.nameToImpressionTracker = [:]
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
 
   @objc public static func requiresMainQueueSetup() -> Bool { true }
-
-  private func contentFor(_ dictionary: ReactNativeDictionary?) -> Content {
-    return Content(
-      properties: dictionary,
-      nameKeys: nameKeys,
-      contentIDKeys: contentIDKeys,
-      insertionIDKeys: insertionIDKeys
-    )
-  }
-
-  private func itemFor(_ dictionary: ReactNativeDictionary?) -> Item {
-    return Item(
-      properties: dictionary,
-      nameKeys: nameKeys,
-      contentIDKeys: contentIDKeys,
-      insertionIDKeys: insertionIDKeys
-    )
-  }
 }
 
 public extension PromotedMetricsModule {
@@ -112,19 +58,19 @@ public extension PromotedMetricsModule {
   // MARK: - Impressions
   @objc(logImpression:)
   func logImpression(content: ReactNativeDictionary?) {
-    metricsLogger?.logImpression(content: contentFor(content))
+    metricsLogger?.logImpression(content: Content(content))
   }
 
   @objc(logImpressionWithSourceType:sourceType:)
   func logImpression(content: ReactNativeDictionary?, sourceType: Int) {
     let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
-    metricsLogger?.logImpression(content: contentFor(content), sourceType: s)
+    metricsLogger?.logImpression(content: Content(content), sourceType: s)
   }
 
   // MARK: - Clicks
   @objc(logNavigateAction:)
   func logNavigateAction(content: ReactNativeDictionary?) {
-    metricsLogger?.logNavigateAction(content: contentFor(content))
+    metricsLogger?.logNavigateAction(content: Content(content))
   }
 
   @objc(logNavigateActionWithScreenName:screenName:)
@@ -133,7 +79,7 @@ public extension PromotedMetricsModule {
     screenName: String
   ) {
     metricsLogger?.logNavigateAction(
-      content: contentFor(content),
+      content: Content(content),
       screenName: screenName
     )
   }
@@ -141,7 +87,7 @@ public extension PromotedMetricsModule {
   @objc(logAction:content:)
   func logAction(type: Int, content: ReactNativeDictionary?) {
     let actionType = ActionType(rawValue: type) ?? .unknown
-    metricsLogger?.logAction(type: actionType, content: contentFor(content))
+    metricsLogger?.logAction(type: actionType, content: Content(content))
   }
 
   @objc(logActionWithName:content:name:)
@@ -149,7 +95,7 @@ public extension PromotedMetricsModule {
     let actionType = ActionType(rawValue: type) ?? .unknown
     metricsLogger?.logAction(
       type: actionType,
-      content: contentFor(content),
+      content: Content(content),
       name: name
     )
   }
@@ -219,7 +165,7 @@ public extension PromotedMetricsModule {
   func collectionViewDidChange(visibleContent: [AnyObject], id: String) {
     guard let tracker = nameToImpressionTracker[id] else { return }
     let contentList = visibleContent.map {
-      contentFor($0 as? ReactNativeDictionary)
+      Content($0 as? ReactNativeDictionary)
     }
     tracker.collectionViewDidChangeVisibleContent(contentList)
   }
@@ -239,7 +185,7 @@ public extension PromotedMetricsModule {
   ) {
     guard let tracker = nameToImpressionTracker[id] else { return }
     let a = ActionType(rawValue: actionType) ?? .unknown
-    let c = contentFor(content)
+    let c = Content(content)
     let impressionID = tracker.impressionID(for: c)
     metricsLogger?.logAction(
       type: a,
@@ -293,5 +239,21 @@ public extension PromotedMetricsModule {
     if let viewID = ancestorIDs?["viewId"] as? String {
       metricsLogger.viewID = viewID
     }
+  }
+}
+
+private extension Content {
+
+  static let nameKeys = ["name"]
+  static let contentIDKeys = ["contentId"]
+  static let insertionIDKeys = ["insertionId"]
+
+  convenience init(_ dict: PromotedMetricsModule.ReactNativeDictionary?) {
+    self.init(
+      properties: dict,
+      nameKeys: Self.nameKeys,
+      contentIDKeys: Self.contentIDKeys,
+      insertionIDKeys: Self.insertionIDKeys
+    )
   }
 }
