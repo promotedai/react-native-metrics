@@ -19,57 +19,22 @@ RCT_EXTERN_METHOD(logImpressionWithSourceType:(nullable NSDictionary *)content
 
 #pragma mark - Clicks
 
-RCT_EXTERN_METHOD(logNavigateAction:(NSString *)screenName)
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logNavigateAction:(nullable NSDictionary *)content)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logNavigateActionWithContent:(NSString *)screenName
-                  forContent:(nullable NSDictionary *)content)
-
-/// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logAddToCartAction:(nullable NSDictionary *)item)
-
-/// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logRemoveFromCartAction:(nullable NSDictionary *)item)
-
-RCT_EXTERN_METHOD(logCheckoutAction)
-
-/// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logPurchaseAction:(nullable NSDictionary *)item)
+RCT_EXTERN_METHOD(logNavigateActionWithScreenName:(nullable NSDictionary *)content
+                  screenName:(NSString *)screenName)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logShareAction:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logLikeAction:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logUnlikeAction:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logCommentAction:(nullable NSDictionary *)content)
-
-/// @param item (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logMakeOfferAction:(nullable NSDictionary *)item)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logAskQuestionAction:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logAnswerQuestionAction:(nullable NSDictionary *)content)
-
-RCT_EXTERN_METHOD(logCompleteSignInAction)
-
-RCT_EXTERN_METHOD(logCompleteSignUpAction)
-
-RCT_EXTERN_METHOD(logAction:(NSString *)name)
-
-RCT_EXTERN_METHOD(logActionWithType:(NSString *)name
-                  type:(NSInteger)type)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logActionWithContent:(NSString *)name
-                  type:(NSInteger)type
+RCT_EXTERN_METHOD(logAction:(NSInteger)type
                   content:(nullable NSDictionary *)content)
+
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logActionWithName:(NSInteger)type
+                  content:(nullable NSDictionary *)content
+                  name:(NSString *)name)
+
 
 #pragma mark - Views
 RCT_EXTERN_METHOD(logViewReady:(NSString *)routeName
@@ -87,14 +52,19 @@ RCT_EXTERN_METHOD(logViewChangeWithUseCase:(NSString *)routeName
                   useCase:(NSInteger)useCase)
 
 #pragma mark - ImpressionLogger
-RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionViewName
+RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionID
                   sourceType:(NSInteger)sourceType)
 
 /// @param visibleContent (`NSArray<NSDictionary<String, id>>`)
 RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
-                  collectionViewName:(NSString *)collectionViewName)
+                  collectionID:(NSString *)collectionID)
 
-RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionViewName)
+/// @param content (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(collectionViewActionDidOccur:(NSInteger)actionType
+                  content:(nullable NSDictionary *)content
+                  collectionID: (NSString *)collectionID)
+
+RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionID)
 
 #pragma mark - Ancestor IDs
 RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolver

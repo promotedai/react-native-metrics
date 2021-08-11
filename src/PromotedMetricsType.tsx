@@ -47,24 +47,10 @@ export type PromotedMetricsType = {
 
   // Action logging
 
-  logNavigateAction(screenName: string): void;
-  logNavigateActionWithContent(screenName: string, content: Object): void;
-  logAddToCartAction(item: Object): void;
-  logRemoveFromCartAction(item: Object): void;
-  logCheckoutAction(): void;
-  logPurchaseAction(item: Object): void;
-  logShareAction(content: Object): void;
-  logLikeAction(content: Object): void;
-  logUnlikeAction(content: Object): void;
-  logCommentAction(content: Object): void;
-  logMakeOfferAction(content: Object): void;
-  logAskQuestionAction(content: Object): void;
-  logAnswerQuestionAction(content: Object): void;
-  logCompleteSignInAction(): void;
-  logCompleteSignUpAction(): void;
-  logAction(name: string): void;
-  logActionWithType(name: string, type: ActionType): void;
-  logActionWithContent(name: string, type: ActionType, content: Object): void;
+  logNavigateAction(content: Object): void;
+  logNavigateActionWithScreenName(content: Object, screenName: string): void;
+  logAction(type: ActionType, content: Object): void;
+  logActionWithName(type: ActionType, content: Object, name: string): void;
 
   // View logging
 
@@ -88,10 +74,10 @@ export type PromotedMetricsType = {
    * view reloads on a timer. In these cases, the impression logging state
    * from the previous session will persist.
    *
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(collectionViewName: string, sourceType: ImpressionSourceType): void;
+  collectionViewDidMount(id: string, sourceType: ImpressionSourceType): void;
 
   /**
    * Logs impressions for changed content.
@@ -99,17 +85,27 @@ export type PromotedMetricsType = {
    * `ImpressionLogger` will calculate deltas and log appropriate events.
    *
    * @param visibleContent list of currently visible content
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    */
-  collectionViewDidChange(visibleContent: Array<Object>, collectionViewName: string): void;
+  collectionViewDidChange(visibleContent: Array<Object>, id: string): void;
+
+  /**
+   * Logs actions for content in a given collection view.
+   * Call this method when an action occurs within a tracked collection view.
+   *
+   * @param actionType see `ActionType`
+   * @param content content for which action occurred
+   * @param id identifier for collection view to track
+   */
+  collectionViewActionDidOccur(actionType: ActionType, content: Object, id: string): void;
 
   /**
    * Ends tracking session for given collection view.
    * Drops all associated impression logging state.
    *
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    */
-  collectionViewWillUnmount(collectionViewName: string): void;
+  collectionViewWillUnmount(id: string): void;
 
   // Ancestor IDs
 
