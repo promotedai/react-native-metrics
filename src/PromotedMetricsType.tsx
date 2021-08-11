@@ -1,6 +1,16 @@
 import type { ActionType } from './ActionType';
 import type { ImpressionSourceType } from './ImpressionSourceType';
 
+/**
+ * Marketplace content (saleable item, partner) involved with
+ * Promoted delivery.
+ */
+export interface Content {
+  contentId?: string
+  insertionId?: string
+  name?: string
+};
+
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
   logUserId?: string;
@@ -8,6 +18,7 @@ export interface AncestorIds {
   viewId?: string;
 };
 
+// Maintainers:
 // IF YOU CHANGE THIS FILE, also update BuildProject/App.tsx
 // to include a test for your change.
 
@@ -31,7 +42,7 @@ export type PromotedMetricsType = {
 
   /**
    * Logs an impression for given content.
-   * Typically, you would call useImpressionTracker() for use with
+   * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
@@ -39,7 +50,7 @@ export type PromotedMetricsType = {
 
   /**
    * Logs an impression for given content.
-   * Typically, you would call useImpressionTracker() for use with
+   * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
@@ -47,9 +58,41 @@ export type PromotedMetricsType = {
 
   // Action logging
 
+  /**
+   * Logs a clickthrough for details about given content.
+   *
+   * @param content content whose details are requested
+   */
   logNavigateAction(content: Object): void;
-  logNavigateActionWithScreenName(content: Object, screenName: string): void;
+
+  /**
+   * Logs a clickthrough for details about given content.
+   *
+   * @param content content whose details are requested
+   * @param screenName name of screen that will display content details
+   */
+   logNavigateActionWithScreenName(content: Object, screenName: string): void;
+
+  /**
+   * Logs an action on given content.
+   *
+   * @param type Semantic meaning of action in marketplace.
+   *   If you use CustomActionType, provide a name for the action
+   *   using logActionWithName.
+   * @param content content whose details are requested
+   */
   logAction(type: ActionType, content: Object): void;
+
+  /**
+   * Logs an action on given content.
+   * Any action type can have a custom name to distinguish different
+   * actions in the same class. If you use ActionType.CustomActionType,
+   * use this method and provide a name for the action.
+   *
+   * @param type semantic meaning of action in marketplace
+   * @param content content whose details are requested
+   * @param name custom name for action
+   */
   logActionWithName(type: ActionType, content: Object, name: string): void;
 
   // View logging
