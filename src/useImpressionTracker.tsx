@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
-import { NativeModules } from 'react-native';
-import type { ViewToken } from 'react-native';
-import { ImpressionSourceType } from './ImpressionSourceType';
+import { useCallback, useEffect } from 'react'
+import { NativeModules } from 'react-native'
+import type { ViewToken } from 'react-native'
+import { ImpressionSourceType } from './ImpressionSourceType'
 
-const { PromotedMetrics } = NativeModules;
+const { PromotedMetrics } = NativeModules
 
 export const promotedViewabilityConfig = {
   waitForInteraction: false,
@@ -25,16 +25,16 @@ export const useImpressionTracker = (
 
   const _onViewableItemsChanged = useCallback(
     ({viewableItems}) => {
-      const contentList = viewableItems.map(contentCreator);
-      PromotedMetrics.collectionViewDidChange(contentList, collectionViewName);
-    }, []);
+      const contentList = viewableItems.map(contentCreator)
+      PromotedMetrics.collectionViewDidChange(contentList, collectionViewName)
+    }, [])
 
   useEffect(() => {
-    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType);
+    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType)
     return () => {
-      PromotedMetrics.collectionViewWillUnmount(collectionViewName);
+      PromotedMetrics.collectionViewWillUnmount(collectionViewName)
     }
-  }, []);
+  }, [])
 
   return { _viewabilityConfig, _onViewableItemsChanged }
-};
+}

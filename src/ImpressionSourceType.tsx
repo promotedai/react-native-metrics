@@ -7,4 +7,4 @@ export enum ImpressionSourceType {
 
   /** Non-Promoted backend. */
   ClientBackend = 2
-};
+}

@@ -1,7 +1,7 @@
-import type { MutableRefObject } from 'react';
-import { NativeModules } from 'react-native';
+import type { MutableRefObject } from 'react'
+import { NativeModules } from 'react-native'
 
-const { PromotedMetrics } = NativeModules;
+const { PromotedMetrics } = NativeModules
 
 /**
  * Returns handlers for use with onReady and onStateChange for
@@ -10,14 +10,14 @@ const { PromotedMetrics } = NativeModules;
 export const useViewTracker = (navigationRef: MutableRefObject) => {
 
   const _onReady = async () => {
-    const currentRoute = navigationRef.current?.getCurrentRoute();
-    PromotedMetrics.logViewReady(currentRoute.name, currentRoute.key);
+    const currentRoute = navigationRef.current?.getCurrentRoute()
+    PromotedMetrics.logViewReady(currentRoute.name, currentRoute.key)
   }
 
   const _onStateChange = async () => {
-    const currentRoute = navigationRef.current?.getCurrentRoute();
-    PromotedMetrics.logViewChange(currentRoute.name, currentRoute.key);
+    const currentRoute = navigationRef.current?.getCurrentRoute()
+    PromotedMetrics.logViewChange(currentRoute.name, currentRoute.key)
   }
 
   return { _onReady, _onStateChange }
-};
+}

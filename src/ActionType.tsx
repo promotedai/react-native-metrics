@@ -46,4 +46,4 @@ export enum ActionType {
 
   /** Complete sign-up. */
   CompleteSignUp = 15
-};
+}
