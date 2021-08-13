@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { ActionType } from './ActionType'
 import type { Content } from './PromotedMetricsType'
-import type { ImpressionSourceType } from './ImpressionSourceType'
+import { ImpressionSourceType } from './ImpressionSourceType'
 import { useImpressionTracker } from './useImpressionTracker'
 
 const { PromotedMetrics } = NativeModules
@@ -23,13 +23,11 @@ export interface CollectionTrackerArgs {
   sourceType: ImpressionSourceType
 }
 
-export function CollectionTracker<
-  P extends CollectionTrackerProps
->(
-  args: CollectionTrackerArgs
-) {
+export function CollectionTracker<P extends CollectionTrackerProps>({
+  contentCreator,
+  sourceType = ImpressionSourceType.ClientBackend
+} : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
-    const { contentCreator, sourceType } = args
     const trackerId = uuidv4()
 
     const WrappedComponent = (
