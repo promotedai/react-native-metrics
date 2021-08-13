@@ -43,7 +43,6 @@ export function CollectionTracker<
     ) : React.ReactElement => {
       const navigation = useNavigation()
 
-      // Merge existing viewability configs with our own.
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
@@ -52,22 +51,35 @@ export function CollectionTracker<
         trackerId,
         sourceType,
       )
-      const _viewabilityPairs = React.useRef([
-        ...(viewabilityConfigCallbackPairs || []),
-        ...((onViewableItemsChanged != null && viewabilityConfig != null)
-          ? [{ onViewableItemsChanged, viewabilityConfig }]
-          : []),
-        {
-          onViewableItemsChanged: _onViewableItemsChanged,
-          viewabilityConfig: _viewabilityConfig,
-        },
-      ])
+
+      // Merge existing viewability configs with our own if needed.
+      // Otherwise, just use our viewability config.
+      const viewabilityArgs = (
+        onViewableItemsChanged ||
+        viewabilityConfig ||
+        viewabilityConfigCallbackPairs
+      ) ? {
+        viewabilityConfigCallbackPairs: React.useRef([
+          ...(viewabilityConfigCallbackPairs || []),
+          ...((onViewableItemsChanged != null && viewabilityConfig != null)
+            ? [{ onViewableItemsChanged, viewabilityConfig }]
+            : []),
+          {
+            onViewableItemsChanged: _onViewableItemsChanged,
+            viewabilityConfig: _viewabilityConfig,
+          },
+        ])
+      } : {
+        onViewableItemsChanged: _onViewableItemsChanged,
+        viewabilityConfig: _viewabilityConfig,
+      }
 
       // Wrap the rendered item with an action logger.
+      // TODO: Allow configuration so that controls within
+      // the rendered item can trigger different actions.
       const _renderItem = ({ item }) => {
         const _onTapForItem = (item) => (event) => {
           if (event.nativeEvent.state === State.ACTIVE) {
-            console.log('***** onTap ', contentCreator(item))
             PromotedMetrics.collectionViewActionDidOccur(
               ActionType.Navigate,
               contentCreator(item),
@@ -90,13 +102,13 @@ export function CollectionTracker<
       return (
         <Component
           renderItem={_renderItem}
-          viewabilityConfigCallbackPairs={_viewabilityPairs.current}
+          {...viewabilityArgs}
           {...rest}
         />
       )
     }
 
-    WrappedComponent.displayName = `withCollectionTracker(${
+    WrappedComponent.displayName = `CollectionTracker(${
       Component.displayName || Component.name
     })`
 
@@ -110,6 +122,6 @@ export function useCollectionTracker<
   args: CollectionTrackerArgs
 ) {
   return (Component: React.ComponentType<P>) => {
-    return React.useCallback(CollectionTracker(args), [])
+    return React.useCallback(CollectionTracker(args)(Component), [])
   }
 }
