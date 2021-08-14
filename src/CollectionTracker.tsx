@@ -17,20 +17,18 @@ const { PromotedMetrics } = NativeModules
  *
  * If you wrap your own component with CollectionTracker, it must support
  * the following operations:
- * <ul>
- * <li>*Click tracking* requires support for `renderItem`.
- * <li>*Impression tracking* requires support for one of the following:
- *   <ul>
- *   <li>`viewabilityConfig` and `onViewableItemsChanged`, if you do not
- *       have your own viewability configuration, *or*:
- *   <li>`viewabilityConfigCallbackPairs`, if you have your own viewabilty
- *       configuration that needs to run alongside impression tracking.
- *   </ul>
- * </ul>
+ *
+ * - *Click tracking* requires support for `renderItem`.
+ * - *Impression tracking* requires support for one of the following:
+ *   - `viewabilityConfig` and `onViewableItemsChanged`, if you do not
+ *     have your own viewability configuration, *or*:
+ *   - `viewabilityConfigCallbackPairs`, if you have your own viewabilty
+ *     configuration that needs to run alongside impression tracking.
+ *
  * If your component doesn't support the required properties for both click
  * tracking and impression tracking, CollectionTracker still works with what
  * you have. That is, if you support `renderItem`, then wrapping your list
- * in CollectionTracker will give you click tracking.
+ * in CollectionTracker will give you only click tracking.
  *
  * @see CollectionTracker
  */
@@ -50,6 +48,50 @@ export interface CollectionTrackerArgs {
   sourceType: ImpressionSourceType
 }
 
+/**
+ * CollectionTracker wraps a list component to add action and impression
+ * tracking for Promoted backends. It works with `FlatList` and `SectionList`,
+ * or any component that supports the required properties.
+ *
+ * This version is for use with class components. For functional components,
+ * see `useCollectionTracker`.
+ *
+ * # Usage
+ *
+ * CollectionTracker does a drop-in replacement of the list component and
+ * requires minimal configuration. Just supply a `contentCreator` and a
+ * source for the content, and use it in place of your list component.
+ * ```
+ * const TrackedList = CollectionTracker({
+ *   contentCreator: (item) => ({
+ *     contentId: item.marketplaceId,
+ *     insertionId: item.insertionId,
+ *     name: item.displayName,
+ *   }),
+ * })(FlatList)
+ *
+ * class MyItemList extends PureComponent<...> {
+ *   public render() {
+ *     return (
+ *       <TrackedList
+ *         data={myData}
+ *         renderItem={myRenderItem}
+ *         {...props}
+ *       />
+ *     )
+ *   }
+ * }
+ * ```
+ *
+ * # Implementation Details
+ *
+ * If you use CollectionTracker with your own component, it must
+ *
+ * ## Action tracking
+ *
+ *
+ * @returns Wrapped component to use as list component
+ */
 export function CollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
   sourceType = ImpressionSourceType.ClientBackend
@@ -139,11 +181,42 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
 
 /**
  * Wraps a component with CollectionTracker for use with *functional*
- * components.
+ * components. Usage:
+ * ```
+ * const MyListComponent: FunctionComponent<MyListProps> = (props) => {
+ *   // Wrap the list component before use.
+ *   const TrackedList = useCollectionTracker({
+ *     contentCreator: (item) => ({
+ *       contentId: item.internalId.toString(),
+ *       insertionId: item.insertionId,
+ *       name: item.displayName,
+ *     }),
+ *     sourceType: ImpressionSourceType.Delivery,
+ *   })(FlatList)
+ *   // Instantiate the tracked list.
+ *   return (
+ *     <TrackedList
+ *       data={...}
+ *       renderItem={...}
+ *       {...rest}
+ *     />
+ *   )
+ * }
+ * ```
+ * Note that `useCollectionTracker` must be called to wrap the component
+ * class *before* the component is initialized. In the example above, this
+ * means that `const TrackedList = useCollectionTracker(...)` occurs before
+ * the use of the list component. The return value of `useCollectionTracker`
+ * is then instantiated as `TrackedList` and used as the result of the
+ * component `MyListComponent`.
+ *
+ * You must wrap a component class that supports the properties in
+ * `CollectionTrackerProps` for action/impression tracking to work.
+ * See documentation on `CollectionTracker` for more details.
  *
  * @see CollectionTracker
- * @param args CollectionTracker configuration
- * @returns wrapped component
+ * @see CollectionTrackerProps
+ * @returns Wrapped component to use as list component
  */
 export function useCollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
