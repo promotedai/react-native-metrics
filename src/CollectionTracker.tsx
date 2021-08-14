@@ -85,10 +85,29 @@ export interface CollectionTrackerArgs {
  *
  * # Implementation Details
  *
- * If you use CollectionTracker with your own component, it must
+ * If you use CollectionTracker with your own component, it must support
+ * support the following properties as defined in `CollectionTrackerProps`.
  *
- * ## Action tracking
+ * ## Action Tracking
  *
+ * Action tracking wraps your `renderItem` function to return a
+ * `TapGestureHandler` to surround the component that you render. This
+ * handler listens for tap events and records them as Promoted actions.
+ * The content for these actions is derived by applying `contentCreator`
+ * to the argument of `renderItem`.
+ *
+ * This handler does not consume the tap event or alter the existing
+ * behavior of your rendered items in any other way.
+ *
+ * ## Impression Tracking
+ *
+ * Impression tracking uses the `VirtualizedList` mechanism for viewability
+ * tracking. In most cases, this uses the `onViewableItemsChanged` and
+ * `viewabilityConfig` properties on the list. If you already supply
+ * viewability tracking properties to the list, then they are merged into
+ * the `viewabilityConfigCallbackPairs` property. The aforementioned
+ * property will include both viewability tracking for Promoted impressions
+ * and your existing viewability tracking.
  *
  * @returns Wrapped component to use as list component
  */
@@ -105,7 +124,7 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
       viewabilityConfig,
       viewabilityConfigCallbackPairs,
       ...rest
-    }: P) : React.ReactElement => {
+    } : P) : React.ReactElement => {
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
