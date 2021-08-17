@@ -16,18 +16,17 @@ export const promotedViewabilityConfig = {
  * viewabilityConfig for FlatLists and SectionLists.
  */
 export const useImpressionTracker = (
-    contentCreator: (viewToken: ViewToken) => Object,
-    collectionViewName: string,
-    sourceType: ImpressionSourceType =
-        ImpressionSourceType.UnknownImpressionSourceType) => {
+  contentCreator: (viewToken: ViewToken) => Object,
+  collectionViewName: string,
+  sourceType: ImpressionSourceType = ImpressionSourceType.Unknown
+) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
 
-  const _onViewableItemsChanged = useCallback(
-    ({viewableItems}) => {
-      const contentList = viewableItems.map(contentCreator)
-      PromotedMetrics.collectionViewDidChange(contentList, collectionViewName)
-    }, [])
+  const _onViewableItemsChanged = useCallback(({viewableItems}) => {
+    const contentList = viewableItems.map(contentCreator)
+    PromotedMetrics.collectionViewDidChange(contentList, collectionViewName)
+  }, [])
 
   useEffect(() => {
     PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType)
