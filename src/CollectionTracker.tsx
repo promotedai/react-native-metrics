@@ -113,7 +113,7 @@ export interface CollectionTrackerArgs {
  */
 export function CollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
-  sourceType = ImpressionSourceType.ClientBackend
+  sourceType = ImpressionSourceType.Unknown
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     const trackerId = uuidv4()
