@@ -71,7 +71,7 @@ export type PromotedMetricsType = {
    * @param content content whose details are requested
    * @param screenName name of screen that will display content details
    */
-   logNavigateActionWithScreenName(content: Object, screenName: string): void
+  logNavigateActionWithScreenName(content: Object, screenName: string): void
 
   /**
    * Logs an action on given content.
