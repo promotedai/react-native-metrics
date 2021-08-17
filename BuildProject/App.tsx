@@ -71,67 +71,30 @@ const App: () => Node = () => {
     PromotedMetrics.logViewChange('spaghetti', 'meatballs');
     recordTestPassed('logViewChange');
 
-    PromotedMetrics.logNavigateAction('screen');
+    PromotedMetrics.logNavigateAction(content);
     recordTestPassed('logNavigateAction');
 
-    PromotedMetrics.logNavigateActionWithContent('screen', content);
-    recordTestPassed('logNavigateActionWithContent');
+    PromotedMetrics.logNavigateActionWithScreenName(content, 'screen');
+    recordTestPassed('logNavigateActionWithScreenName');
 
-    PromotedMetrics.logAddToCartAction(content);
-    recordTestPassed('logAddToCartAction');
-
-    PromotedMetrics.logRemoveFromCartAction(content);
-    recordTestPassed('logRemoveFromCartAction');
-
-    PromotedMetrics.logCheckoutAction();
-    recordTestPassed('logCheckoutAction');
-
-    PromotedMetrics.logPurchaseAction(content);
-    recordTestPassed('logPurchaseAction');
-
-    PromotedMetrics.logShareAction(content);
-    recordTestPassed('logShareAction');
-
-    PromotedMetrics.logLikeAction(content);
-    recordTestPassed('logLikeAction');
-
-    PromotedMetrics.logUnlikeAction(content);
-    recordTestPassed('logUnlikeAction');
-
-    PromotedMetrics.logCommentAction(content);
-    recordTestPassed('logCommentAction');
-
-    PromotedMetrics.logMakeOfferAction(content);
-    recordTestPassed('logMakeOfferAction');
-
-    PromotedMetrics.logAskQuestionAction(content);
-    recordTestPassed('logAskQuestionAction');
-
-    PromotedMetrics.logAnswerQuestionAction(content);
-    recordTestPassed('logAnswerQuestionAction');
-
-    PromotedMetrics.logCompleteSignInAction();
-    recordTestPassed('logCompleteSignInAction');
-
-    PromotedMetrics.logCompleteSignUpAction();
-    recordTestPassed('logCompleteSignUpAction');
-
-    PromotedMetrics.logAction('custom');
+    PromotedMetrics.logAction(ActionType.Share, content);
     recordTestPassed('logAction');
 
-    PromotedMetrics.logActionWithType('custom', ActionType.Navigate);
-    recordTestPassed('logActionWithType');
-
-    PromotedMetrics.logActionWithContent('custom', ActionType.Share, content);
-    recordTestPassed('logActionWithContent');
+    PromotedMetrics.logActionWithName(ActionType.Share, content, 'custom');
+    recordTestPassed('logActionWithName');
   }
 
   const testCollectionView = (recordTestPassed) => {
+    const content = { _id: 'foobar'};
+
     PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend);
     recordTestPassed('collectionViewDidMount');
 
     PromotedMetrics.collectionViewDidChange([], 'hello');
     recordTestPassed('collectionViewDidChange');
+
+    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'hello');
+    recordTestPassed('collectionViewActionDidOccur');
 
     PromotedMetrics.collectionViewWillUnmount('hello');
     recordTestPassed('collectionViewWillUnmount');

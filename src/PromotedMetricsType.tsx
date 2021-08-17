@@ -1,13 +1,24 @@
-import type { ActionType } from './ActionType';
-import type { ImpressionSourceType } from './ImpressionSourceType';
+import type { ActionType } from './ActionType'
+import type { ImpressionSourceType } from './ImpressionSourceType'
+
+/**
+ * Marketplace content (saleable item, partner) involved with
+ * Promoted delivery.
+ */
+export interface Content {
+  contentId?: string
+  insertionId?: string
+  name?: string
+}
 
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
-  logUserId?: string;
-  sessionId?: string;
-  viewId?: string;
-};
+  logUserId?: string
+  sessionId?: string
+  viewId?: string
+}
 
+// Maintainers:
 // IF YOU CHANGE THIS FILE, also update BuildProject/App.tsx
 // to include a test for your change.
 
@@ -18,53 +29,71 @@ export type PromotedMetricsType = {
    * Starts logging session with the provided user and logs a
    * user event.
    */
-  startSessionAndLogUser(userId: string): void;
+  startSessionAndLogUser(userId: string): void
 
   /**
    * Call when sign-in completes with no user.
    * Starts logging session with signed-out user and logs a
    * user event.
    */
-  startSessionAndLogSignedOutUser(): void;
+  startSessionAndLogSignedOutUser(): void
 
   // Impression logging
 
   /**
    * Logs an impression for given content.
-   * Typically, you would call useImpressionTracker() for use with
+   * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(content: Object): void;
+  logImpression(content: Object): void
 
   /**
    * Logs an impression for given content.
-   * Typically, you would call useImpressionTracker() for use with
+   * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpressionWithSourceType(content: Object, sourceType: ImpressionSourceType): void;
+  logImpressionWithSourceType(content: Object, sourceType: ImpressionSourceType): void
 
   // Action logging
 
-  logNavigateAction(screenName: string): void;
-  logNavigateActionWithContent(screenName: string, content: Object): void;
-  logAddToCartAction(item: Object): void;
-  logRemoveFromCartAction(item: Object): void;
-  logCheckoutAction(): void;
-  logPurchaseAction(item: Object): void;
-  logShareAction(content: Object): void;
-  logLikeAction(content: Object): void;
-  logUnlikeAction(content: Object): void;
-  logCommentAction(content: Object): void;
-  logMakeOfferAction(content: Object): void;
-  logAskQuestionAction(content: Object): void;
-  logAnswerQuestionAction(content: Object): void;
-  logCompleteSignInAction(): void;
-  logCompleteSignUpAction(): void;
-  logAction(name: string): void;
-  logActionWithType(name: string, type: ActionType): void;
-  logActionWithContent(name: string, type: ActionType, content: Object): void;
+  /**
+   * Logs a clickthrough for details about given content.
+   *
+   * @param content content whose details are requested
+   */
+  logNavigateAction(content: Object): void
+
+  /**
+   * Logs a clickthrough for details about given content.
+   *
+   * @param content content whose details are requested
+   * @param screenName name of screen that will display content details
+   */
+  logNavigateActionWithScreenName(content: Object, screenName: string): void
+
+  /**
+   * Logs an action on given content.
+   *
+   * @param type Semantic meaning of action in marketplace.
+   *   If you use CustomActionType, provide a name for the action
+   *   using logActionWithName.
+   * @param content content whose details are requested
+   */
+  logAction(type: ActionType, content: Object): void
+
+  /**
+   * Logs an action on given content.
+   * Any action type can have a custom name to distinguish different
+   * actions in the same class. If you use ActionType.CustomActionType,
+   * use this method and provide a name for the action.
+   *
+   * @param type semantic meaning of action in marketplace
+   * @param content content whose details are requested
+   * @param name custom name for action
+   */
+  logActionWithName(type: ActionType, content: Object, name: string): void
 
   // View logging
 
@@ -72,13 +101,13 @@ export type PromotedMetricsType = {
    * Logs a screen view. Use with NavigationContainer's onReady handler
    * to provide the name and key from the current navigation route.
    */
-  logViewReady(routeName: string, routeKey: string): void;
+  logViewReady(routeName: string, routeKey: string): void
 
   /**
    * Logs a screen view. Use with NavigationContainer's onChange handler
    * to provide the name and key from the current navigation route.
    */
-  logViewChange(routeName: string, routeKey: string): void;
+  logViewChange(routeName: string, routeKey: string): void
 
   // Impression logging
 
@@ -88,10 +117,10 @@ export type PromotedMetricsType = {
    * view reloads on a timer. In these cases, the impression logging state
    * from the previous session will persist.
    *
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(collectionViewName: string, sourceType: ImpressionSourceType): void;
+  collectionViewDidMount(id: string, sourceType: ImpressionSourceType): void
 
   /**
    * Logs impressions for changed content.
@@ -99,23 +128,33 @@ export type PromotedMetricsType = {
    * `ImpressionLogger` will calculate deltas and log appropriate events.
    *
    * @param visibleContent list of currently visible content
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    */
-  collectionViewDidChange(visibleContent: Array<Object>, collectionViewName: string): void;
+  collectionViewDidChange(visibleContent: Array<Object>, id: string): void
+
+  /**
+   * Logs actions for content in a given collection view.
+   * Call this method when an action occurs within a tracked collection view.
+   *
+   * @param actionType see `ActionType`
+   * @param content content for which action occurred
+   * @param id identifier for collection view to track
+   */
+  collectionViewActionDidOccur(actionType: ActionType, content: Object, id: string): void
 
   /**
    * Ends tracking session for given collection view.
    * Drops all associated impression logging state.
    *
-   * @param collectionViewName identifier for collection view to track
+   * @param id identifier for collection view to track
    */
-  collectionViewWillUnmount(collectionViewName: string): void;
+  collectionViewWillUnmount(id: string): void
 
   // Ancestor IDs
 
   /** Returns ancestor IDs that will be used for initial values. */
-  getCurrentOrPendingAncestorIds(): Promise<AncestorIds>;
+  getCurrentOrPendingAncestorIds(): Promise<AncestorIds>
 
   /** Sets external ancestor IDs in logger. */
-  setAncestorIds(ancestorIds: AncestorIds): void;
-};
+  setAncestorIds(ancestorIds: AncestorIds): void
+}

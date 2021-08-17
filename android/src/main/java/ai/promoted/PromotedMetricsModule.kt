@@ -45,94 +45,24 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logNavigateAction(screenName: String) =
-    PromotedAi.onAction(screenName, ActionType.NAVIGATE) {}
+  fun logNavigateAction(content: ReadableMap) =
+    PromotedAi.onAction("navigate", ActionType.NAVIGATE, content.toActionData()) {}
 
   @ReactMethod
   @Suppress("Unused")
-  fun logNavigateActionWithContent(screenName: String, content: ReadableMap) =
+  fun logNavigateActionWithScreenName(content: ReadableMap, screenName: String) =
     PromotedAi.onAction(screenName, ActionType.NAVIGATE, content.toActionData())
 
   @ReactMethod
   @Suppress("Unused")
-  fun logAddToCartAction(item: ReadableMap) =
-    PromotedAi.onAction("add-to-cart", ActionType.ADD_TO_CART, item.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logRemoveFromCartAction(item: ReadableMap) =
-    PromotedAi.onAction("remove-from-cart", ActionType.REMOVE_FROM_CART, item.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logCheckoutAction() =
-    PromotedAi.onAction("checkout", ActionType.CHECKOUT) {}
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logPurchaseAction(item: ReadableMap) =
-    PromotedAi.onAction("purchase", ActionType.PURCHASE, item.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logShareAction(content: ReadableMap) =
-    PromotedAi.onAction("share", ActionType.SHARE, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logLikeAction(content: ReadableMap) =
-    PromotedAi.onAction("like", ActionType.LIKE, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logUnlikeAction(content: ReadableMap) =
-    PromotedAi.onAction("unlike", ActionType.UNLIKE, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logCommentAction(content: ReadableMap) =
-    PromotedAi.onAction("comment", ActionType.COMMENT, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logMakeOfferAction(content: ReadableMap) =
-    PromotedAi.onAction("make-offer", ActionType.MAKE_OFFER, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logAskQuestionAction(content: ReadableMap) =
-    PromotedAi.onAction("ask-question", ActionType.ASK_QUESTION, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logAnswerQuestionAction(content: ReadableMap) =
-    PromotedAi.onAction("answer-question", ActionType.ANSWER_QUESTION, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logCompleteSignInAction() =
-    PromotedAi.onAction("sign-in", ActionType.COMPLETE_SIGN_IN) {}
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logCompleteSignUpAction() =
-    PromotedAi.onAction("sign-up", ActionType.COMPLETE_SIGN_UP) {}
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logAction(name: String) =
-    PromotedAi.onAction(name, ActionType.CUSTOM_ACTION_TYPE) {}
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logActionWithType(name: String, type: Int) {
+  fun logAction(type: Int, content: ReadableMap, name: String) {
     val actionType = ActionType.forNumber(type) ?: return
-    PromotedAi.onAction(name, actionType) {}
+    PromotedAi.onAction(actionType.getName(), actionType, content.toActionData())
   }
 
   @ReactMethod
   @Suppress("Unused")
-  fun logActionWithContent(name: String, type: Int, content: ReadableMap) {
+  fun logActionWithName(type: Int, content: ReadableMap, name: String) {
     val actionType = ActionType.forNumber(type) ?: return
     PromotedAi.onAction(name, actionType, content.toActionData())
   }
@@ -146,17 +76,17 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidMount(collectionViewName: String?, sourceType: Int) {
+  fun collectionViewDidMount(id: String?, sourceType: Int) {
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    collectionViewName ?: return
-    PromotedAi.onCollectionVisible(collectionViewName, emptyList())
+    id ?: return
+    PromotedAi.onCollectionVisible(id, emptyList())
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun collectionViewDidChange(visibleContent: ReadableArray?,
-                              collectionViewName: String?) {
-    collectionViewName ?: return
+                              id: String?) {
+    id ?: return
     visibleContent ?: return
 
     val visibleContentForSdk =
@@ -166,14 +96,26 @@ class PromotedMetricsModule(
           arrayItem.toContent()
         }
 
-    PromotedAi.onCollectionUpdated(collectionViewName, visibleContentForSdk)
+    PromotedAi.onCollectionUpdated(id, visibleContentForSdk)
   }
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewWillUnmount(collectionViewName: String?) {
-    collectionViewName ?: return
-    PromotedAi.onCollectionHidden(collectionViewName)
+  fun collectionViewActionDidOccur(type: Int,
+                                   content: ReadableMap,
+                                   id: String?) {
+    id ?: return
+    content ?: return
+    val actionType = ActionType.forNumber(type) ?: return
+    // TODO: Map impressionId for content.
+    PromotedAi.onAction(actionType.getName(), actionType, content.toActionData())
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun collectionViewWillUnmount(id: String?) {
+    id ?: return
+    PromotedAi.onCollectionHidden(id)
   }
 
   @ReactMethod
