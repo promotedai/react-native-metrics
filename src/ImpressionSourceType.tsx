@@ -4,7 +4,7 @@
  * insertion IDs in list content.
  */
 export enum ImpressionSourceType {
-  UnknownImpressionSourceType = 0,
+  Unknown = 0,
 
   /**
    * Content served by Promoted Delivery API. In this case, we require
