@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { Node } from 'react'
 import {
   Button,
+  Platform,
   SafeAreaView,
   StatusBar,
   Text,
@@ -128,17 +129,22 @@ const App: () => Node = () => {
     }, [])
   }
 
+  const testID = (id) => (
+    Platform.OS === 'ios' ? {
+      testID: id
+    } : {
+      accessibilityLabel: id
+    }
+  )
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Button
-        accessibilityLabel='test-all-button'
         onPress={handleTestAll}
-        testID='test-all-button'
-        title='Test All'/>
-      <Text
-        accessibilityLabel='messages-text'
-        testID='messages-text'>
+        title='Test All'
+        {...testID('test-all-button')}/>
+      <Text {...testID('messages-text')}>
         {text}
       </Text>
     </SafeAreaView>
