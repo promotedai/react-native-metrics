@@ -36,23 +36,22 @@ test(`Test All Promoted Logging Calls (${TEST_PLATFORM})`, async () => {
     }
   }
 
-  await retry(async () => {
-    const messagesText = await driver.elementByAccessibilityId('messages-text')
-    const s = await messagesText.text()
+  const expectMessageTextEndsWith = async (expectedMessage) => {
+    const messagesText = await driver.elementByAccessibilityId('messages-text').text()
     // Text not yet available. Cause a retry (or failure).
-    if (!s) throw new EmptyResultTextError()
+    if (!messagesText) throw new EmptyResultTextError()
     // Text is available. Check that it contains what we expect.
-    if (!s.endsWith('All hooks passed')) fail(s)
+    if (!messagesText.endsWith(expectedMessage)) {
+      fail(`"${messagesText}" does not end with "${expectedMessage}"`)
+    }
+  }
+
+  await retry(async () => {
+    await expectMessageTextEndsWith('All hooks passed')
   }, /*errorClassesToIgnore=*/[EmptyResultTextError], driver)
 
   await retry(async () => {
-    const testAllButton = await driver.elementByAccessibilityId('test-all-button')
-    await driver.tapElement(testAllButton)
-    const messagesText = await driver.elementByAccessibilityId('messages-text')
-    const s = await messagesText.text()
-    // Text not yet available. Cause a retry (or failure).
-    if (!s) throw new EmptyResultTextError()
-    // Text is available. Check that it contains what we expect.
-    if (!s.endsWith('All logging passed')) fail(s)
+    await driver.elementByAccessibilityId('test-all-button').click().sleep(500)
+    await expectMessageTextEndsWith('All logging passed')
   }, /*errorClassesToIgnore=*/[EmptyResultTextError], driver)
 })
