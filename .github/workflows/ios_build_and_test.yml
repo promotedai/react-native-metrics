@@ -1,0 +1,43 @@
+name: ios_build_and_test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        macos: [macos-latest]
+        xcode: ['12.4']
+    runs-on: ${{ matrix.macos }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: sinoru/actions-setup-xcode@v1.1.2
+      with:
+        xcode-version: ${{ matrix.xcode }}
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: npm install (react-native-metrics)
+      run: npm install
+    - name: npm install (BuildProject)
+      run: npm install
+      working-directory: BuildProject
+    - name: Cocoapod install
+      run: pod install
+      working-directory: BuildProject/ios
+    - name: Run Appium
+      run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
+      working-directory: BuildProject
+    - name: xcrun simctl list
+      run: xcrun simctl list
+    - name: npm run test
+      run: npm run test
+      working-directory: BuildProject
+      env:
+        TEST_PLATFORM: ios
