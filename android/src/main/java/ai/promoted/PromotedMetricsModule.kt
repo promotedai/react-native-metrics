@@ -46,7 +46,7 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun logNavigateAction(content: ReadableMap) =
-    PromotedAi.onAction("navigate", ActionType.NAVIGATE, content.toActionData()) {}
+    PromotedAi.onAction(ActionType.NAVIGATE.toString(), ActionType.NAVIGATE, content.toActionData())
 
   @ReactMethod
   @Suppress("Unused")
@@ -55,9 +55,9 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logAction(type: Int, content: ReadableMap, name: String) {
+  fun logAction(type: Int, content: ReadableMap) {
     val actionType = ActionType.forNumber(type) ?: return
-    PromotedAi.onAction(actionType.getName(), actionType, content.toActionData())
+    PromotedAi.onAction(actionType.toString(), actionType, content.toActionData())
   }
 
   @ReactMethod
@@ -69,9 +69,16 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logView(screenName: String?) {
-    screenName ?: return
-    PromotedAi.onViewVisible(screenName)
+  fun logViewReady(routeName: String?, routeKey: String?) {
+    routeName ?: return
+    PromotedAi.onViewVisible(routeName)
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logViewChange(routeName: String?, routeKey: String?) {
+    routeName ?: return
+    PromotedAi.onViewVisible(routeName)
   }
 
   @ReactMethod
@@ -105,10 +112,9 @@ class PromotedMetricsModule(
                                    content: ReadableMap,
                                    id: String?) {
     id ?: return
-    content ?: return
     val actionType = ActionType.forNumber(type) ?: return
     // TODO: Map impressionId for content.
-    PromotedAi.onAction(actionType.getName(), actionType, content.toActionData())
+    PromotedAi.onAction(actionType.toString(), actionType, content.toActionData())
   }
 
   @ReactMethod
