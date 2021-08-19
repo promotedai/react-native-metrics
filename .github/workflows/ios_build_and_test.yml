@@ -1,4 +1,4 @@
-name: react-native-metrics
+name: ios_build_and_test
 
 on:
   push:
@@ -39,3 +39,5 @@ jobs:
     - name: npm run test
       run: npm run test
       working-directory: BuildProject
+      env:
+        TEST_PLATFORM: ios

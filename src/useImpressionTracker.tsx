@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
-import { NativeModules } from 'react-native';
-import type { ViewToken } from 'react-native';
-import { ImpressionSourceType } from './ImpressionSourceType';
+import { useCallback, useEffect } from 'react'
+import { NativeModules } from 'react-native'
+import type { ViewToken } from 'react-native'
+import { ImpressionSourceType } from './ImpressionSourceType'
 
-const { PromotedMetrics } = NativeModules;
+const { PromotedMetrics } = NativeModules
 
 export const promotedViewabilityConfig = {
   waitForInteraction: false,
@@ -16,25 +16,24 @@ export const promotedViewabilityConfig = {
  * viewabilityConfig for FlatLists and SectionLists.
  */
 export const useImpressionTracker = (
-    contentCreator: (viewToken: ViewToken) => Object,
-    collectionViewName: string,
-    sourceType: ImpressionSourceType =
-        ImpressionSourceType.UnknownImpressionSourceType) => {
+  contentCreator: (viewToken: ViewToken) => Object,
+  collectionViewName: string,
+  sourceType: ImpressionSourceType = ImpressionSourceType.Unknown
+) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
 
-  const _onViewableItemsChanged = useCallback(
-    ({viewableItems}) => {
-      const contentList = viewableItems.map(contentCreator);
-      PromotedMetrics.collectionViewDidChange(contentList, collectionViewName);
-    }, []);
+  const _onViewableItemsChanged = useCallback(({viewableItems}) => {
+    const contentList = viewableItems.map(contentCreator)
+    PromotedMetrics.collectionViewDidChange(contentList, collectionViewName)
+  }, [])
 
   useEffect(() => {
-    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType);
+    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType)
     return () => {
-      PromotedMetrics.collectionViewWillUnmount(collectionViewName);
+      PromotedMetrics.collectionViewWillUnmount(collectionViewName)
     }
-  }, []);
+  }, [])
 
   return { _viewabilityConfig, _onViewableItemsChanged }
-};
+}

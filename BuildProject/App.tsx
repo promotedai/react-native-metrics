@@ -1,153 +1,110 @@
-/**
- * Promoted React Native Metrics testing app.
- *
- * @format
- * @flow strict-local
- */
-
-import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker, useViewTracker } from '@promotedai/react-native-metrics';
-import type { AncestorIds } from '@promotedai/react-native-metrics';
-import React, { useEffect, useRef, useState } from 'react';
-import type { Node } from 'react';
+import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker, useViewTracker } from '@promotedai/react-native-metrics'
+import type { AncestorIds } from '@promotedai/react-native-metrics'
+import React, { useEffect, useRef, useState } from 'react'
+import type { Node } from 'react'
 import {
   Button,
+  Platform,
   SafeAreaView,
   StatusBar,
   Text,
   useColorScheme,
-} from 'react-native';
+} from 'react-native'
 
 import {
   Colors,
-} from 'react-native/Libraries/NewAppScreen';
+} from 'react-native/Libraries/NewAppScreen'
 
 const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode = useColorScheme() === 'dark'
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  }
 
-  const [text, setText] = useState('');
+  const [text, setText] = useState('')
 
   const handleTestAll = () => {
-    var allMessages = text + '\n';
+    var allMessages = text + '\n'
     const recordTestPassed = (message) => {
-      allMessages += 'Passed: ' + message + '\n';
-    };
+      allMessages += 'Passed: ' + message + '\n'
+    }
 
     try {
-      testStartSession(recordTestPassed);
-      testLogEvents(recordTestPassed);
-      testCollectionView(recordTestPassed);
-      testAncestorIds(recordTestPassed);
-      allMessages += 'All logging passed';
-      setText(allMessages);
+      testStartSession(recordTestPassed)
+      testLogEvents(recordTestPassed)
+      testCollectionView(recordTestPassed)
+      testAncestorIds(recordTestPassed)
+      allMessages += 'All logging passed'
+      setText(allMessages)
     } catch (err) {
-      setText(err.message);
+      setText(err.message)
     }
-  };
+  }
 
   const testStartSession = (recordTestPassed) => {
-    PromotedMetrics.startSessionAndLogUser('foobar');
-    recordTestPassed('startSessionAndLogUser');
+    PromotedMetrics.startSessionAndLogUser('foobar')
+    recordTestPassed('startSessionAndLogUser')
 
-    PromotedMetrics.startSessionAndLogSignedOutUser();
-    recordTestPassed('startSessionAndLogSignedOutUser');
+    PromotedMetrics.startSessionAndLogSignedOutUser()
+    recordTestPassed('startSessionAndLogSignedOutUser')
   }
 
   const testLogEvents = (recordTestPassed) => {
-    const content = { _id: 'foobar'};
+    const content = { _id: 'foobar'}
 
-    PromotedMetrics.logImpression(content);
-    recordTestPassed('logImpression');
+    PromotedMetrics.logImpression(content)
+    recordTestPassed('logImpression')
 
-    PromotedMetrics.logImpressionWithSourceType(content, ImpressionSourceType.Delivery);
-    recordTestPassed('logImpressionWithSourceType');
+    PromotedMetrics.logImpressionWithSourceType(content, ImpressionSourceType.Delivery)
+    recordTestPassed('logImpressionWithSourceType')
 
-    PromotedMetrics.logViewReady('foobar', 'batman');
-    recordTestPassed('logViewReady');
+    PromotedMetrics.logViewReady('foobar', 'batman')
+    recordTestPassed('logViewReady')
 
-    PromotedMetrics.logViewChange('spaghetti', 'meatballs');
-    recordTestPassed('logViewChange');
+    PromotedMetrics.logViewChange('spaghetti', 'meatballs')
+    recordTestPassed('logViewChange')
 
-    PromotedMetrics.logNavigateAction('screen');
-    recordTestPassed('logNavigateAction');
+    PromotedMetrics.logNavigateAction(content)
+    recordTestPassed('logNavigateAction')
 
-    PromotedMetrics.logNavigateActionWithContent('screen', content);
-    recordTestPassed('logNavigateActionWithContent');
+    PromotedMetrics.logNavigateActionWithScreenName(content, 'screen')
+    recordTestPassed('logNavigateActionWithScreenName')
 
-    PromotedMetrics.logAddToCartAction(content);
-    recordTestPassed('logAddToCartAction');
+    PromotedMetrics.logAction(ActionType.Share, content)
+    recordTestPassed('logAction')
 
-    PromotedMetrics.logRemoveFromCartAction(content);
-    recordTestPassed('logRemoveFromCartAction');
-
-    PromotedMetrics.logCheckoutAction();
-    recordTestPassed('logCheckoutAction');
-
-    PromotedMetrics.logPurchaseAction(content);
-    recordTestPassed('logPurchaseAction');
-
-    PromotedMetrics.logShareAction(content);
-    recordTestPassed('logShareAction');
-
-    PromotedMetrics.logLikeAction(content);
-    recordTestPassed('logLikeAction');
-
-    PromotedMetrics.logUnlikeAction(content);
-    recordTestPassed('logUnlikeAction');
-
-    PromotedMetrics.logCommentAction(content);
-    recordTestPassed('logCommentAction');
-
-    PromotedMetrics.logMakeOfferAction(content);
-    recordTestPassed('logMakeOfferAction');
-
-    PromotedMetrics.logAskQuestionAction(content);
-    recordTestPassed('logAskQuestionAction');
-
-    PromotedMetrics.logAnswerQuestionAction(content);
-    recordTestPassed('logAnswerQuestionAction');
-
-    PromotedMetrics.logCompleteSignInAction();
-    recordTestPassed('logCompleteSignInAction');
-
-    PromotedMetrics.logCompleteSignUpAction();
-    recordTestPassed('logCompleteSignUpAction');
-
-    PromotedMetrics.logAction('custom');
-    recordTestPassed('logAction');
-
-    PromotedMetrics.logActionWithType('custom', ActionType.Navigate);
-    recordTestPassed('logActionWithType');
-
-    PromotedMetrics.logActionWithContent('custom', ActionType.Share, content);
-    recordTestPassed('logActionWithContent');
+    PromotedMetrics.logActionWithName(ActionType.Share, content, 'custom')
+    recordTestPassed('logActionWithName')
   }
 
   const testCollectionView = (recordTestPassed) => {
-    PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend);
-    recordTestPassed('collectionViewDidMount');
+    const content = { _id: 'foobar'}
 
-    PromotedMetrics.collectionViewDidChange([], 'hello');
-    recordTestPassed('collectionViewDidChange');
+    PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend)
+    recordTestPassed('collectionViewDidMount')
 
-    PromotedMetrics.collectionViewWillUnmount('hello');
-    recordTestPassed('collectionViewWillUnmount');
+    PromotedMetrics.collectionViewDidChange([], 'hello')
+    recordTestPassed('collectionViewDidChange')
+
+    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'hello')
+    recordTestPassed('collectionViewActionDidOccur')
+
+    PromotedMetrics.collectionViewWillUnmount('hello')
+    recordTestPassed('collectionViewWillUnmount')
   }
 
   const testAncestorIds = (recordTestPassed) => {
-    PromotedMetrics.getCurrentOrPendingAncestorIds();
-    recordTestPassed('getCurrentOrPendingAncestorIds');
+    PromotedMetrics.getCurrentOrPendingAncestorIds()
+    recordTestPassed('getCurrentOrPendingAncestorIds')
 
     const ancestorIds = {
       logUserId: 'batman',
       sessionId: 'gotham',
       viewId: 'joker'
-    } as AncestorIds;
-    PromotedMetrics.setAncestorIds(ancestorIds);
-    recordTestPassed('setAncestorIds');
+    } as AncestorIds
+    PromotedMetrics.setAncestorIds(ancestorIds)
+    recordTestPassed('setAncestorIds')
   }
 
   try {
@@ -159,29 +116,39 @@ const App: () => Node = () => {
       }),
       'TestCollectionViewName',
       ImpressionSourceType.Delivery
-    );
-    useViewTracker(useRef());
+    )
+    useViewTracker(useRef())
     useEffect(() => {
       setText('Passed: useImpressionTracker\n' +
               'Passed: useViewTracker\n' +
-              'All hooks passed');
-    }, []);
+              'All hooks passed')
+    }, [])
   } catch (err) {
     useEffect(() => {
-      setText(err.message);
-    }, []);
+      setText(err.message)
+    }, [])
   }
+
+  const testID = (id) => (
+    Platform.OS === 'ios' ? {
+      testID: id
+    } : {
+      accessibilityLabel: id
+    }
+  )
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Button
-        title='Test All'
         onPress={handleTestAll}
-        testID='test-all-button'/>
-      <Text testID='messages-text'>{text}</Text>
+        title='Test All'
+        {...testID('test-all-button')}/>
+      <Text {...testID('messages-text')}>
+        {text}
+      </Text>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default App;
+export default App
