@@ -1,5 +1,5 @@
 import wd from 'wd'
-import { retry } from './retry.js'
+import { retry } from './retry.ts'
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000
 const TEST_PLATFORM = process.env.TEST_PLATFORM
