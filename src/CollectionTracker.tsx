@@ -102,13 +102,14 @@ const TrackerContext = React.createContext({
  *   }
  *   const showButtonHandler = () => {
  *     // Don't call setActionState to default Promoted to
- *     // ActionType.Navigate
+ *     // ActionType.Navigate.
  *     showItem(item)
  *   }
  *   // ... Rest of handlers
  *   return (
  *     <MyItem>
  *       // ... Rest of component
+ *       <ShowButton onPress={showButtonHandler} />
  *       <LikeButton onPress={likeButtonHandler} />
  *       <MoreLikeThisButton onPress={moreLikeThisButtonHandler} />
  *     </MyItem>
