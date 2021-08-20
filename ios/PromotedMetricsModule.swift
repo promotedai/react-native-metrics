@@ -189,7 +189,6 @@ public extension PromotedMetricsModule {
     let a = ActionType(rawValue: actionType) ?? .unknown
     let c = Content(content)
     let impressionID = tracker.impressionID(for: c)
-    print("***** logAction \(a) \(name) \(c) \(impressionID)")
     metricsLogger?.logAction(
       type: a,
       content: c,
