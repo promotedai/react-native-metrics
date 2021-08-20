@@ -54,7 +54,8 @@ export interface CollectionActionState {
 }
 
 const TrackerContext = React.createContext({
-  setActionState: (args: CollectionActionState) => {},
+  // @ts-ignore (TS6133: CollectionActionState declared but not used)
+  setActionState: (CollectionActionState) => {},
 })
 
 export function useCollectionActionState() {
