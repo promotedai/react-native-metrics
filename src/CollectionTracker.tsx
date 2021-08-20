@@ -194,17 +194,14 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
             })
             break
           case State.ACTIVE:
-            const actionType = actionState.actionType ?? ActionType.Navigate
-            const actionName = actionState.name ?? ''
             PromotedMetrics.collectionViewActionDidOccur(
-              actionType,
+              actionState.actionType ?? ActionType.Navigate,
               contentCreator(item),
-              actionName,
+              actionState.name ?? '',
               trackerId
             )
             break
           }
-          console.log('tap state: ', event.nativeEvent.state, event.nativeEvent.target)
         }
         return (
           <TapGestureHandler
