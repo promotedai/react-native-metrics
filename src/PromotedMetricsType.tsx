@@ -138,9 +138,10 @@ export type PromotedMetricsType = {
    *
    * @param actionType see `ActionType`
    * @param content content for which action occurred
+   * @param name action name, if `actionType` is Custom
    * @param id identifier for collection view to track
    */
-  collectionViewActionDidOccur(actionType: ActionType, content: Object, id: string): void
+  collectionViewActionDidOccur(actionType: ActionType, content: Object, name: string, id: string): void
 
   /**
    * Ends tracking session for given collection view.

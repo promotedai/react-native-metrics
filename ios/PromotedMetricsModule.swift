@@ -176,22 +176,25 @@ public extension PromotedMetricsModule {
   /// - Parameters:
   ///   - actionType: As defined by `ActionType`.
   ///   - content: Content involved in action
+  ///   - name: Action name, used if `actionType` is `Custom`
   ///   - id: Identifier for collection view to track.
-  @objc(collectionViewActionDidOccur:content:collectionID:)
+  @objc(collectionViewActionDidOccur:content:name:collectionID:)
   func collectionViewActionDidOccur(
     actionType: Int,
     content: ReactNativeDictionary?,
+    name: String,
     id: String
   ) {
     guard let tracker = nameToImpressionTracker[id] else { return }
     let a = ActionType(rawValue: actionType) ?? .unknown
     let c = Content(content)
     let impressionID = tracker.impressionID(for: c)
+    print("***** logAction \(a) \(name) \(c) \(impressionID)")
     metricsLogger?.logAction(
       type: a,
       content: c,
       impressionID: impressionID,
-      name: a.description
+      name: a == .custom ? name : a.description
     )
   }
 

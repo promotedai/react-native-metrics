@@ -48,6 +48,25 @@ export interface CollectionTrackerArgs {
   sourceType: ImpressionSourceType
 }
 
+export interface CollectionActionState {
+  actionType: ActionType
+  name: string
+}
+
+const TrackerContext = React.createContext({
+  setActionState: (args: CollectionActionState) => {},
+})
+
+export function useCollectionActionState() {
+  const context = React.useContext(TrackerContext)
+  return ({
+    actionType,
+    name = '',
+  }: CollectionActionState) => {
+    context.setActionState({ actionType, name })
+  }
+}
+
 /**
  * CollectionTracker wraps a list component to add action and impression
  * tracking for Promoted backends. It works with `FlatList` and `SectionList`,
@@ -113,7 +132,7 @@ export interface CollectionTrackerArgs {
  */
 export function CollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
-  sourceType = ImpressionSourceType.Unknown
+  sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     const trackerId = uuidv4()
@@ -156,18 +175,35 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
         viewabilityConfig: _viewabilityConfig,
       }
 
+      const [actionState, setActionState] = React.useState({
+        actionType: ActionType.Unknown,
+        name: '',
+      } as CollectionActionState)
+
       // Wrap the rendered item with an action logger.
       // TODO: Allow configuration so that controls within
       // the rendered item can trigger different actions.
       const _renderItem = ({ item }) => {
         const _onTapForItem = (item) => (event) => {
-          if (event.nativeEvent.state === State.ACTIVE) {
+          switch (event.nativeEvent.state) {
+          case State.BEGAN:
+            setActionState({
+              actionType: null,
+              name: null,
+            })
+            break
+          case State.ACTIVE:
+            const actionType = actionState.actionType ?? ActionType.Navigate
+            const actionName = actionState.name ?? ''
             PromotedMetrics.collectionViewActionDidOccur(
-              ActionType.Navigate,
+              actionType,
               contentCreator(item),
+              actionName,
               trackerId
             )
+            break
           }
+          console.log('tap state: ', event.nativeEvent.state, event.nativeEvent.target)
         }
         return (
           <TapGestureHandler
@@ -182,11 +218,15 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
       }
 
       return (
-        <Component
-          renderItem={_renderItem}
-          {...viewabilityArgs}
-          {...rest}
-        />
+        <TrackerContext.Provider
+          value={{setActionState: args => { setActionState(args) }}}
+          >
+          <Component
+            renderItem={_renderItem}
+            {...viewabilityArgs}
+            {...rest}
+          />
+        </TrackerContext.Provider>
       )
     }
 
