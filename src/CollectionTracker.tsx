@@ -349,7 +349,7 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
       return (
         <TrackerContext.Provider
           value={{setActionState: args => { setActionState(args) }}}
-          >
+        >
           <Component
             renderItem={_renderItem}
             {...viewabilityArgs}
