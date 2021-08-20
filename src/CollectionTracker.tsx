@@ -408,7 +408,7 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
  */
 export function useCollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
-  sourceType = ImpressionSourceType.ClientBackend
+  sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     return React.useCallback(
