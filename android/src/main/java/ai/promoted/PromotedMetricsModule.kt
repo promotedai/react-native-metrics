@@ -115,7 +115,7 @@ class PromotedMetricsModule(
     id ?: return
     val actionType = ActionType.forNumber(type) ?: return
     // TODO: Map impressionId for content.
-    PromotedAi.onAction(name ?: actionType.toString(), actionType, content.toActionData())
+    PromotedAi.onAction(name, actionType, content.toActionData())
   }
 
   @ReactMethod

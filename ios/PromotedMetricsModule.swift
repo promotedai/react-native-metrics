@@ -176,7 +176,7 @@ public extension PromotedMetricsModule {
   /// - Parameters:
   ///   - actionType: As defined by `ActionType`.
   ///   - content: Content involved in action
-  ///   - name: Action name, used if `actionType` is `Custom`
+  ///   - name: Action name, mostly used if `actionType` is `Custom`
   ///   - id: Identifier for collection view to track.
   @objc(collectionViewActionDidOccur:content:name:collectionID:)
   func collectionViewActionDidOccur(
@@ -193,7 +193,7 @@ public extension PromotedMetricsModule {
       type: a,
       content: c,
       impressionID: impressionID,
-      name: a == .custom ? name : a.description
+      name: name
     )
   }
 
