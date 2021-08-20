@@ -178,8 +178,8 @@ export function useCollectionActionState() {
  *   public render() {
  *     return (
  *       <TrackedList
- *         data={myData}
- *         renderItem={myRenderItem}
+ *         data={this.data}
+ *         renderItem={this.renderItem}
  *         {...props}
  *       />
  *     )
@@ -205,13 +205,10 @@ export function useCollectionActionState() {
  *
  * ### Accessory Views and Other Action Types
  *
- * If your list items in a functional component contain accessory views
- * that perform different actions, see `useCollectionActionState()`.
- *
- * If you're doing this with a class component, the `renderItem` function
- * of your component will be called with an additional parameter named
- * `setActionState` of type `(CollectionActionState) => void`. Use that
- * parameter to set different action types and names in class components.
+ * In class components, the `renderItem` function of your component will
+ * be called with an additional parameter named `setActionState` of type
+ * `(CollectionActionState) => void`. Use that parameter to set different
+ * action types and names in class components.
  * For example:
  * ```
  * const TrackedList = CollectionTracker({
@@ -236,6 +233,8 @@ export function useCollectionActionState() {
  *   }
  * }
  * ```
+ * If your list items in a functional component contain accessory views
+ * that perform different actions, see `useCollectionActionState()`.
  *
  * ## Impression Tracking
  *
