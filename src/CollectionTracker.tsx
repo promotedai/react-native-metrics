@@ -72,7 +72,7 @@ const TrackerContext = React.createContext({
  * List components wrapped with CollectionTracker will pass `setActionState`
  * as a parameter to `renderItem`. You can use that parameter as a function
  * to set the action type/name instead. This is mostly for use in class
- * components.
+ * components. See `CollectionTracker`.
  *
  * # Usage
  *
