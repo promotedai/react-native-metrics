@@ -78,9 +78,10 @@ const TrackerContext = React.createContext({
  *
  * ## Functional Components
  *
- * Suppose you have a list item with a "Like" button, and tapping on this
- * button should record `ActionType.Like/Unlike`. In your `renderItem`
- * function, add the following to the event handler for your "Like" button:
+ * Suppose you have a list item with a "Like" button and a "More Like This"
+ * button, and tapping on these buttons should record `ActionType.Like` and
+ * `ActionType.Custom` respectively. In your `renderItem` function, add the
+ * following to the event handlers for your "Like" and "More Like This" buttons:
  * ```
  * const renderItem = ({ item }) => {
  *   const setActionState = useCollectionActionState()
