@@ -120,7 +120,8 @@ const TrackerContext = React.createContext({
  * the above example. If you don't call the function, then any taps on
  * your list item will be recorded as `ActionType.Navigate`.
  *
- * To prevent Promoted from logging any actions, set `actionType` to `null`.
+ * To prevent Promoted from logging any actions, call
+ * `setActionState({ actionType: null })`.
  *
  * ## Class Components
  *
@@ -130,9 +131,9 @@ const TrackerContext = React.createContext({
  * # Implementation Details
  *
  * Uses a React.Context passed in from the containing CollectionTracker-
- * wrapped component. Your list items must be descendents of that component.
+ * wrapped component. Your list items must be descendants of that component.
  * Calling this hook outside of a functional component body or from a
- * component that is not a CollectionTracker descendent will cause a runtime
+ * component that is not a CollectionTracker descendant will cause a runtime
  * error.
  *
  * The function returned from this hook must be called synchronously in your
