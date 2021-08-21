@@ -223,6 +223,11 @@ export function useCollectionActionState() {
  * })(FlatList)
  *
  * class MyItemList extends PureComponent<...> {
+ *   public render() {
+ *     return (
+ *       <TrackedList>...</TrackedList>
+ *     )
+ *   }
  *   private renderItem = ({ item, setActionState }) => {
  *     return (
  *       <MyListItem data={item}>
