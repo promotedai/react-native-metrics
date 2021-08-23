@@ -110,11 +110,12 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun collectionViewActionDidOccur(type: Int,
                                    content: ReadableMap,
+                                   name: String?,
                                    id: String?) {
     id ?: return
     val actionType = ActionType.forNumber(type) ?: return
     // TODO: Map impressionId for content.
-    PromotedAi.onAction(actionType.toString(), actionType, content.toActionData())
+    PromotedAi.onAction(name ?: "", actionType, content.toActionData())
   }
 
   @ReactMethod

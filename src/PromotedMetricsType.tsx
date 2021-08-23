@@ -29,7 +29,9 @@ export type PromotedMetricsType = {
    * Starts logging session with the provided user and logs a
    * user event.
    */
-  startSessionAndLogUser(userId: string): void
+  startSessionAndLogUser(
+    userId: string
+  ): void
 
   /**
    * Call when sign-in completes with no user.
@@ -46,7 +48,9 @@ export type PromotedMetricsType = {
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(content: Object): void
+  logImpression(
+    content: Object
+  ): void
 
   /**
    * Logs an impression for given content.
@@ -54,7 +58,10 @@ export type PromotedMetricsType = {
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpressionWithSourceType(content: Object, sourceType: ImpressionSourceType): void
+  logImpressionWithSourceType(
+    content: Object,
+    sourceType: ImpressionSourceType
+  ): void
 
   // Action logging
 
@@ -63,7 +70,9 @@ export type PromotedMetricsType = {
    *
    * @param content content whose details are requested
    */
-  logNavigateAction(content: Object): void
+  logNavigateAction(
+    content: Object
+  ): void
 
   /**
    * Logs a clickthrough for details about given content.
@@ -71,7 +80,10 @@ export type PromotedMetricsType = {
    * @param content content whose details are requested
    * @param screenName name of screen that will display content details
    */
-  logNavigateActionWithScreenName(content: Object, screenName: string): void
+  logNavigateActionWithScreenName(
+    content: Object,
+    screenName: string
+  ): void
 
   /**
    * Logs an action on given content.
@@ -81,7 +93,10 @@ export type PromotedMetricsType = {
    *   using logActionWithName.
    * @param content content whose details are requested
    */
-  logAction(type: ActionType, content: Object): void
+  logAction(
+    type: ActionType,
+    content: Object
+  ): void
 
   /**
    * Logs an action on given content.
@@ -93,7 +108,11 @@ export type PromotedMetricsType = {
    * @param content content whose details are requested
    * @param name custom name for action
    */
-  logActionWithName(type: ActionType, content: Object, name: string): void
+  logActionWithName(
+    type: ActionType,
+    content: Object,
+    name: string
+  ): void
 
   // View logging
 
@@ -101,13 +120,19 @@ export type PromotedMetricsType = {
    * Logs a screen view. Use with NavigationContainer's onReady handler
    * to provide the name and key from the current navigation route.
    */
-  logViewReady(routeName: string, routeKey: string): void
+  logViewReady(
+    routeName: string,
+    routeKey: string
+  ): void
 
   /**
    * Logs a screen view. Use with NavigationContainer's onChange handler
    * to provide the name and key from the current navigation route.
    */
-  logViewChange(routeName: string, routeKey: string): void
+  logViewChange(
+    routeName: string,
+    routeKey: string
+  ): void
 
   // Impression logging
 
@@ -120,7 +145,10 @@ export type PromotedMetricsType = {
    * @param id identifier for collection view to track
    * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(id: string, sourceType: ImpressionSourceType): void
+  collectionViewDidMount(
+    id: string,
+    sourceType: ImpressionSourceType
+  ): void
 
   /**
    * Logs impressions for changed content.
@@ -130,7 +158,10 @@ export type PromotedMetricsType = {
    * @param visibleContent list of currently visible content
    * @param id identifier for collection view to track
    */
-  collectionViewDidChange(visibleContent: Array<Object>, id: string): void
+  collectionViewDidChange(
+    visibleContent: Array<Object>,
+    id: string
+  ): void
 
   /**
    * Logs actions for content in a given collection view.
@@ -138,9 +169,15 @@ export type PromotedMetricsType = {
    *
    * @param actionType see `ActionType`
    * @param content content for which action occurred
+   * @param name action name, if `actionType` is Custom
    * @param id identifier for collection view to track
    */
-  collectionViewActionDidOccur(actionType: ActionType, content: Object, id: string): void
+  collectionViewActionDidOccur(
+    actionType: ActionType,
+    content: Object,
+    name: string,
+    id: string
+  ): void
 
   /**
    * Ends tracking session for given collection view.
@@ -148,7 +185,9 @@ export type PromotedMetricsType = {
    *
    * @param id identifier for collection view to track
    */
-  collectionViewWillUnmount(id: string): void
+  collectionViewWillUnmount(
+    id: string
+  ): void
 
   // Ancestor IDs
 
@@ -156,5 +195,7 @@ export type PromotedMetricsType = {
   getCurrentOrPendingAncestorIds(): Promise<AncestorIds>
 
   /** Sets external ancestor IDs in logger. */
-  setAncestorIds(ancestorIds: AncestorIds): void
+  setAncestorIds(
+    ancestorIds: AncestorIds
+  ): void
 }

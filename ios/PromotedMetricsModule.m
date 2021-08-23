@@ -62,7 +62,8 @@ RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
 /// @param content (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(collectionViewActionDidOccur:(NSInteger)actionType
                   content:(nullable NSDictionary *)content
-                  collectionID: (NSString *)collectionID)
+                  name:(NSString *)name
+                  collectionID:(NSString *)collectionID)
 
 RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionID)
 

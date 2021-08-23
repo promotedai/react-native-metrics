@@ -5,6 +5,7 @@ import { ImpressionSourceType } from './ImpressionSourceType'
 
 const { PromotedMetrics } = NativeModules
 
+/** Default viewability params for impression logging. */
 export const promotedViewabilityConfig = {
   waitForInteraction: false,
   minimumViewTime: 1000,
