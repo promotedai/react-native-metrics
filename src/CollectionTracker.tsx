@@ -7,7 +7,7 @@ import { ActionType } from './ActionType'
 import { ImpressionSourceType } from './ImpressionSourceType'
 import { useImpressionTracker } from './useImpressionTracker'
 import type { Content } from './Types'
-import { withAutoViewTracker } from './ViewTracker'
+import { withAutoViewState } from './ViewTracker'
 
 const { PromotedMetrics } = NativeModules
 
@@ -368,7 +368,7 @@ export function CollectionTracker<
       Component.displayName || Component.name
     })`
 
-    return withAutoViewTracker(CollectionTrackerComponent)
+    return withAutoViewState(CollectionTrackerComponent)
   }
 }
 

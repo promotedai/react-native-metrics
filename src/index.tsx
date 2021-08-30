@@ -10,4 +10,4 @@ export { CollectionActionState, CollectionTracker, useCollectionActionState, use
 export type { CollectionTrackerArgs, CollectionTrackerProps } from './CollectionTracker'
 export { ImpressionSourceType } from './ImpressionSourceType'
 export { useImpressionTracker, promotedViewabilityConfig } from './useImpressionTracker'
-export { useViewTracker } from './useViewTracker'
+export { useAutoViewState } from './ViewTracker'

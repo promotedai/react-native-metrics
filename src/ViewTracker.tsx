@@ -1,7 +1,11 @@
+import { NavigationContext } from '@react-navigation/core'
 import * as React from 'react'
 import { NativeModules } from 'react-native'
-import { NavigationContext, NavigationInjectedProps, withNavigation } from '@react-navigation/core'
 import { v4 as uuidv4 } from 'uuid'
+import type { PromotedMetricsType } from './PromotedMetricsType'
+
+const { PromotedMetrics } = NativeModules
+const P = PromotedMetrics as PromotedMetricsType
 
 export type AutoViewState = {
 
@@ -15,12 +19,6 @@ export type AutoViewState = {
   autoViewId: string
 }
 
-const AutoViewContext = React.createContext({
-  routeName: '',
-  routeKey: '',
-  autoViewId: '',
-} as AutoViewState)
-
 /**
  * Most recently logged view state.
  * Prevents us from logging same view twice in a row.
@@ -31,116 +29,63 @@ var currentAutoViewState: AutoViewState = {
   autoViewId: '',
 }
 
-export interface AutoViewTrackerInjectedProps extends NavigationInjectedProps {
-  autoViewState: AutoViewState
-}
-
-export interface AutoViewTrackerArgs {
-
-}
-
 /**
+ * Creates an updating `AutoViewState` tied to the active component.
  *
- * @returns
+ * @returns Updating `AutoViewState` if available, `null` otherwise
  */
-// export function useAutoViewTracker() {
-//   const navigation = React.useContext(NavigationContext)
-//   const routeName = navigation.state.routeName
-//   const routeKey = navigation.state.key
-//   return () => {
-//     if (currentAutoViewState.routeKey == routeKey) return
-//     console.log("***** logView", routeName, routeKey, uuidv4())
-//   }
-// }
-
 export function useAutoViewState() {
-  const autoViewState = React.useContext(AutoViewContext)
+  const navigation = React.useContext(NavigationContext)
+  const [autoViewState, setAutoViewState] = navigation !== undefined
+    ? React.useState({
+        routeName: navigation.state.routeName,
+        routeKey: navigation.state.key,
+        autoViewId: ''
+      })
+    : [null, null]
+
+  React.useEffect(() => {
+    if (navigation === undefined) {
+      return () => {}
+    }
+    const removeListener = navigation.addListener('focus', () => {
+      if (currentAutoViewState.routeKey != autoViewState.routeKey) {
+        // Generates a new primary key for this.
+        const updatedAutoViewState = {
+          ...autoViewState,
+          autoViewId: uuidv4(),
+        }
+        // Sets state for this context.
+        setAutoViewState(updatedAutoViewState)
+        // Logs this view as being topmost.
+        P.logAutoView(updatedAutoViewState)
+        // Sets state globally for most recent logged view.
+        currentAutoViewState = updatedAutoViewState
+      }
+    })
+    return () => { removeListener() }
+  }, [navigation, autoViewState, setAutoViewState])
+
+  return autoViewState
 }
 
+
 /**
- * Wraps a component so that the result will automatically log views on
- * navigation 'focus' events. Typically, you would use this on pages or
- * components that contain controls that you wish to track manually.
- *
- * If you use `withCollectionTracker()` or `withMetricsLogger()`, the wrapped
- * component from those already use `withAutoViewTracker()`, so don't use
- * this function in conjunction with those.
- *
- * Usage:
- * ```
- * const MyComponent: FunctionComponent<MyProps> = (props) => {
- *   return withAutoViewTracker(
- *     <Component>{props.children}</Component>
- *   )
- * }
- * ```
- * Alternately you can use this with a class component:
- * ```
- * class MyComponent extends PureComponent<...> {
- *   // ...
- * }
- *
- * export default withAutoViewTracker(MyComponent)
- * ```
- *
- *
- * @returns  Wrapped component that will automatically log views
+ * Creates a scoped `MetricsLogger` tied to a given Component.
  */
-export function withAutoViewTracker<
-  P extends Partial<NavigationInjectedProps>
->({
-
-} : AutoViewTrackerArgs) {
-  return (Component: React.ComponentType<P>) => {
-
-    const AutoViewTrackerComponent = ({
-      navigation,
-      ...rest
-    } : P) : React.ReactElement => {
-      //const autoViewState = React.useContext(AutoViewContext)
-
-      React.useEffect(() => {
-        if (navigation === undefined) {
-          return
-        }
-        const routeName = navigation.state.routeName
-        const routeKey = navigation.state.key
-        navigation.addListener('focus', () => {
-
-        })
-        navigation.addListener('blur', () => {
-
-        })
-
-        // if (navigation.state !== undefined) {
-        //   setAssociatedView({
-        //     routeName: navigation.state.routeName,
-        //     routeKey: navigation.state.key,
-        //   })
-        // }
-      }, [])
-
-      return (
-        <AutoViewContext.Provider
-          value={{
-            routeName: navigation.state.routeName,
-            routeKey: navigation.state.key,
-            autoViewId: 'TODO',
-          }}
-        >
-          <Component
-            navigation={navigation}
-            associatedView={associatedView}
-            {...rest}
-          />
-        </AutoViewContext.Provider>
-      )
-    }
-
-    AutoViewTrackerComponent.displayName = `AutoViewTracker(${
-      Component.displayName || Component.name
-    })`
-
-    return withNavigation(AutoViewTrackerComponent)
+ export function withAutoViewState<P>(
+  Component: React.ComponentType<P>
+) {
+  const AutoViewStateComponent = ({
+    ...rest
+  }) : React.ReactElement => {
+    const autoViewState = useAutoViewState()
+    return (
+      <Component
+        autoViewState={autoViewState}
+        {...rest}
+      />
+    )
   }
+  return AutoViewStateComponent
 }

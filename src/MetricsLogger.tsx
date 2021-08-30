@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native'
 import { ImpressionSourceType } from './ImpressionSourceType'
 import type { PromotedMetricsType } from './PromotedMetricsType'
-import { withAutoViewTracker  } from './ViewTracker'
+import { AutoViewState, useAutoViewState  } from './ViewTracker'
 
 import type {
   LogImpressionArgs,
@@ -25,12 +25,12 @@ const P = PromotedMetrics as PromotedMetricsType
  */
 export class MetricsLogger {
 
-  autoViewId?: string
+  autoViewState?: AutoViewState
 
   constructor(
-    autoViewId?: string
+    autoViewState?: AutoViewState
   ) {
-    this.autoViewId = autoViewId
+    this.autoViewState = autoViewState
   }
 
   logImpression({
@@ -40,7 +40,7 @@ export class MetricsLogger {
     P.logImpression({
       content,
       sourceType,
-      autoViewId: this.autoViewId,
+      autoViewId: this.autoViewState.autoViewId,
     })
   }
 
@@ -55,7 +55,7 @@ export class MetricsLogger {
       type,
       destinationScreenName,
       actionName,
-      autoViewId: this.autoViewId,
+      autoViewId: this.autoViewState.autoViewId,
     })
   }
 
@@ -68,18 +68,29 @@ export class MetricsLogger {
 }
 
 export function useMetricsLogger() {
-
+  const autoViewState = useAutoViewState()
+  return new MetricsLogger(autoViewState)
 }
 
 export function useUnscopedMetricsLogger() {
   return new MetricsLogger(null)
 }
 
-/**
- * Creates a scoped `MetricsLogger` tied to a given Component.
- */
-export function withMetricsLogger(
-  Component: React.ComponentType
+export function withMetricsLogger<P>(
+  Component: React.ComponentType<P>
 ) {
-  return withAutoViewTracker(Component)
+  const MetricsLoggerComponent = ({
+    ...rest
+  }) : React.ReactElement => {
+    const autoViewState = useAutoViewState()
+    const metricsLogger = new MetricsLogger(autoViewState)
+    return (
+      <Component
+        autoViewState={autoViewState}
+        metricsLogger={metricsLogger}
+        {...rest}
+      />
+    )
+  }
+  return MetricsLoggerComponent
 }
