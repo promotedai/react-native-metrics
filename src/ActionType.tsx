@@ -1,9 +1,9 @@
 /** Semantic type of action event to log. */
 export enum ActionType {
-  UnknownActionType = 0,
+  Unknown = 0,
 
   /** Action that doesn't correspond to any of the below. */
-  CustomActionType = 1,
+  Custom = 1,
 
   /** Navigating to details about content. */
   Navigate = 2,

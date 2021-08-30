@@ -87,7 +87,7 @@ const App: () => Node = () => {
     PromotedMetrics.collectionViewDidChange([], 'hello')
     recordTestPassed('collectionViewDidChange')
 
-    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'hello')
+    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'ActionName', 'hello')
     recordTestPassed('collectionViewActionDidOccur')
 
     PromotedMetrics.collectionViewWillUnmount('hello')

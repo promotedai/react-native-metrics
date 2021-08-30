@@ -48,6 +48,113 @@ export interface CollectionTrackerArgs {
   sourceType: ImpressionSourceType
 }
 
+/** Arguments for function returned by `useCollectionActionState()`. */
+export interface CollectionActionState {
+  actionType?: ActionType
+  name?: string
+}
+
+/** React.Context used to send the state-setting function to children. */
+const TrackerContext = React.createContext({
+  // @ts-ignore (TS6133: CollectionActionState declared but not used)
+  setActionState: (CollectionActionState) => {},
+})
+
+/**
+ * If your list items contain accessory views that perform actions on list
+ * content other than Navigate, then use the function returned from this
+ * hook to indicate the type and name of the action.
+ *
+ * Use of this hook is *optional*. If your list items don't contain controls
+ * for other action types, you don't need to call this. CollectionTracker
+ * will automatically log Navigate actions for the items in your list.
+ *
+ * List components wrapped with CollectionTracker will pass `setActionState`
+ * as a parameter to `renderItem`. You can use that parameter as a function
+ * to set the action type/name instead. This is mostly for use in class
+ * components. See `CollectionTracker`.
+ *
+ * # Usage
+ *
+ * ## Functional Components
+ *
+ * Suppose you have a list item with a "Like" button and a "More Like This"
+ * button, and tapping on these buttons should record `ActionType.Like` and
+ * `ActionType.Custom` respectively. In your `renderItem` function, add the
+ * following to the event handlers for your "Like" and "More Like This" buttons:
+ * ```
+ * const renderItem = ({ item }) => {
+ *   const setActionState = useCollectionActionState()
+ *   const likeButtonHandler = () => {
+ *     // Report this tap is ActionType.Like to Promoted.
+ *     // The rest of the details are automatically filled in.
+ *     setActionState({
+ *       actionType: ActionType.Like
+ *     })
+ *     likeItem(item)
+ *   }
+ *   const moreLikeThisButtonHandler = () => {
+ *     // Report a custom action to Promoted.
+ *     setActionState({
+ *       actionType: ActionType.Custom,
+ *       name: 'MoreLikeThis'
+ *     })
+ *     showMoreLikeThis(item)
+ *   }
+ *   const showButtonHandler = () => {
+ *     // Don't call setActionState to default Promoted to
+ *     // ActionType.Navigate.
+ *     showItem(item)
+ *   }
+ *   // ... Rest of handlers
+ *   return (
+ *     <MyItem>
+ *       // ... Rest of component
+ *       <ShowButton onPress={showButtonHandler} />
+ *       <LikeButton onPress={likeButtonHandler} />
+ *       <MoreLikeThisButton onPress={moreLikeThisButtonHandler} />
+ *     </MyItem>
+ *   )
+ * }
+ * ```
+ * This hook returns a function that you can call from your handler like
+ * the above example. If you don't call the function, then any taps on
+ * your list item will be recorded as `ActionType.Navigate`.
+ *
+ * To prevent Promoted from logging any actions, call
+ * `setActionState({ actionType: null })`.
+ *
+ * ## Class Components
+ *
+ * See `CollectionTracker` for details on accessory view action logging with
+ * class components.
+ *
+ * # Implementation Details
+ *
+ * Uses a React.Context passed in from the containing CollectionTracker-
+ * wrapped component. Your list items must be descendants of that component.
+ * Calling this hook outside of a functional component body or from a
+ * component that is not a CollectionTracker descendant will cause a runtime
+ * error.
+ *
+ * The function returned from this hook must be called synchronously in your
+ * event handler. If your handler executes asynchronous code, call the
+ * function in your handler before you invoke any async code. If you need to
+ * prevent the synchronous execution from logging Promoted actions, call
+ * `setActionState({ actionType: null })`.
+ *
+ * @returns setter function for `actionType` and `name`
+ */
+export function useCollectionActionState() {
+  const context = React.useContext(TrackerContext)
+  return ({
+    actionType,
+    name = '',
+  }: CollectionActionState) => {
+    context.setActionState({ actionType, name })
+  }
+}
+
 /**
  * CollectionTracker wraps a list component to add action and impression
  * tracking for Promoted backends. It works with `FlatList` and `SectionList`,
@@ -74,8 +181,8 @@ export interface CollectionTrackerArgs {
  *   public render() {
  *     return (
  *       <TrackedList
- *         data={myData}
- *         renderItem={myRenderItem}
+ *         data={this.data}
+ *         renderItem={this.renderItem}
  *         {...props}
  *       />
  *     )
@@ -99,6 +206,44 @@ export interface CollectionTrackerArgs {
  * This handler does not consume the tap event or alter the existing
  * behavior of your rendered items in any other way.
  *
+ * ### Accessory Views and Other Action Types
+ *
+ * In class components, the `renderItem` function of your component will
+ * be called with an additional parameter named `setActionState` of type
+ * `(CollectionActionState) => void`. Use that parameter to set different
+ * action types and names in class components.
+ * For example:
+ * ```
+ * const TrackedList = CollectionTracker({
+ *   contentCreator: (item) => ({
+ *     contentId: item.marketplaceId,
+ *     insertionId: item.insertionId,
+ *     name: item.displayName,
+ *   }),
+ * })(FlatList)
+ *
+ * class MyItemList extends PureComponent<...> {
+ *   public render() {
+ *     return (
+ *       <TrackedList>...</TrackedList>
+ *     )
+ *   }
+ *   private renderItem = ({ item, setActionState }) => {
+ *     return (
+ *       <MyListItem data={item}>
+ *         <LikeButton onClick={() => {
+ *           // This causes Promoted to log a Like instead of a Navigate.
+ *           setActionState({ actionType: ActionType.Like })
+ *           this.handleLikeButton({ item, setActionState })
+ *         }} />
+ *       </MyListItem>
+ *     )
+ *   }
+ * }
+ * ```
+ * If your list items in a functional component contain accessory views
+ * that perform different actions, see `useCollectionActionState()`.
+ *
  * ## Impression Tracking
  *
  * Impression tracking uses the `VirtualizedList` mechanism for viewability
@@ -113,7 +258,7 @@ export interface CollectionTrackerArgs {
  */
 export function CollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
-  sourceType = ImpressionSourceType.Unknown
+  sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     const trackerId = uuidv4()
@@ -156,17 +301,45 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
         viewabilityConfig: _viewabilityConfig,
       }
 
-      // Wrap the rendered item with an action logger.
-      // TODO: Allow configuration so that controls within
-      // the rendered item can trigger different actions.
-      const _renderItem = ({ item }) => {
+      // Set up a state in which accessory view event handlers can
+      // set action type and name.
+      const [actionState, setActionState] = React.useState({
+        actionType: ActionType.Unknown,
+        name: '',
+      } as CollectionActionState)
+
+      // Wrap the rendered item with a TapGestureHandler. This handler
+      // will receive events even if child components consume it.
+      const _renderItem = ({ item, ...rest }) => {
         const _onTapForItem = (item) => (event) => {
-          if (event.nativeEvent.state === State.ACTIVE) {
-            PromotedMetrics.collectionViewActionDidOccur(
-              ActionType.Navigate,
-              contentCreator(item),
-              trackerId
-            )
+          // State machine will always give BEGAN and END on taps and
+          // drags. For drags, it will be only BEGAN -> END.
+          // ACTIVE only happens when it's an actual tap. When there's
+          // an accessory event handler, it gets called before ACTIVE:
+          // BEGAN -> (accessory event handler) -> ACTIVE -> END.
+          // Any action state set by accessory event handlers must be
+          // in place before the ACTIVE state.
+          switch (event.nativeEvent.state) {
+          case State.BEGAN:
+            // Clear any context from previous event.
+            // Default to Navigate action if this ends up being a tap.
+            setActionState({
+              actionType: ActionType.Navigate,
+              name: null,
+            })
+            break
+          case State.ACTIVE:
+            // If an accessory event handler has set `actionType` to
+            // `null`, do not log.
+            if (actionState.actionType) {
+              PromotedMetrics.collectionViewActionDidOccur(
+                actionState.actionType,
+                contentCreator(item),
+                actionState.name ?? '',
+                trackerId
+              )
+            }
+            break
           }
         }
         return (
@@ -175,18 +348,22 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
             onHandlerStateChange={_onTapForItem(item)}
           >
             <View>
-              {renderItem({ item })}
+              {renderItem({ item, setActionState, ...rest })}
             </View>
           </TapGestureHandler>
         )
       }
 
       return (
-        <Component
-          renderItem={_renderItem}
-          {...viewabilityArgs}
-          {...rest}
-        />
+        <TrackerContext.Provider
+          value={{setActionState: args => { setActionState(args) }}}
+        >
+          <Component
+            renderItem={_renderItem}
+            {...viewabilityArgs}
+            {...rest}
+          />
+        </TrackerContext.Provider>
       )
     }
 
@@ -239,7 +416,7 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
  */
 export function useCollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
-  sourceType = ImpressionSourceType.ClientBackend
+  sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     return React.useCallback(
