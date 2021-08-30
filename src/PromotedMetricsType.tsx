@@ -1,15 +1,11 @@
 import type { ActionType } from './ActionType'
 import type { ImpressionSourceType } from './ImpressionSourceType'
-
-/**
- * Marketplace content (saleable item, partner) involved with
- * Promoted delivery.
- */
-export interface Content {
-  contentId?: string
-  insertionId?: string
-  name?: string
-}
+import type {
+  InternalLogImpressionArgs,
+  InternalLogActionArgs,
+  LogViewArgs,
+  LogAutoViewArgs,
+} from './Types'
 
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
@@ -40,101 +36,56 @@ export type PromotedMetricsType = {
    */
   startSessionAndLogSignedOutUser(): void
 
-  // Impression logging
-
   /**
    * Logs an impression for given content.
    * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(
-    content: Object
-  ): void
-
-  /**
-   * Logs an impression for given content.
-   * Typically, you would call withCollectionTracker() for use with
-   * SectionLists and FlatLists. This method should only be used
-   * outside of those components.
-   */
-  logImpressionWithSourceType(
-    content: Object,
-    sourceType: ImpressionSourceType
-  ): void
-
-  // Action logging
-
-  /**
-   * Logs a clickthrough for details about given content.
-   *
-   * @param content content whose details are requested
-   */
-  logNavigateAction(
-    content: Object
-  ): void
-
-  /**
-   * Logs a clickthrough for details about given content.
-   *
-   * @param content content whose details are requested
-   * @param screenName name of screen that will display content details
-   */
-  logNavigateActionWithScreenName(
-    content: Object,
-    screenName: string
-  ): void
-
-  /**
-   * Logs an action on given content.
-   *
-   * @param type Semantic meaning of action in marketplace.
-   *   If you use CustomActionType, provide a name for the action
-   *   using logActionWithName.
-   * @param content content whose details are requested
-   */
-  logAction(
-    type: ActionType,
-    content: Object
-  ): void
+  logImpression({
+    content,
+    sourceType,
+    autoViewId,
+  }: InternalLogImpressionArgs): void
 
   /**
    * Logs an action on given content.
    * Any action type can have a custom name to distinguish different
    * actions in the same class. If you use ActionType.CustomActionType,
    * use this method and provide a name for the action.
-   *
-   * @param type semantic meaning of action in marketplace
-   * @param content content whose details are requested
-   * @param name custom name for action
    */
-  logActionWithName(
-    type: ActionType,
-    content: Object,
-    name: string
-  ): void
+  logAction({
+    content,
+    type,
+    destinationScreenName,
+    actionName,
+    autoViewId,
+  }: InternalLogActionArgs): void
 
   // View logging
 
   /**
-   * Logs a screen view. Use with NavigationContainer's onReady handler
-   * to provide the name and key from the current navigation route.
+   * Logs a screen view. Prefer to use `CollectionTracker` and
+   * `ViewTracker` if you can. In situations where you cannot do so,
+   * such as logging a view for a screen that generates no impressions
+   * or action, use this method.
    */
-  logViewReady(
-    routeName: string,
-    routeKey: string
-  ): void
+  logView({
+    routeName,
+    routeKey,
+  }: LogViewArgs): void
 
   /**
-   * Logs a screen view. Use with NavigationContainer's onChange handler
-   * to provide the name and key from the current navigation route.
+   * Used internally to log auto views.
+   * Don't call this method from outside the `@promotedai` library.
    */
-  logViewChange(
-    routeName: string,
-    routeKey: string
-  ): void
+  logAutoView({
+    autoViewId,
+    routeName,
+    routeKey,
+  }: LogAutoViewArgs): void
 
-  // Impression logging
+  // Collection tracking
 
   /**
    * Begins tracking session for given collection view.
