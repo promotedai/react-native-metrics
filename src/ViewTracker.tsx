@@ -30,7 +30,39 @@ var currentAutoViewState: AutoViewState = {
 }
 
 /**
- * Creates an updating `AutoViewState` tied to the active component.
+ * Creates an `AutoViewState` with a hook that will automatically
+ * log a Promoted view when it receives navigation focus.
+ * There must be a `NavigationContext` available for this to succeed.
+ *
+ * In order to properly enable automatic view logging, some path
+ * needs to go through this method to install the hook. As of this
+ * writing, there are 3 ways to do this:
+ *
+ * 1. Use one of `useCollectionTracker()` or `withCollectionTracker()`.
+ *    The wrapped Component will automatically log a view when it gains
+ *    navigation focus.
+ * 2. Use the `useMetricsLogger()` hook. This installs another hook that
+ *    will automatically log a view when the current functional component
+ *    gains focus.
+ * 3. Use `withMetricsLogger()` with some component. This component will
+ *    then automatically log a view when it gains focus.
+ *
+ * You can mix and match these approaches in your Components. For example,
+ * you can place CollectionTracker inside a Component wrapped with
+ * `withMetricsLogger()` and automatic view logging will still work properly.
+ *
+ * If you can't do any of these at the point of logging, please talk to the
+ * mobile team at Promoted. Some things we might suggest:
+ *
+ * 1. If there's a parent component, then install one of the hooks there
+ *    to make it automatically log a view. This is less desirable because
+ *    it separates the view and action logging, but it works.
+ * 2. Log the view manually. You can call `MetricsLogger.logView` to cause
+ *    a view to be unconditionally logged. This may not produce the most
+ *    accurate tracking, so use with caution.
+ * 3. Install handlers on a `NavigationContainer` to log when the route
+ *    changes. This is also less desirable because it will log *every*
+ *    view change that occurs within, not just relevant ones.
  *
  * @returns Updating `AutoViewState` if available, `null` otherwise
  */
@@ -45,7 +77,11 @@ export function useAutoViewState() {
     : [null, null]
 
   React.useEffect(() => {
-    if (navigation === undefined) {
+    if (
+      navigation === undefined ||
+      autoViewState == null ||
+      setAutoViewState == null
+    ) {
       return () => {}
     }
     const removeListener = navigation.addListener('focus', () => {
@@ -69,11 +105,11 @@ export function useAutoViewState() {
   return autoViewState
 }
 
-
 /**
- * Creates a scoped `MetricsLogger` tied to a given Component.
+ * Wraps a Component with `AutoViewState` so that it will automatically
+ * log a Promoted view when it receives navigation focus.
  */
- export function withAutoViewState<P>(
+export function withAutoViewState<P>(
   Component: React.ComponentType<P>
 ) {
   const AutoViewStateComponent = ({
