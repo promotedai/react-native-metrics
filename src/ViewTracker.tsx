@@ -23,10 +23,22 @@ export type AutoViewState = {
  * Most recently logged view state.
  * Prevents us from logging same view twice in a row.
  */
-var currentAutoViewState: AutoViewState = {
+export var currentAutoViewState: AutoViewState = {
   routeName: '',
   routeKey: '',
   autoViewId: '',
+}
+
+export function overrideAutoViewState(
+  routeName: string,
+  routeKey: string,
+  viewId: string,
+) {
+  currentAutoViewState = {
+    routeName: routeName,
+    routeKey: routeKey,
+    autoViewId: viewId,
+  }
 }
 
 /**
@@ -73,7 +85,7 @@ export function useAutoViewState() {
         routeName: navigation.state.routeName,
         routeKey: navigation.state.key,
         autoViewId: ''
-      })
+      } as AutoViewState)
     : [null, null]
 
   React.useEffect(() => {

@@ -1,7 +1,8 @@
 import { NativeModules } from 'react-native'
+import { v4 as uuidv4 } from 'uuid'
 import { ImpressionSourceType } from './ImpressionSourceType'
 import type { PromotedMetricsType } from './PromotedMetricsType'
-import { AutoViewState, useAutoViewState  } from './ViewTracker'
+import { AutoViewState, currentAutoViewState, overrideAutoViewState, useAutoViewState  } from './ViewTracker'
 
 import type {
   LogImpressionArgs,
@@ -20,7 +21,7 @@ const P = PromotedMetrics as PromotedMetricsType
  * Alternatively, if no Component is available to you, you
  * can create an unscoped `MetricsLogger` that inherits the
  * frontmost view scope. This is not the preferred usage;
- * prefer the scoped version when available. See
+ * use the scoped version when available. See
  * `useUnscopedMetricsLogger()`.
  */
 export class MetricsLogger {
@@ -63,7 +64,15 @@ export class MetricsLogger {
     routeName,
     routeKey,
   }: LogViewArgs): void {
-    P.logView({ routeName, routeKey })
+    if (currentAutoViewState.routeKey != routeKey) {
+      const viewId = uuidv4()
+      P.logView({ routeName, routeKey, viewId })
+      overrideAutoViewState(
+        routeName,
+        routeKey,
+        viewId
+      )
+    }
   }
 }
 

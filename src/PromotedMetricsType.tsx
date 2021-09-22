@@ -3,7 +3,7 @@ import type { ImpressionSourceType } from './ImpressionSourceType'
 import type {
   InternalLogImpressionArgs,
   InternalLogActionArgs,
-  LogViewArgs,
+  InternalLogViewArgs,
   LogAutoViewArgs,
 } from './Types'
 
@@ -73,16 +73,17 @@ export type PromotedMetricsType = {
   logView({
     routeName,
     routeKey,
-  }: LogViewArgs): void
+    viewId,
+  }: InternalLogViewArgs): void
 
   /**
    * Used internally to log auto views.
    * Don't call this method from outside the `@promotedai` library.
    */
   logAutoView({
-    autoViewId,
     routeName,
     routeKey,
+    autoViewId,
   }: LogAutoViewArgs): void
 
   // Collection tracking
