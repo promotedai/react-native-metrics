@@ -14,6 +14,11 @@ public class PromotedMetricsModule: NSObject {
   /// Dictionary objects that represent content as expected from React Native.
   public typealias ReactNativeDictionary = [String: Any]
 
+  public typealias LogImpressionArgs = ReactNativeDictionary
+  public typealias LogActionArgs = ReactNativeDictionary
+  public typealias LogViewArgs = ReactNativeDictionary
+  public typealias LogAutoViewArgs = ReactNativeDictionary
+
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
   private var nameToImpressionTracker: [String: ImpressionTracker]
@@ -57,82 +62,46 @@ public extension PromotedMetricsModule {
 
   // MARK: - Impressions
   @objc(logImpression:)
-  func logImpression(content: ReactNativeDictionary?) {
-    metricsLogger?.logImpression(content: Content(content))
-  }
-
-  @objc(logImpressionWithSourceType:sourceType:)
-  func logImpression(content: ReactNativeDictionary?, sourceType: Int) {
-    let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
-    metricsLogger?.logImpression(content: Content(content), sourceType: s)
-  }
-
-  // MARK: - Clicks
-  @objc(logNavigateAction:)
-  func logNavigateAction(content: ReactNativeDictionary?) {
-    metricsLogger?.logNavigateAction(content: Content(content))
-  }
-
-  @objc(logNavigateActionWithScreenName:screenName:)
-  func logNavigateAction(
-    content: ReactNativeDictionary?,
-    screenName: String
-  ) {
-    metricsLogger?.logNavigateAction(
-      content: Content(content),
-      screenName: screenName
+  func logImpression(args: LogImpressionArgs?) {
+    metricsLogger?.logImpression(
+      content: Content(args?.content),
+      viewID: args?.autoViewID,
+      sourceType: args?.impressionSourceType ?? .unknown
     )
   }
 
-  @objc(logAction:content:)
-  func logAction(type: Int, content: ReactNativeDictionary?) {
-    let actionType = ActionType(rawValue: type) ?? .unknown
-    metricsLogger?.logAction(type: actionType, content: Content(content))
-  }
-
-  @objc(logActionWithName:content:name:)
-  func logAction(type: Int, content: ReactNativeDictionary?, name: String) {
-    let actionType = ActionType(rawValue: type) ?? .unknown
+  // MARK: - Actions
+  @objc(logAction:)
+  func logAction(_ args: LogActionArgs?) {
     metricsLogger?.logAction(
-      type: actionType,
-      content: Content(content),
-      name: name
+      type: args?.actionType ?? .unknown,
+      content: Content(args?.content),
+      viewID: args?.autoViewID,
+      name: args?.destinationScreenName ?? args?.actionName
     )
   }
 
   // MARK: - Views
-  @objc(logViewReady:routeKey:)
-  func logViewReady(routeName: String, routeKey: String) {
-    metricsLogger?.logViewReady(routeName: routeName, routeKey: routeKey)
-  }
-
-  @objc(logViewReadyWithUseCase:routeKey:useCase:)
-  func logViewReady(routeName: String, routeKey: String, useCase: Int) {
-    let u = UseCase(rawValue: useCase) ?? .unknown
-    metricsLogger?.logViewReady(
-      routeName: routeName,
-      routeKey: routeKey,
-      useCase: u
+  @objc(logView:)
+  func logView(_ args: LogViewArgs?) {
+    metricsLogger?.logView(
+      routeName: args?.routeName,
+      routeKey: args?.routeKey,
+      viewID: args?.autoViewID
     )
   }
 
-  @objc(logViewChange:routeKey:)
-  func logViewChange(routeName: String, routeKey: String) {
-    metricsLogger?.logViewChange(routeName: routeName, routeKey: routeKey)
-  }
-
-  @objc(logViewChangeWithUseCase:routeKey:useCase:)
-  func logViewChange(routeName: String, routeKey: String, useCase: Int) {
-    let u = UseCase(rawValue: useCase) ?? .unknown
-    metricsLogger?.logViewChange(
-      routeName: routeName,
-      routeKey: routeKey,
-      useCase: u
+  @objc(logAutoView:)
+  func logAutoView(_ args: LogAutoViewArgs?) {
+    metricsLogger?.logAutoView(
+      routeName: args?.routeName,
+      routeKey: args?.routeKey,
+      viewID: args?.autoViewID
     )
   }
 }
 
-// MARK: - ImpressionTracker
+// MARK: - CollectionTracker
 public extension PromotedMetricsModule {
 
   /// Begins tracking session for given collection view.
@@ -244,13 +213,16 @@ public extension PromotedMetricsModule {
   }
 }
 
+private typealias ReactNativeDictionary =
+  PromotedMetricsModule.ReactNativeDictionary
+
 private extension Content {
 
   static let nameKeys = ["name"]
   static let contentIDKeys = ["contentId"]
   static let insertionIDKeys = ["insertionId"]
 
-  convenience init(_ dict: PromotedMetricsModule.ReactNativeDictionary?) {
+  convenience init(_ dict: ReactNativeDictionary?) {
     self.init(
       properties: dict,
       nameKeys: Self.nameKeys,
@@ -258,4 +230,34 @@ private extension Content {
       insertionIDKeys: Self.insertionIDKeys
     )
   }
+}
+
+private extension ReactNativeDictionary {
+  func valueForCalledPropertyNameAsKey<T>(function: String = #function) -> T? {
+    return self[function] as? T
+  }
+
+  var content: ReactNativeDictionary? { valueForCalledPropertyNameAsKey() }
+
+  var routeName: String? { valueForCalledPropertyNameAsKey() }
+
+  var routeKey: String? { valueForCalledPropertyNameAsKey() }
+
+  var autoViewID: String? { self["autoViewId"] as? String }
+}
+
+private extension PromotedMetricsModule.LogImpressionArgs {
+  var impressionSourceType: ImpressionSourceType? {
+    ImpressionSourceType(rawValue: (self["sourceType"] as? Int) ?? 0)
+  }
+}
+
+private extension PromotedMetricsModule.LogActionArgs {
+  var actionType: ActionType? {
+    ActionType(rawValue: (self["type"] as? Int) ?? 0)
+  }
+
+  var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
+
+  var actionName: String? { valueForCalledPropertyNameAsKey() }
 }

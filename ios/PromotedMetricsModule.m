@@ -10,48 +10,20 @@ RCT_EXTERN_METHOD(startSessionAndLogSignedOutUser)
 
 #pragma mark - Impressions
 
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)content)
+/// @param args (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)args)
 
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logImpressionWithSourceType:(nullable NSDictionary *)content
-                  sourceType:(NSInteger)sourceType)
+#pragma mark - Actions
 
-#pragma mark - Clicks
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logNavigateAction:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logNavigateActionWithScreenName:(nullable NSDictionary *)content
-                  screenName:(NSString *)screenName)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logAction:(NSInteger)type
-                  content:(nullable NSDictionary *)content)
-
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(logActionWithName:(NSInteger)type
-                  content:(nullable NSDictionary *)content
-                  name:(NSString *)name)
-
+/// @param args (NSDictionary<NSString, id>)
+RCT_EXTERN_METHOD(logAction:(nullable NSDictionary *)args)
 
 #pragma mark - Views
-RCT_EXTERN_METHOD(logViewReady:(NSString *)routeName
-                  routeKey:(NSString *)routeKey)
+RCT_EXTERN_METHOD(logView:(nullable NSDictionary *)args)
 
-RCT_EXTERN_METHOD(logViewReadyWithUseCase:(NSString *)routeName
-                  routeKey:(NSString *)routeKey
-                  useCase:(NSInteger)useCase)
+RCT_EXTERN_METHOD(logAutoView:(nullable NSDictionary *)args)
 
-RCT_EXTERN_METHOD(logViewChange:(NSString *)routeName
-                  routeKey:(NSString *)routeKey)
-
-RCT_EXTERN_METHOD(logViewChangeWithUseCase:(NSString *)routeName
-                  routeKey:(NSString *)routeKey
-                  useCase:(NSInteger)useCase)
-
-#pragma mark - ImpressionLogger
+#pragma mark - CollectionTracker
 RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionID
                   sourceType:(NSInteger)sourceType)
 
