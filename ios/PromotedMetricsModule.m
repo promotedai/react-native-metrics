@@ -4,6 +4,7 @@
 @interface RCT_EXTERN_REMAP_MODULE(PromotedMetrics, PromotedMetricsModule, NSObject)
 
 #pragma mark - Starting new sessions
+
 RCT_EXTERN_METHOD(startSessionAndLogUser:(NSString *)userID)
 
 RCT_EXTERN_METHOD(startSessionAndLogSignedOutUser)
@@ -19,11 +20,13 @@ RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)args)
 RCT_EXTERN_METHOD(logAction:(nullable NSDictionary *)args)
 
 #pragma mark - Views
+
 RCT_EXTERN_METHOD(logView:(nullable NSDictionary *)args)
 
 RCT_EXTERN_METHOD(logAutoView:(nullable NSDictionary *)args)
 
 #pragma mark - CollectionTracker
+
 RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionID
                   sourceType:(NSInteger)sourceType)
 
@@ -40,6 +43,7 @@ RCT_EXTERN_METHOD(collectionViewActionDidOccur:(NSInteger)actionType
 RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionID)
 
 #pragma mark - Ancestor IDs
+
 RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolver
                   rejecter:(RCTPromiseRejectBlock)rejecter)
 
