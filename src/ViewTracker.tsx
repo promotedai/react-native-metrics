@@ -1,6 +1,7 @@
 import { NavigationContext } from '@react-navigation/core'
 import * as React from 'react'
 import { NativeModules } from 'react-native'
+import { useFocusEffect } from 'react-navigation-hooks'
 import { v4 as uuidv4 } from 'uuid'
 import type { PromotedMetricsType } from './PromotedMetricsType'
 
@@ -88,31 +89,25 @@ export function useAutoViewState() {
       } as AutoViewState)
     : [null, null]
 
-  React.useEffect(() => {
-    if (
-      navigation === undefined ||
-      autoViewState == null ||
-      setAutoViewState == null
-    ) {
-      return () => {}
-    }
-    const removeListener = navigation.addListener('focus', () => {
-      if (currentAutoViewState.routeKey != autoViewState.routeKey) {
-        // Generates a new primary key for this.
-        const updatedAutoViewState = {
-          ...autoViewState,
-          autoViewId: uuidv4(),
-        }
-        // Sets state for this context.
-        setAutoViewState(updatedAutoViewState)
-        // Logs this view as being topmost.
-        P.logAutoView(updatedAutoViewState)
-        // Sets state globally for most recent logged view.
-        currentAutoViewState = updatedAutoViewState
+  useFocusEffect(
+    React.useCallback(() => {
+      // If view is already most recently logged, don't log again.
+      if (currentAutoViewState.routeKey == autoViewState.routeKey) {
+        return
       }
-    })
-    return () => { removeListener() }
-  }, [navigation, autoViewState, setAutoViewState])
+      // Generates a new primary key for this.
+      const updatedAutoViewState = {
+        ...autoViewState,
+        autoViewId: uuidv4(),
+      }
+      // Sets state for this context.
+      setAutoViewState(updatedAutoViewState)
+      // Logs this view as being topmost.
+      P.logAutoView(updatedAutoViewState)
+      // Sets state globally for most recent logged view.
+      currentAutoViewState = updatedAutoViewState
+    }, [autoViewState, setAutoViewState])
+  )
 
   return autoViewState
 }
