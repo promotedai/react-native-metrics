@@ -1,14 +1,15 @@
 import { NativeModules } from 'react-native'
 import { v4 as uuidv4 } from 'uuid'
+
 import { ImpressionSourceType } from './ImpressionSourceType'
 import type { PromotedMetricsType } from './PromotedMetricsType'
-import { AutoViewState, currentAutoViewState, overrideAutoViewState, useAutoViewState  } from './ViewTracker'
+import { AutoViewState, useAutoViewState  } from './ViewTracker'
 
 import type {
   LogImpressionArgs,
   LogActionArgs,
   LogViewArgs,
-} from './Types'
+} from './LoggerArgs'
 
 const { PromotedMetrics } = NativeModules
 const P = PromotedMetrics as PromotedMetricsType
@@ -64,15 +65,8 @@ export class MetricsLogger {
     routeName,
     routeKey,
   }: LogViewArgs): void {
-    if (currentAutoViewState.routeKey != routeKey) {
-      const viewId = uuidv4()
-      P.logView({ routeName, routeKey, viewId })
-      overrideAutoViewState(
-        routeName,
-        routeKey,
-        viewId
-      )
-    }
+    const viewId = uuidv4()
+    P.logView({ routeName, routeKey })
   }
 }
 

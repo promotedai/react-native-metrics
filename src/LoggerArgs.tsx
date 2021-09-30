@@ -1,15 +1,6 @@
 import type { ActionType } from './ActionType'
+import type { Content } from './Content'
 import type { ImpressionSourceType } from './ImpressionSourceType'
-
-/**
- * Marketplace content (saleable item, partner) involved with
- * Promoted delivery.
- */
-export type Content = {
-  contentId?: string
-  insertionId?: string
-  name?: string
-}
 
 export type AutoViewIdArgs = {
   /** Auto view ID for event. */
@@ -25,7 +16,9 @@ export type LogImpressionArgs = {
   sourceType?: ImpressionSourceType
 }
 
-export type InternalLogImpressionArgs = LogImpressionArgs & AutoViewIdArgs
+export type InternalLogImpressionArgs = (
+  LogImpressionArgs & AutoViewIdArgs
+)
 
 /** Arguments for `logAction`. */
 export type LogActionArgs = {
@@ -55,7 +48,9 @@ export type LogActionArgs = {
   actionName?: string
 }
 
-export type InternalLogActionArgs = LogActionArgs & AutoViewIdArgs
+export type InternalLogActionArgs = (
+  LogActionArgs & AutoViewIdArgs
+)
 
 /** Arguments for `logView`. */
 export type LogViewArgs = {
@@ -65,8 +60,6 @@ export type LogViewArgs = {
   /** navigation.state.key */
   routeKey: string
 }
-
-export type InternalLogViewArgs = LogViewArgs & { viewId?: string }
 
 /** Arguments for `logAutoView`. */
 export type LogAutoViewArgs = {

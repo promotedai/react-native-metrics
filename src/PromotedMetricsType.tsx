@@ -3,9 +3,9 @@ import type { ImpressionSourceType } from './ImpressionSourceType'
 import type {
   InternalLogImpressionArgs,
   InternalLogActionArgs,
-  InternalLogViewArgs,
   LogAutoViewArgs,
-} from './Types'
+  LogViewArgs,
+} from './LoggerArgs'
 
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
@@ -73,8 +73,7 @@ export type PromotedMetricsType = {
   logView({
     routeName,
     routeKey,
-    viewId,
-  }: InternalLogViewArgs): void
+  }: LogViewArgs): void
 
   /**
    * Used internally to log auto views.
@@ -97,7 +96,7 @@ export type PromotedMetricsType = {
    * @param id identifier for collection view to track
    * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(
+  collectionDidMount(
     id: string,
     sourceType: ImpressionSourceType
   ): void
@@ -110,7 +109,7 @@ export type PromotedMetricsType = {
    * @param visibleContent list of currently visible content
    * @param id identifier for collection view to track
    */
-  collectionViewDidChange(
+  collectionDidChange(
     visibleContent: Array<Object>,
     id: string
   ): void
@@ -124,7 +123,7 @@ export type PromotedMetricsType = {
    * @param name action name, if `actionType` is Custom
    * @param id identifier for collection view to track
    */
-  collectionViewActionDidOccur(
+  collectionActionDidOccur(
     actionType: ActionType,
     content: Object,
     name: string,
@@ -137,7 +136,7 @@ export type PromotedMetricsType = {
    *
    * @param id identifier for collection view to track
    */
-  collectionViewWillUnmount(
+  collectionWillUnmount(
     id: string
   ): void
 

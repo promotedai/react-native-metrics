@@ -4,10 +4,11 @@ import { State, TapGestureHandler } from 'react-native-gesture-handler'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ActionType } from './ActionType'
+import type { Content } from './Content'
 import { ImpressionSourceType } from './ImpressionSourceType'
+import { MetricsLogger } from './MetricsLogger'
+import { useAutoViewState } from './ViewTracker'
 import { useImpressionTracker } from './useImpressionTracker'
-import type { Content } from './Types'
-import { withAutoViewState } from './ViewTracker'
 
 const { PromotedMetrics } = NativeModules
 
@@ -267,6 +268,8 @@ export function CollectionTracker<
       viewabilityConfigCallbackPairs,
       ...rest
     } : P) : React.ReactElement => {
+      const autoViewState = useAutoViewState()
+
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
@@ -304,6 +307,8 @@ export function CollectionTracker<
         actionType: ActionType.Unknown,
         name: '',
       } as CollectionActionState)
+
+      const metricsLogger = new MetricsLogger(autoViewState)
 
       // Wrap the rendered item with a TapGestureHandler. This handler
       // will receive events even if child components consume it.
@@ -368,7 +373,7 @@ export function CollectionTracker<
       Component.displayName || Component.name
     })`
 
-    return withAutoViewState(CollectionTrackerComponent)
+    return CollectionTrackerComponent
   }
 }
 

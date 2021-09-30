@@ -3,6 +3,7 @@ import * as React from 'react'
 import { NativeModules } from 'react-native'
 import { useFocusEffect } from 'react-navigation-hooks'
 import { v4 as uuidv4 } from 'uuid'
+
 import type { PromotedMetricsType } from './PromotedMetricsType'
 
 const { PromotedMetrics } = NativeModules
@@ -24,22 +25,10 @@ export type AutoViewState = {
  * Most recently logged view state.
  * Prevents us from logging same view twice in a row.
  */
-export var currentAutoViewState: AutoViewState = {
+var mostRecentlyLoggedAutoViewState: AutoViewState = {
   routeName: '',
   routeKey: '',
   autoViewId: '',
-}
-
-export function overrideAutoViewState(
-  routeName: string,
-  routeKey: string,
-  viewId: string,
-) {
-  currentAutoViewState = {
-    routeName: routeName,
-    routeKey: routeKey,
-    autoViewId: viewId,
-  }
 }
 
 /**
@@ -91,8 +80,22 @@ export function useAutoViewState() {
 
   useFocusEffect(
     React.useCallback(() => {
-      // If view is already most recently logged, don't log again.
-      if (currentAutoViewState.routeKey == autoViewState.routeKey) {
+      // If view is already most recently logged, don't log it again.
+      // Read its state into ours so that we use the same autoViewId
+      // as any existing state.
+      // This is so that if you have multiple instances of
+      // useAutoViewState() (such as multiple MetricsLoggers or
+      // CollectionTrackers) in the same view, we don't end logging
+      // each of them with a different autoViewId.
+      // Instead, only the first one of these callbacks generates
+      // and logs the autoViewId, and the rest of them copy the
+      // autoViweId from that callback. It doesn't matter which order
+      // the callbacks are invoked by React Native.
+      if (
+        mostRecentlyLoggedAutoViewState.routeKey ==
+          autoViewState?.routeKey
+      ) {
+        setAutoViewState(mostRecentlyLoggedAutoViewState)
         return
       }
       // Generates a new primary key for this.
@@ -105,7 +108,7 @@ export function useAutoViewState() {
       // Logs this view as being topmost.
       P.logAutoView(updatedAutoViewState)
       // Sets state globally for most recent logged view.
-      currentAutoViewState = updatedAutoViewState
+      mostRecentlyLoggedAutoViewState = updatedAutoViewState
     }, [autoViewState, setAutoViewState])
   )
 
