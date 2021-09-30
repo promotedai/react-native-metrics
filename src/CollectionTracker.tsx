@@ -84,7 +84,7 @@ const CollectionTrackerContext = React.createContext({
  * function, add the following to the event handler for your "Like" button:
  * ```
  * const renderItem = ({ item }) => {
- *   const setActionState = useCollectionActionState()
+ *   const { setActionState } = useCollectionActionState()
  *   const likeButtonHandler = () => {
  *     // Report this tap is ActionType.Like to Promoted.
  *     // The rest of the details are automatically filled in.
@@ -147,11 +147,13 @@ const CollectionTrackerContext = React.createContext({
  */
 export function useCollectionActionState() {
   const context = React.useContext(CollectionTrackerContext)
-  return ({
-    actionType,
-    name = '',
-  }: CollectionActionState) => {
-    context.setActionState({ actionType, name })
+  return {
+    setActionState: ({
+      actionType,
+      name = '',
+    }: CollectionActionState) => {
+      context.setActionState({ actionType, name })
+    }
   }
 }
 
@@ -304,7 +306,7 @@ export function CollectionTracker<
         actionType: ActionType.Unknown,
         name: '',
       } as CollectionActionState)
-      const autoViewState = useAutoViewState()
+      const autoViewStateRef = useAutoViewState()
 
       // Wrap the rendered item with a TapGestureHandler. This handler
       // will receive events even if child components consume it.
@@ -330,10 +332,10 @@ export function CollectionTracker<
             // If an accessory event handler has set `actionType` to
             // `null`, do not log.
             if (actionState.actionType) {
-              PromotedMetrics.collectionViewActionDidOccur({
+              PromotedMetrics.collectionActionDidOccur({
                 actionName: actionState.name ?? '',
                 actionType: actionState.actionType,
-                autoViewId: autoViewState.autoViewId,
+                autoViewId: autoViewStateRef.current.autoViewId,
                 content: contentCreator(item),
                 collectionId,
               })

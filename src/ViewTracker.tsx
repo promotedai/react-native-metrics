@@ -32,8 +32,9 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
 }
 
 /**
- * Creates an `AutoViewState` with a hook that will automatically
- * log a Promoted view when it receives navigation focus.
+ * Creates a reference to an `AutoViewState` and automatically logs a
+ * Promoted view when it receives navigation focus. The reference will
+ * always contain an updated `autoViewId` for the AutoView.
  * There must be a `NavigationContext` available for this to succeed.
  *
  * In order to properly enable automatic view logging, some path
@@ -66,53 +67,54 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
  *    changes. This is also less desirable because it will log *every*
  *    view change that occurs within, not just relevant ones.
  *
- * @returns Updating `AutoViewState` if available, `null` otherwise
+ * @returns Reference to `AutoViewState`
  */
 export function useAutoViewState() {
   const navigation = React.useContext(NavigationContext)
-  const [autoViewState, setAutoViewState] = navigation !== undefined
-    ? React.useState({
-        routeName: navigation.state.routeName,
-        routeKey: navigation.state.key,
-        autoViewId: ''
-      } as AutoViewState)
-    : [null, null]
+  const autoViewStateRef = React.useRef({
+    routeName: navigation?.state.routeName,
+    routeKey: navigation?.state.key,
+    autoViewId: ''
+  } as AutoViewState)
 
   useFocusEffect(
-    React.useCallback(() => {
-      // If view is already most recently logged, don't log it again.
-      // Read its state into ours so that we use the same autoViewId
-      // as any existing state.
-      // This is so that if you have multiple instances of
-      // useAutoViewState() (such as multiple MetricsLoggers or
-      // CollectionTrackers) in the same view, we don't end logging
-      // each of them with a different autoViewId.
-      // Instead, only the first one of these callbacks generates
-      // and logs the autoViewId, and the rest of them copy the
-      // autoViweId from that callback. It doesn't matter which order
-      // the callbacks are invoked by React Native.
-      if (
-        mostRecentlyLoggedAutoViewState.routeKey ==
-          autoViewState?.routeKey
-      ) {
-        setAutoViewState(mostRecentlyLoggedAutoViewState)
-        return
-      }
-      // Generates a new primary key for this.
-      const updatedAutoViewState = {
-        ...autoViewState,
-        autoViewId: uuidv4(),
-      }
-      // Sets state for this context.
-      setAutoViewState(updatedAutoViewState)
-      // Logs this view as being topmost.
-      P.logAutoView(updatedAutoViewState)
-      // Sets state globally for most recent logged view.
-      mostRecentlyLoggedAutoViewState = updatedAutoViewState
-    }, [autoViewState, setAutoViewState])
+    React.useCallback(
+      () => {
+        // If view is already most recently logged, don't log it again.
+        // Read its state into ours so that we use the same autoViewId
+        // as any existing state.
+        // This is so that if you have multiple instances of
+        // useAutoViewState() (such as multiple MetricsLoggers or
+        // CollectionTrackers) in the same view, we don't end logging
+        // each of them with a different autoViewId.
+        // Instead, only the first one of these callbacks generates
+        // and logs the autoViewId, and the rest of them copy the
+        // autoViweId from that callback. It doesn't matter which order
+        // the callbacks are invoked by React Native.
+        if (
+          mostRecentlyLoggedAutoViewState.routeKey ==
+            autoViewStateRef.current.routeKey
+        ) {
+          autoViewStateRef.current = mostRecentlyLoggedAutoViewState
+          return
+        }
+        // Generates a new primary key for this.
+        const updatedAutoViewState = {
+          ...autoViewStateRef.current,
+          autoViewId: uuidv4(),
+        }
+        // Sets state for this context.
+        autoViewStateRef.current = updatedAutoViewState
+        // Logs this view as being topmost.
+        P.logAutoView(updatedAutoViewState)
+        // Sets state globally for most recent logged view.
+        mostRecentlyLoggedAutoViewState = updatedAutoViewState
+      },
+      []
+    )
   )
 
-  return autoViewState
+  return autoViewStateRef
 }
 
 /**
