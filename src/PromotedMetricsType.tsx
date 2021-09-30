@@ -23,23 +23,23 @@ export interface CollectionDidMountArgs {
 }
 
 export interface CollectionDidChangeArgs {
-  /** List of currently visible content */
-  visibleContent: Array<Content>
-  /** Identifier for collection view to track */
-  collectionId: string
   /** AutoViewId for impression */
   autoViewId: string
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** List of currently visible content */
+  visibleContent: Array<Content>
 }
 
 export interface CollectionActionDidOccurArgs {
-  actionType: ActionType
-  content: Content
   /** Action name, used if `actionType` is Custom */
-  name: string
-  /** Identifier for collection view to track */
-  collectionId: string
+  actionName: string
+  actionType: ActionType
   /** AutoViewId for action */
   autoViewId: string
+  content: Content
+  /** Identifier for collection view to track */
+  collectionId: string
 }
 
 export interface CollectionWillUnmountArgs {
@@ -89,7 +89,7 @@ export type PromotedMetricsType = {
    */
   logAction({
     content,
-    type,
+    actionType,
     destinationScreenName,
     actionName,
     autoViewId,
@@ -137,9 +137,9 @@ export type PromotedMetricsType = {
    * `ImpressionLogger` will calculate deltas and log appropriate events.
    */
   collectionDidChange({
-    visibleContent,
-    collectionId,
     autoViewId,
+    collectionId,
+    visibleContent,
   } : CollectionDidChangeArgs): void
 
   /**
@@ -147,11 +147,11 @@ export type PromotedMetricsType = {
    * Call this method when an action occurs within a tracked collection.
    */
   collectionActionDidOccur({
+    actionName,
     actionType,
     content,
-    name,
-    collectionId,
     autoViewId,
+    collectionId,
   } : CollectionActionDidOccurArgs): void
 
   /**

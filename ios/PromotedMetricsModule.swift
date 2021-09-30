@@ -19,6 +19,11 @@ public class PromotedMetricsModule: NSObject {
   public typealias LogViewArgs = ReactNativeDictionary
   public typealias LogAutoViewArgs = ReactNativeDictionary
 
+  public typealias CollectionDidMountArgs = ReactNativeDictionary
+  public typealias CollectionDidChangeArgs = ReactNativeDictionary
+  public typealias CollectionActionDidOccurArgs = ReactNativeDictionary
+  public typealias CollectionWillUnmountArgs = ReactNativeDictionary
+
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
   private var idToImpressionTracker: [String: ImpressionTracker]
@@ -63,40 +68,44 @@ public extension PromotedMetricsModule {
   // MARK: - Impressions
   @objc(logImpression:)
   func logImpression(args: LogImpressionArgs?) {
+    guard let args = args else { return }
     metricsLogger?.logImpression(
-      content: Content(args?.content),
-      viewID: args?.autoViewID,
-      sourceType: args?.impressionSourceType ?? .unknown
+      content: args.content,
+      viewID: args.autoViewID,
+      sourceType: args.impressionSourceType
     )
   }
 
   // MARK: - Actions
   @objc(logAction:)
   func logAction(_ args: LogActionArgs?) {
+    guard let args = args else { return }
     metricsLogger?.logAction(
-      type: args?.actionType ?? .unknown,
-      content: Content(args?.content),
-      viewID: args?.autoViewID,
-      name: args?.destinationScreenName ?? args?.actionName
+      type: args.actionType,
+      content: args.content,
+      viewID: args.autoViewID,
+      name: args.destinationScreenName ?? args.actionName
     )
   }
 
   // MARK: - Views
   @objc(logView:)
   func logView(_ args: LogViewArgs?) {
+    guard let args = args else { return }
     metricsLogger?.logView(
-      routeName: args?.routeName,
-      routeKey: args?.routeKey
+      routeName: args.routeName,
+      routeKey: args.routeKey
     )
   }
 
   @objc(logAutoView:)
   func logAutoView(_ args: LogAutoViewArgs?) {
+    guard let args = args else { return }
     print("***** \(#function) \(args)")
     metricsLogger?.logAutoView(
-      routeName: args?.routeName,
-      routeKey: args?.routeKey,
-      viewID: args?.autoViewID
+      routeName: args.routeName,
+      routeKey: args.routeKey,
+      autoViewID: args.autoViewID
     )
   }
 }
@@ -108,16 +117,13 @@ public extension PromotedMetricsModule {
   /// Can be called multiple times in succession, such as when a collection
   /// view reloads on a timer. In these cases, the impression logging state
   /// from the previous session will persist.
-  ///
-  /// - Parameters:
-  ///   - id: Identifier for collection view to track.
-  ///   - sourceType: Source of content in collection view.
-  @objc(collectionDidMount:sourceType:)
-  func collectionDidMount(id: String, sourceType: Int) {
+  @objc(collectionDidMount:)
+  func collectionDidMount(_ args: CollectionDidMountArgs?) {
+    guard let args = args, let id = args.collectionID else { return }
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = idToImpressionTracker[id] { return }
-    let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
+    let s = args.impressionSourceType
     if let tracker = service?.impressionTracker()?.with(sourceType: s) {
       idToImpressionTracker[id] = tracker
     }
@@ -126,17 +132,14 @@ public extension PromotedMetricsModule {
   /// Logs impressions for changed content.
   /// Call this method with currently visible content and the underlying
   /// `ImpressionTracker` will calculate deltas and log appropriate events.
-  ///
-  /// - Parameters:
-  ///   - visibleContent: List of currently visible content.
-  ///   - id: Identifier for collection view to track.
-  @objc(collectionDidChange:collectionID:)
-  func collectionDidChange(visibleContent: [AnyObject], id: String) {
-    guard let tracker = idToImpressionTracker[id] else { return }
-    let contentList = visibleContent.map {
-      Content($0 as? ReactNativeDictionary)
-    }
-    tracker.collectionViewDidChangeVisibleContent(contentList)
+  @objc(collectionDidChange:)
+  func collectionDidChange(_ args: CollectionDidChangeArgs?) {
+    guard
+      let args = args,
+      let id = args.collectionID,
+      let tracker = idToImpressionTracker[id]
+    else { return }
+    tracker.collectionViewDidChangeVisibleContent(args.visibleContent)
   }
 
   /// Logs actions for content in a given collection view.
@@ -147,23 +150,21 @@ public extension PromotedMetricsModule {
   ///   - content: Content involved in action
   ///   - name: Action name, mostly used if `actionType` is `Custom`
   ///   - id: Identifier for collection view to track.
-  @objc(collectionActionDidOccur:content:name:collectionID:)
-  func collectionActionDidOccur(
-    actionType: Int,
-    content: ReactNativeDictionary?,
-    name: String,
-    id: String
-  ) {
-    guard let tracker = idToImpressionTracker[id] else { return }
-    let a = ActionType(rawValue: actionType) ?? .unknown
-    let c = Content(content)
-    let impressionID = tracker.impressionID(for: c)
-    print("***** \(#function) \(name) \(c) \(impressionID)")
+  @objc(collectionActionDidOccur:)
+  func collectionActionDidOccur(_ args: CollectionActionDidOccurArgs?) {
+    guard
+      let args = args,
+      let id = args.collectionID,
+      let tracker = idToImpressionTracker[id]
+    else { return }
+    let content = args.content
+    let impressionID = tracker.impressionID(for: content)
+    print("***** \(#function) \(args.actionName) \(args.content) \(impressionID)")
     metricsLogger?.logAction(
-      type: a,
-      content: c,
+      type: args.actionType,
+      content: content,
       impressionID: impressionID,
-      name: name
+      name: args.actionName
     )
   }
 
@@ -172,10 +173,12 @@ public extension PromotedMetricsModule {
   ///
   /// - Parameter id: Identifier for collection view to track.
   @objc(collectionWillUnmount:)
-  func collectionWillUnmount(id: String) {
-    guard let tracker = idToImpressionTracker.removeValue(forKey: id) else {
-      return
-    }
+  func collectionWillUnmount(_ args: CollectionWillUnmountArgs?) {
+    guard
+      let args = args,
+      let id = args.collectionID,
+      let tracker = idToImpressionTracker.removeValue(forKey: id)
+    else { return }
     tracker.collectionViewDidHideAllContent()
   }
 }
@@ -234,31 +237,38 @@ private extension Content {
 }
 
 private extension ReactNativeDictionary {
-  func valueForCalledPropertyNameAsKey<T>(function: String = #function) -> T? {
+  func valueForCalledPropertyNameAsKey<T>(
+    function: String = #function
+  ) -> T? {
     return self[function] as? T
   }
 
-  var content: ReactNativeDictionary? { valueForCalledPropertyNameAsKey() }
+  var actionName: String? { valueForCalledPropertyNameAsKey() }
+
+  var actionType: ActionType {
+    ActionType(rawValue: (self["actionType"] as? Int) ?? 0) ?? .unknown
+  }
+
+  var autoViewID: String? { self["autoViewId"] as? String }
+
+  var collectionID: String? { self["collectionId"] as? String }
+
+  var content: Content { Content(valueForCalledPropertyNameAsKey()) }
+
+  var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
+
+  var impressionSourceType: ImpressionSourceType {
+    ImpressionSourceType(
+      rawValue: (self["sourceType"] as? Int) ?? 0
+    ) ?? .unknown
+  }
 
   var routeName: String? { valueForCalledPropertyNameAsKey() }
 
   var routeKey: String? { valueForCalledPropertyNameAsKey() }
 
-  var autoViewID: String? { self["autoViewId"] as? String }
-}
-
-private extension PromotedMetricsModule.LogImpressionArgs {
-  var impressionSourceType: ImpressionSourceType? {
-    ImpressionSourceType(rawValue: (self["sourceType"] as? Int) ?? 0)
+  var visibleContent: [Content] {
+    (self["visibleContent"] as? [ReactNativeDictionary] ?? [])
+      .map { Content($0) }
   }
-}
-
-private extension PromotedMetricsModule.LogActionArgs {
-  var actionType: ActionType? {
-    ActionType(rawValue: (self["type"] as? Int) ?? 0)
-  }
-
-  var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
-
-  var actionName: String? { valueForCalledPropertyNameAsKey() }
 }

@@ -47,13 +47,13 @@ export class MetricsLogger {
 
   logAction({
     content,
-    type,
+    actionType,
     destinationScreenName = '',
     actionName = '',
   }: LogActionArgs): void {
     P.logAction({
       content,
-      type,
+      actionType,
       destinationScreenName,
       actionName,
       autoViewId: this.autoViewState.autoViewId,

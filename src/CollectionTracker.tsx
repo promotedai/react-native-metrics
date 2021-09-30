@@ -331,11 +331,11 @@ export function CollectionTracker<
             // `null`, do not log.
             if (actionState.actionType) {
               PromotedMetrics.collectionViewActionDidOccur({
+                actionName: actionState.name ?? '',
                 actionType: actionState.actionType,
-                content: contentCreator(item),
-                name: actionState.name ?? '',
-                collectionId,
                 autoViewId: autoViewState.autoViewId,
+                content: contentCreator(item),
+                collectionId,
               })
             }
             break

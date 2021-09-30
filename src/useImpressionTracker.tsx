@@ -39,9 +39,9 @@ export const useImpressionTracker = ({
   const _onViewableItemsChanged = useCallback(({viewableItems}) => {
     const contentList = viewableItems.map(contentCreator)
     PromotedMetrics.collectionDidChange({
-      contentList,
-      collectionId,
       autoViewId: autoViewState.autoViewId,
+      collectionId,
+      visibleContent: contentList,
     })
   }, [])
 

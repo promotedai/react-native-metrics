@@ -31,7 +31,7 @@ export type LogActionArgs = {
    * `actionName`. If you use `CustomActionType` though, provide a
    * name for the action using `actionName`.
    */
-  type?: ActionType
+  actionType?: ActionType
 
   /**
    * For `Navigate` actions, name of screen that will display

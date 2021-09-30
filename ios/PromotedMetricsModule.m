@@ -11,12 +11,10 @@ RCT_EXTERN_METHOD(startSessionAndLogSignedOutUser)
 
 #pragma mark - Impressions
 
-/// @param args (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logImpression:(nullable NSDictionary *)args)
 
 #pragma mark - Actions
 
-/// @param args (NSDictionary<NSString, id>)
 RCT_EXTERN_METHOD(logAction:(nullable NSDictionary *)args)
 
 #pragma mark - Views
@@ -27,20 +25,13 @@ RCT_EXTERN_METHOD(logAutoView:(nullable NSDictionary *)args)
 
 #pragma mark - CollectionTracker
 
-RCT_EXTERN_METHOD(collectionDidMount:(NSString *)collectionID
-                  sourceType:(NSInteger)sourceType)
+RCT_EXTERN_METHOD(collectionDidMount:(nullable NSDictionary *)args)
 
-/// @param visibleContent (`NSArray<NSDictionary<String, id>>`)
-RCT_EXTERN_METHOD(collectionDidChange:(NSArray *)visibleContent
-                  collectionID:(NSString *)collectionID)
+RCT_EXTERN_METHOD(collectionDidChange:(nullable NSDictionary *)args)
 
-/// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(collectionActionDidOccur:(NSInteger)actionType
-                  content:(nullable NSDictionary *)content
-                  name:(NSString *)name
-                  collectionID:(NSString *)collectionID)
+RCT_EXTERN_METHOD(collectionActionDidOccur:(nullable NSDictionary *)args)
 
-RCT_EXTERN_METHOD(collectionWillUnmount:(NSString *)collectionID)
+RCT_EXTERN_METHOD(collectionWillUnmount:(nullable NSDictionary *)args)
 
 #pragma mark - Ancestor IDs
 
