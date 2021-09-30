@@ -1,4 +1,5 @@
 import type { ActionType } from './ActionType'
+import type { Content } from './Content'
 import type { ImpressionSourceType } from './ImpressionSourceType'
 import type {
   InternalLogImpressionArgs,
@@ -12,6 +13,38 @@ export interface AncestorIds {
   logUserId?: string
   sessionId?: string
   viewId?: string
+}
+
+export interface CollectionDidMountArgs {
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** Origin of impressed content */
+  sourceType: ImpressionSourceType
+}
+
+export interface CollectionDidChangeArgs {
+  /** List of currently visible content */
+  visibleContent: Array<Content>
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** AutoViewId for impression */
+  autoViewId: string
+}
+
+export interface CollectionActionDidOccurArgs {
+  actionType: ActionType
+  content: Content
+  /** Action name, used if `actionType` is Custom */
+  name: string
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** AutoViewId for action */
+  autoViewId: string
+}
+
+export interface CollectionWillUnmountArgs {
+  /** Identifier for collection view to track */
+  collectionId: string
 }
 
 // Maintainers:
@@ -46,7 +79,7 @@ export type PromotedMetricsType = {
     content,
     sourceType,
     autoViewId,
-  }: InternalLogImpressionArgs): void
+  } : InternalLogImpressionArgs): void
 
   /**
    * Logs an action on given content.
@@ -60,7 +93,7 @@ export type PromotedMetricsType = {
     destinationScreenName,
     actionName,
     autoViewId,
-  }: InternalLogActionArgs): void
+  } : InternalLogActionArgs): void
 
   // View logging
 
@@ -73,7 +106,7 @@ export type PromotedMetricsType = {
   logView({
     routeName,
     routeKey,
-  }: LogViewArgs): void
+  } : LogViewArgs): void
 
   /**
    * Used internally to log auto views.
@@ -83,7 +116,7 @@ export type PromotedMetricsType = {
     routeName,
     routeKey,
     autoViewId,
-  }: LogAutoViewArgs): void
+  } : LogAutoViewArgs): void
 
   // Collection tracking
 
@@ -92,53 +125,42 @@ export type PromotedMetricsType = {
    * Can be called multiple times in succession, such as when a collection
    * view reloads on a timer. In these cases, the impression logging state
    * from the previous session will persist.
-   *
-   * @param id identifier for collection view to track
-   * @param sourceType origin of impressed content
    */
-  collectionDidMount(
-    id: string,
-    sourceType: ImpressionSourceType
-  ): void
+  collectionDidMount({
+    collectionId,
+    sourceType,
+  } : CollectionDidMountArgs): void
 
   /**
    * Logs impressions for changed content.
    * Call this method with currently visible content and the underlying
    * `ImpressionLogger` will calculate deltas and log appropriate events.
-   *
-   * @param visibleContent list of currently visible content
-   * @param id identifier for collection view to track
    */
-  collectionDidChange(
-    visibleContent: Array<Object>,
-    id: string
-  ): void
+  collectionDidChange({
+    visibleContent,
+    collectionId,
+    autoViewId,
+  } : CollectionDidChangeArgs): void
 
   /**
    * Logs actions for content in a given collection view.
-   * Call this method when an action occurs within a tracked collection view.
-   *
-   * @param actionType see `ActionType`
-   * @param content content for which action occurred
-   * @param name action name, if `actionType` is Custom
-   * @param id identifier for collection view to track
+   * Call this method when an action occurs within a tracked collection.
    */
-  collectionActionDidOccur(
-    actionType: ActionType,
-    content: Object,
-    name: string,
-    id: string
-  ): void
+  collectionActionDidOccur({
+    actionType,
+    content,
+    name,
+    collectionId,
+    autoViewId,
+  } : CollectionActionDidOccurArgs): void
 
   /**
-   * Ends tracking session for given collection view.
+   * Ends tracking session for given collection.
    * Drops all associated impression logging state.
-   *
-   * @param id identifier for collection view to track
    */
-  collectionWillUnmount(
-    id: string
-  ): void
+  collectionWillUnmount({
+    collectionId,
+  } : CollectionWillUnmountArgs): void
 
   // Ancestor IDs
 

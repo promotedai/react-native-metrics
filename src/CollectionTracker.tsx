@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { ActionType } from './ActionType'
 import type { Content } from './Content'
 import { ImpressionSourceType } from './ImpressionSourceType'
-import { MetricsLogger } from './MetricsLogger'
 import { useAutoViewState } from './ViewTracker'
 import { useImpressionTracker } from './useImpressionTracker'
 
@@ -259,7 +258,7 @@ export function CollectionTracker<
   sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
-    const trackerId = uuidv4()
+    const collectionId = uuidv4()
 
     const CollectionTrackerComponent = ({
       onViewableItemsChanged,
@@ -268,16 +267,14 @@ export function CollectionTracker<
       viewabilityConfigCallbackPairs,
       ...rest
     } : P) : React.ReactElement => {
-      const autoViewState = useAutoViewState()
-
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
-      } = useImpressionTracker(
-        ({ item }) => contentCreator(item),
-        trackerId,
+      } = useImpressionTracker({
+        contentCreator: ({ item }) => contentCreator(item),
+        collectionId,
         sourceType,
-      )
+      })
 
       // Merge existing viewability configs with our own if needed.
       // Otherwise, just use our viewability config.
@@ -307,8 +304,7 @@ export function CollectionTracker<
         actionType: ActionType.Unknown,
         name: '',
       } as CollectionActionState)
-
-      const metricsLogger = new MetricsLogger(autoViewState)
+      const autoViewState = useAutoViewState()
 
       // Wrap the rendered item with a TapGestureHandler. This handler
       // will receive events even if child components consume it.
@@ -334,12 +330,13 @@ export function CollectionTracker<
             // If an accessory event handler has set `actionType` to
             // `null`, do not log.
             if (actionState.actionType) {
-              PromotedMetrics.collectionViewActionDidOccur(
-                actionState.actionType,
-                contentCreator(item),
-                actionState.name ?? '',
-                trackerId
-              )
+              PromotedMetrics.collectionViewActionDidOccur({
+                actionType: actionState.actionType,
+                content: contentCreator(item),
+                name: actionState.name ?? '',
+                collectionId,
+                autoViewId: autoViewState.autoViewId,
+              })
             }
             break
           }

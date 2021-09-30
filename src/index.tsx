@@ -45,8 +45,3 @@ export {
   useUnscopedMetricsLogger,
   withMetricsLogger,
 } from './MetricsLogger'
-
-export {
-  useImpressionTracker,
-  promotedViewabilityConfig,
-} from './useImpressionTracker'

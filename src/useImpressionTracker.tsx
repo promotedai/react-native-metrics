@@ -4,6 +4,7 @@ import type { ViewToken } from 'react-native'
 
 import type { Content } from './Content'
 import { ImpressionSourceType } from './ImpressionSourceType'
+import { useAutoViewState } from './ViewTracker'
 
 const { PromotedMetrics } = NativeModules
 
@@ -14,27 +15,40 @@ export const promotedViewabilityConfig = {
   itemVisiblePercentThreshold: 50
 }
 
+export interface UseImpressionTrackerArgs {
+  /** Function to map list items to Promoted Content. */
+  contentCreator: (viewToken: ViewToken) => Content
+  /** UUID for tracked collection. */
+  collectionId: string
+  /** Source of presented list content. Default: ClientBackend. */
+  sourceType: ImpressionSourceType
+}
+
 /**
  * Returns handlers for use with onViewableItemsChanged and
  * viewabilityConfig for FlatLists and SectionLists.
  */
-export const useImpressionTracker = (
-  contentCreator: (viewToken: ViewToken) => Content,
-  id: string,
-  sourceType: ImpressionSourceType = ImpressionSourceType.Unknown
-) => {
+export const useImpressionTracker = ({
+  contentCreator,
+  collectionId,
+  sourceType = ImpressionSourceType.Unknown,
+} : UseImpressionTrackerArgs) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
-
+  const autoViewState = useAutoViewState()
   const _onViewableItemsChanged = useCallback(({viewableItems}) => {
     const contentList = viewableItems.map(contentCreator)
-    PromotedMetrics.collectionDidChange(contentList, id)
+    PromotedMetrics.collectionDidChange({
+      contentList,
+      collectionId,
+      autoViewId: autoViewState.autoViewId,
+    })
   }, [])
 
   useEffect(() => {
-    PromotedMetrics.collectionDidMount(id, sourceType)
+    PromotedMetrics.collectionDidMount(collectionId, sourceType)
     return () => {
-      PromotedMetrics.collectionWillUnmount(id)
+      PromotedMetrics.collectionWillUnmount(collectionId)
     }
   }, [])
 

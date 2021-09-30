@@ -2,14 +2,13 @@ import { NativeModules } from 'react-native'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ImpressionSourceType } from './ImpressionSourceType'
-import type { PromotedMetricsType } from './PromotedMetricsType'
-import { AutoViewState, useAutoViewState  } from './ViewTracker'
-
 import type {
   LogImpressionArgs,
   LogActionArgs,
   LogViewArgs,
 } from './LoggerArgs'
+import type { PromotedMetricsType } from './PromotedMetricsType'
+import { AutoViewState, useAutoViewState  } from './ViewTracker'
 
 const { PromotedMetrics } = NativeModules
 const P = PromotedMetrics as PromotedMetricsType
