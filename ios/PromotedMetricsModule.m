@@ -27,20 +27,20 @@ RCT_EXTERN_METHOD(logAutoView:(nullable NSDictionary *)args)
 
 #pragma mark - CollectionTracker
 
-RCT_EXTERN_METHOD(collectionViewDidMount:(NSString *)collectionID
+RCT_EXTERN_METHOD(collectionDidMount:(NSString *)collectionID
                   sourceType:(NSInteger)sourceType)
 
 /// @param visibleContent (`NSArray<NSDictionary<String, id>>`)
-RCT_EXTERN_METHOD(collectionViewDidChange:(NSArray *)visibleContent
+RCT_EXTERN_METHOD(collectionDidChange:(NSArray *)visibleContent
                   collectionID:(NSString *)collectionID)
 
 /// @param content (NSDictionary<NSString, id>)
-RCT_EXTERN_METHOD(collectionViewActionDidOccur:(NSInteger)actionType
+RCT_EXTERN_METHOD(collectionActionDidOccur:(NSInteger)actionType
                   content:(nullable NSDictionary *)content
                   name:(NSString *)name
                   collectionID:(NSString *)collectionID)
 
-RCT_EXTERN_METHOD(collectionViewWillUnmount:(NSString *)collectionID)
+RCT_EXTERN_METHOD(collectionWillUnmount:(NSString *)collectionID)
 
 #pragma mark - Ancestor IDs
 

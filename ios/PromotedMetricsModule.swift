@@ -21,7 +21,7 @@ public class PromotedMetricsModule: NSObject {
 
   private let service: MetricsLoggerService?
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
-  private var nameToImpressionTracker: [String: ImpressionTracker]
+  private var idToImpressionTracker: [String: ImpressionTracker]
 
   @objc public override convenience init() {
     // Log a debug message instead of throwing an error so that clients
@@ -40,7 +40,7 @@ public class PromotedMetricsModule: NSObject {
     optionalMetricsLoggerService: MetricsLoggerService?
   ) {
     self.service = optionalMetricsLoggerService
-    self.nameToImpressionTracker = [:]
+    self.idToImpressionTracker = [:]
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
@@ -86,13 +86,13 @@ public extension PromotedMetricsModule {
   func logView(_ args: LogViewArgs?) {
     metricsLogger?.logView(
       routeName: args?.routeName,
-      routeKey: args?.routeKey,
-      viewID: args?.autoViewID
+      routeKey: args?.routeKey
     )
   }
 
   @objc(logAutoView:)
   func logAutoView(_ args: LogAutoViewArgs?) {
+    print("***** \(#function) \(args)")
     metricsLogger?.logAutoView(
       routeName: args?.routeName,
       routeKey: args?.routeKey,
@@ -112,14 +112,14 @@ public extension PromotedMetricsModule {
   /// - Parameters:
   ///   - id: Identifier for collection view to track.
   ///   - sourceType: Source of content in collection view.
-  @objc(collectionViewDidMount:sourceType:)
-  func collectionViewDidMount(id: String, sourceType: Int) {
+  @objc(collectionDidMount:sourceType:)
+  func collectionDidMount(id: String, sourceType: Int) {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
-    if let _ = nameToImpressionTracker[id] { return }
+    if let _ = idToImpressionTracker[id] { return }
     let s = ImpressionSourceType(rawValue: sourceType) ?? .unknown
     if let tracker = service?.impressionTracker()?.with(sourceType: s) {
-      nameToImpressionTracker[id] = tracker
+      idToImpressionTracker[id] = tracker
     }
   }
 
@@ -130,9 +130,9 @@ public extension PromotedMetricsModule {
   /// - Parameters:
   ///   - visibleContent: List of currently visible content.
   ///   - id: Identifier for collection view to track.
-  @objc(collectionViewDidChange:collectionID:)
-  func collectionViewDidChange(visibleContent: [AnyObject], id: String) {
-    guard let tracker = nameToImpressionTracker[id] else { return }
+  @objc(collectionDidChange:collectionID:)
+  func collectionDidChange(visibleContent: [AnyObject], id: String) {
+    guard let tracker = idToImpressionTracker[id] else { return }
     let contentList = visibleContent.map {
       Content($0 as? ReactNativeDictionary)
     }
@@ -147,17 +147,18 @@ public extension PromotedMetricsModule {
   ///   - content: Content involved in action
   ///   - name: Action name, mostly used if `actionType` is `Custom`
   ///   - id: Identifier for collection view to track.
-  @objc(collectionViewActionDidOccur:content:name:collectionID:)
-  func collectionViewActionDidOccur(
+  @objc(collectionActionDidOccur:content:name:collectionID:)
+  func collectionActionDidOccur(
     actionType: Int,
     content: ReactNativeDictionary?,
     name: String,
     id: String
   ) {
-    guard let tracker = nameToImpressionTracker[id] else { return }
+    guard let tracker = idToImpressionTracker[id] else { return }
     let a = ActionType(rawValue: actionType) ?? .unknown
     let c = Content(content)
     let impressionID = tracker.impressionID(for: c)
+    print("***** \(#function) \(name) \(c) \(impressionID)")
     metricsLogger?.logAction(
       type: a,
       content: c,
@@ -170,9 +171,9 @@ public extension PromotedMetricsModule {
   /// Drops all associated impression logging state.
   ///
   /// - Parameter id: Identifier for collection view to track.
-  @objc(collectionViewWillUnmount:)
-  func collectionViewWillUnmount(id: String) {
-    guard let tracker = nameToImpressionTracker.removeValue(forKey: id) else {
+  @objc(collectionWillUnmount:)
+  func collectionWillUnmount(id: String) {
+    guard let tracker = idToImpressionTracker.removeValue(forKey: id) else {
       return
     }
     tracker.collectionViewDidHideAllContent()
