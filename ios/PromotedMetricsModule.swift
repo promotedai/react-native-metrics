@@ -143,7 +143,7 @@ public extension PromotedMetricsModule {
     print("***** \(#function) collectionID:\(args.collectionID ?? "nil") autoViewID:\(args.autoViewID ?? "nil")")
     tracker.collectionViewDidChangeVisibleContent(
       args.visibleContent,
-      autoViewID: args.autoViewID
+      autoViewState: args.autoViewState
     )
   }
 
@@ -169,8 +169,7 @@ public extension PromotedMetricsModule {
       type: args.actionType,
       content: content,
       name: args.actionName,
-      autoViewID: args.autoViewID,
-      hasSuperimposedViews: args.hasSuperimposedViews,
+      autoViewState: args.autoViewState,
       impressionID: impressionID
     )
   }
@@ -187,7 +186,7 @@ public extension PromotedMetricsModule {
       let tracker = idToImpressionTracker.removeValue(forKey: id)
     else { return }
     print("***** \(#function) \(args)")
-    tracker.collectionViewDidHideAllContent(autoViewID: args.autoViewID)
+    tracker.collectionViewDidHideAllContent(autoViewState: args.autoViewState)
   }
 }
 
@@ -258,6 +257,13 @@ private extension ReactNativeDictionary {
   }
 
   var autoViewID: String? { self["autoViewId"] as? String }
+
+  var autoViewState: AutoViewState {
+    AutoViewState(
+      autoViewID: self.autoViewID,
+      hasSuperimposedViews: self.hasSuperimposedViews
+    )
+  }
 
   var collectionID: String? { self["collectionId"] as? String }
 
