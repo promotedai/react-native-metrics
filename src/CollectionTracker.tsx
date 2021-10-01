@@ -260,8 +260,6 @@ export function CollectionTracker<
   sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
-    const collectionId = uuidv4()
-
     const CollectionTrackerComponent = ({
       onViewableItemsChanged,
       renderItem,
@@ -269,12 +267,14 @@ export function CollectionTracker<
       viewabilityConfigCallbackPairs,
       ...rest
     } : P) : React.ReactElement => {
+
+      const collectionId = React.useRef(uuidv4())
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
       } = useImpressionTracker({
         contentCreator: ({ item }) => contentCreator(item),
-        collectionId,
+        collectionId: collectionId.current,
         sourceType,
       })
 
@@ -337,7 +337,7 @@ export function CollectionTracker<
                 actionType: actionState.actionType,
                 autoViewId: autoViewStateRef.current.autoViewId,
                 content: contentCreator(item),
-                collectionId,
+                collectionId: collectionId.current,
               })
             }
             break
