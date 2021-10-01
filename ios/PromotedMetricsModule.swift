@@ -139,6 +139,7 @@ public extension PromotedMetricsModule {
       let id = args.collectionID,
       let tracker = idToImpressionTracker[id]
     else { return }
+    print("***** \(#function) \(args.autoViewID)")
     tracker.collectionViewDidChangeVisibleContent(args.visibleContent)
   }
 
@@ -159,11 +160,12 @@ public extension PromotedMetricsModule {
     else { return }
     let content = args.content
     let impressionID = tracker.impressionID(for: content)
-    print("***** \(#function) \(args.actionName) \(args.content) \(impressionID)")
+    print("***** \(#function) \(args)")
     metricsLogger?.logAction(
       type: args.actionType,
       content: content,
       impressionID: impressionID,
+      autoViewID: args.autoViewID,
       name: args.actionName
     )
   }
