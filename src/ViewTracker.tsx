@@ -96,7 +96,10 @@ export function useAutoViewState() {
     React.useCallback(
       () => {
         // We just received focus, so we must be topmost.
-        autoViewStateRef.current.hasSuperimposedViews = false
+        autoViewStateRef.current = {
+          ...autoViewStateRef.current,
+          hasSuperimposedViews: false,
+        }
 
         // If view is already most recently logged, don't log it again.
         // Read its state into ours so that we use the same autoViewId
@@ -115,7 +118,10 @@ export function useAutoViewState() {
         ) {
           autoViewStateRef.current = mostRecentlyLoggedAutoViewState
           return () => {
-            autoViewStateRef.current.hasSuperimposedViews = true
+            autoViewStateRef.current = {
+              ...autoViewStateRef.current,
+              hasSuperimposedViews: true,
+            }
           }
         }
         // Generates a new primary key for this.
@@ -134,7 +140,10 @@ export function useAutoViewState() {
           updatedAutoViewState.autoViewId
         )
         return () => {
-          autoViewStateRef.current.hasSuperimposedViews = true
+          autoViewStateRef.current = {
+            ...autoViewStateRef.current,
+            hasSuperimposedViews: true,
+          }
         }
       },
       []
