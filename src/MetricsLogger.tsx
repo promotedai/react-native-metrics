@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { NativeModules } from 'react-native'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -26,12 +27,12 @@ const P = PromotedMetrics as PromotedMetricsType
  */
 export class MetricsLogger {
 
-  autoViewState?: AutoViewState
+  autoViewStateRef?: React.MutableRefObject<AutoViewState>
 
   constructor(
-    autoViewState?: AutoViewState
+    autoViewStateRef?: React.MutableRefObject<AutoViewState>
   ) {
-    this.autoViewState = autoViewState
+    this.autoViewStateRef = autoViewStateRef
   }
 
   logImpression({
@@ -41,7 +42,7 @@ export class MetricsLogger {
     P.logImpression({
       content,
       sourceType,
-      autoViewId: this.autoViewState.autoViewId,
+      autoViewId: this.autoViewStateRef.current.autoViewId,
     })
   }
 
@@ -56,7 +57,7 @@ export class MetricsLogger {
       actionType,
       destinationScreenName,
       actionName,
-      autoViewId: this.autoViewState.autoViewId,
+      autoViewId: this.autoViewStateRef.current.autoViewId,
     })
   }
 
@@ -84,11 +85,11 @@ export function withMetricsLogger<P>(
   const MetricsLoggerComponent = ({
     ...rest
   }) : React.ReactElement => {
-    const autoViewState = useAutoViewState()
-    const metricsLogger = new MetricsLogger(autoViewState)
+    const autoViewStateRef = useAutoViewState()
+    const metricsLogger = new MetricsLogger(autoViewStateRef)
     return (
       <Component
-        autoViewState={autoViewState}
+        autoViewStateRef={autoViewStateRef}
         metricsLogger={metricsLogger}
         {...rest}
       />
