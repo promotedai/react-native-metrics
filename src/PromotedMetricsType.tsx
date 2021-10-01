@@ -16,6 +16,8 @@ export interface AncestorIds {
 }
 
 export interface CollectionDidMountArgs {
+  /** AutoViewId for impression */
+  autoViewId: string
   /** Identifier for collection view to track */
   collectionId: string
   /** Origin of impressed content */
@@ -43,6 +45,8 @@ export interface CollectionActionDidOccurArgs {
 }
 
 export interface CollectionWillUnmountArgs {
+  /** AutoViewId for impression */
+  autoViewId: string
   /** Identifier for collection view to track */
   collectionId: string
 }
@@ -127,6 +131,7 @@ export type PromotedMetricsType = {
    * from the previous session will persist.
    */
   collectionDidMount({
+    autoViewId,
     collectionId,
     sourceType,
   } : CollectionDidMountArgs): void
@@ -159,6 +164,7 @@ export type PromotedMetricsType = {
    * Drops all associated impression logging state.
    */
   collectionWillUnmount({
+    autoViewId,
     collectionId,
   } : CollectionWillUnmountArgs): void
 

@@ -50,9 +50,16 @@ export const useImpressionTracker = ({
 
   React.useEffect(
     () => {
-      PromotedMetrics.collectionDidMount({collectionId, sourceType})
+      PromotedMetrics.collectionDidMount({
+        autoViewId: autoViewStateRef.current.autoViewId,
+        collectionId,
+        sourceType,
+      })
       return () => {
-        PromotedMetrics.collectionWillUnmount({collectionId})
+        PromotedMetrics.collectionWillUnmount({
+          autoViewId: autoViewStateRef.current.autoViewId,
+          collectionId,
+        })
       }
     },
     [],

@@ -123,6 +123,7 @@ public extension PromotedMetricsModule {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = idToImpressionTracker[id] { return }
+    print("***** \(#function) \(args)")
     let s = args.impressionSourceType
     if let tracker = service?.impressionTracker()?.with(sourceType: s) {
       idToImpressionTracker[id] = tracker
@@ -139,8 +140,11 @@ public extension PromotedMetricsModule {
       let id = args.collectionID,
       let tracker = idToImpressionTracker[id]
     else { return }
-    print("***** \(#function) \(args.autoViewID)")
-    tracker.collectionViewDidChangeVisibleContent(args.visibleContent)
+    print("***** \(#function) collectionID:\(args.collectionID ?? "nil") autoViewID:\(args.autoViewID ?? "nil")")
+    tracker.collectionViewDidChangeVisibleContent(
+      args.visibleContent,
+      autoViewID: args.autoViewID
+    )
   }
 
   /// Logs actions for content in a given collection view.
@@ -181,7 +185,8 @@ public extension PromotedMetricsModule {
       let id = args.collectionID,
       let tracker = idToImpressionTracker.removeValue(forKey: id)
     else { return }
-    tracker.collectionViewDidHideAllContent()
+    print("***** \(#function) \(args)")
+    tracker.collectionViewDidHideAllContent(autoViewID: args.autoViewID)
   }
 }
 
