@@ -71,8 +71,8 @@ public extension PromotedMetricsModule {
     guard let args = args else { return }
     metricsLogger?.logImpression(
       content: args.content,
-      viewID: args.autoViewID,
-      sourceType: args.impressionSourceType
+      sourceType: args.impressionSourceType,
+      viewID: args.autoViewID
     )
   }
 
@@ -83,8 +83,8 @@ public extension PromotedMetricsModule {
     metricsLogger?.logAction(
       type: args.actionType,
       content: args.content,
-      viewID: args.autoViewID,
-      name: args.destinationScreenName ?? args.actionName
+      name: args.destinationScreenName ?? args.actionName,
+      viewID: args.autoViewID
     )
   }
 
@@ -168,9 +168,10 @@ public extension PromotedMetricsModule {
     metricsLogger?.logAction(
       type: args.actionType,
       content: content,
-      impressionID: impressionID,
+      name: args.actionName,
       autoViewID: args.autoViewID,
-      name: args.actionName
+      hasSuperimposedViews: args.hasSuperimposedViews,
+      impressionID: impressionID
     )
   }
 
@@ -263,6 +264,8 @@ private extension ReactNativeDictionary {
   var content: Content { Content(valueForCalledPropertyNameAsKey()) }
 
   var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
+
+  var hasSuperimposedViews: Bool { valueForCalledPropertyNameAsKey() ?? false }
 
   var impressionSourceType: ImpressionSourceType {
     ImpressionSourceType(

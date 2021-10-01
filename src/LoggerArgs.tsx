@@ -5,6 +5,8 @@ import type { ImpressionSourceType } from './ImpressionSourceType'
 export type AutoViewIdArgs = {
   /** Auto view ID for event. */
   autoViewId?: string
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
 }
 
 /** Arguments for `logImpression`. */

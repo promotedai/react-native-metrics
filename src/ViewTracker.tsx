@@ -4,6 +4,7 @@ import { NativeModules } from 'react-native'
 import { useFocusEffect } from 'react-navigation-hooks'
 import { v4 as uuidv4 } from 'uuid'
 
+import { LRUCache  } from './LRUCache'
 import type { PromotedMetricsType } from './PromotedMetricsType'
 
 const { PromotedMetrics } = NativeModules
@@ -19,6 +20,9 @@ export type AutoViewState = {
 
   /** UUID of view, for use as primary key in event. */
   autoViewId: string
+
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
 }
 
 /**
@@ -29,7 +33,16 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
   routeName: '',
   routeKey: '',
   autoViewId: '',
+  hasSuperimposedViews: false,
 }
+
+/**
+ * Mapping of recent routeKeys to autoViewId.
+ * If a componentis mounted in the background, then it won't ever
+ * get focus and so it won't receive an autoViewId. This allows
+ * us to re-use the most recent id for that routeKey.
+ */
+var routeKeyToAutoViewId = new LRUCache()
 
 /**
  * Creates a reference to an `AutoViewState` and automatically logs a
@@ -71,15 +84,20 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
  */
 export function useAutoViewState() {
   const navigation = React.useContext(NavigationContext)
+  const { routeName, key } = navigation?.state
   const autoViewStateRef = React.useRef({
-    routeName: navigation?.state.routeName,
-    routeKey: navigation?.state.key,
-    autoViewId: ''
+    routeName: routeName,
+    routeKey: key,
+    autoViewId: routeKeyToAutoViewId.get(key),
+    hasSuperimposedViews: true,
   } as AutoViewState)
 
   useFocusEffect(
     React.useCallback(
       () => {
+        // We just received focus, so we must be topmost.
+        autoViewStateRef.current.hasSuperimposedViews = false
+
         // If view is already most recently logged, don't log it again.
         // Read its state into ours so that we use the same autoViewId
         // as any existing state.
@@ -96,7 +114,9 @@ export function useAutoViewState() {
             autoViewStateRef.current.routeKey
         ) {
           autoViewStateRef.current = mostRecentlyLoggedAutoViewState
-          return
+          return () => {
+            autoViewStateRef.current.hasSuperimposedViews = true
+          }
         }
         // Generates a new primary key for this.
         const updatedAutoViewState = {
@@ -109,6 +129,13 @@ export function useAutoViewState() {
         P.logAutoView(updatedAutoViewState)
         // Sets state globally for most recent logged view.
         mostRecentlyLoggedAutoViewState = updatedAutoViewState
+        routeKeyToAutoViewId.set(
+          updatedAutoViewState.routeKey,
+          updatedAutoViewState.autoViewId
+        )
+        return () => {
+          autoViewStateRef.current.hasSuperimposedViews = true
+        }
       },
       []
     )
@@ -127,10 +154,10 @@ export function withAutoViewState<P>(
   const AutoViewStateComponent = ({
     ...rest
   }) : React.ReactElement => {
-    const autoViewState = useAutoViewState()
+    const autoViewStateRef = useAutoViewState()
     return (
       <Component
-        autoViewState={autoViewState}
+        autoViewStateRef={autoViewStateRef}
         {...rest}
       />
     )

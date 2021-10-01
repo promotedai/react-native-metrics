@@ -29,6 +29,8 @@ export interface CollectionDidChangeArgs {
   autoViewId: string
   /** Identifier for collection view to track */
   collectionId: string
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
   /** List of currently visible content */
   visibleContent: Array<Content>
 }
@@ -42,6 +44,8 @@ export interface CollectionActionDidOccurArgs {
   content: Content
   /** Identifier for collection view to track */
   collectionId: string
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
 }
 
 export interface CollectionWillUnmountArgs {
@@ -80,9 +84,10 @@ export type PromotedMetricsType = {
    * outside of those components.
    */
   logImpression({
-    content,
-    sourceType,
     autoViewId,
+    content,
+    hasSuperimposedViews,
+    sourceType,
   } : InternalLogImpressionArgs): void
 
   /**
@@ -93,10 +98,11 @@ export type PromotedMetricsType = {
    */
   logAction({
     content,
-    actionType,
-    destinationScreenName,
     actionName,
+    actionType,
     autoViewId,
+    destinationScreenName,
+    hasSuperimposedViews,
   } : InternalLogActionArgs): void
 
   // View logging
@@ -144,6 +150,7 @@ export type PromotedMetricsType = {
   collectionDidChange({
     autoViewId,
     collectionId,
+    hasSuperimposedViews,
     visibleContent,
   } : CollectionDidChangeArgs): void
 
@@ -154,9 +161,10 @@ export type PromotedMetricsType = {
   collectionActionDidOccur({
     actionName,
     actionType,
-    content,
     autoViewId,
     collectionId,
+    content,
+    hasSuperimposedViews,
   } : CollectionActionDidOccurArgs): void
 
   /**

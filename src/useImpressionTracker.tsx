@@ -39,9 +39,14 @@ export const useImpressionTracker = ({
   const _onViewableItemsChanged = React.useCallback(
     ({viewableItems}) => {
       const contentList = viewableItems.map(contentCreator)
+      const {
+        autoViewId,
+        hasSuperimposedViews,
+      } = autoViewStateRef.current
       PromotedMetrics.collectionDidChange({
-        autoViewId: autoViewStateRef.current.autoViewId,
+        autoViewId,
         collectionId,
+        hasSuperimposedViews,
         visibleContent: contentList,
       })
     },

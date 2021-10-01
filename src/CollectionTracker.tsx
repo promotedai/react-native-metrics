@@ -269,6 +269,7 @@ export function CollectionTracker<
     } : P) : React.ReactElement => {
 
       const collectionId = React.useRef(uuidv4())
+
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
@@ -332,12 +333,17 @@ export function CollectionTracker<
             // If an accessory event handler has set `actionType` to
             // `null`, do not log.
             if (actionState.actionType) {
+              const {
+                autoViewId,
+                hasSuperimposedViews,
+              } = autoViewStateRef.current
               PromotedMetrics.collectionActionDidOccur({
                 actionName: actionState.name ?? '',
                 actionType: actionState.actionType,
-                autoViewId: autoViewStateRef.current.autoViewId,
+                autoViewId,
                 content: contentCreator(item),
                 collectionId: collectionId.current,
+                hasSuperimposedViews,
               })
             }
             break

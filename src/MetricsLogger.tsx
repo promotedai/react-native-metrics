@@ -39,10 +39,15 @@ export class MetricsLogger {
     content,
     sourceType = ImpressionSourceType.Unknown,
   }: LogImpressionArgs): void {
+    const {
+      autoViewId,
+      hasSuperimposedViews,
+    } = this.autoViewStateRef.current
     P.logImpression({
+      autoViewId,
       content,
+      hasSuperimposedViews,
       sourceType,
-      autoViewId: this.autoViewStateRef.current.autoViewId,
     })
   }
 
@@ -52,12 +57,17 @@ export class MetricsLogger {
     destinationScreenName = '',
     actionName = '',
   }: LogActionArgs): void {
+    const {
+      autoViewId,
+      hasSuperimposedViews,
+    } = this.autoViewStateRef.current
     P.logAction({
-      content,
-      actionType,
-      destinationScreenName,
       actionName,
-      autoViewId: this.autoViewStateRef.current.autoViewId,
+      actionType,
+      autoViewId,
+      content,
+      destinationScreenName,
+      hasSuperimposedViews,
     })
   }
 
