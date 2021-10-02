@@ -28,12 +28,22 @@ public class PromotedMetricsModule: NSObject {
   private var metricsLogger: MetricsLogger? { service?.metricsLogger }
   private var idToImpressionTracker: [String: ImpressionTracker]
 
+  private let osLog: OSLog?
+  private let impressionLogger: ImpressionTrackerDebugLogger?
+
   @objc public override convenience init() {
     // Log a debug message instead of throwing an error so that clients
     // can integrate the build dependency without adding configuration
     // in the same change.
-    let log = OSLog(subsystem: "ai.promoted", category: "PromotedMetricsModule")
-    os_log("PromotedMetricsModule not configured", log: log, type: .debug)
+    let initialMessageOSLog = OSLog(
+      subsystem: "ai.promoted",
+      category: "PromotedMetricsModule"
+    )
+    os_log(
+      "PromotedMetricsModule not configured",
+      log: initialMessageOSLog,
+      type: .debug
+    )
     self.init(optionalMetricsLoggerService: nil)
   }
 
@@ -46,6 +56,19 @@ public class PromotedMetricsModule: NSObject {
   ) {
     self.service = optionalMetricsLoggerService
     self.idToImpressionTracker = [:]
+    if let service = optionalMetricsLoggerService,
+       service.config.osLogLevel >= .debug {
+      self.osLog = OSLog(
+        subsystem: "ai.promoted",
+        category: "PromotedMetricsModule"
+      )
+      self.impressionLogger = ImpressionTrackerDebugLogger(
+        osLog: self.osLog!
+      )
+    } else {
+      self.osLog = nil
+      self.impressionLogger = nil
+    }
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
@@ -69,6 +92,7 @@ public extension PromotedMetricsModule {
   @objc(logImpression:)
   func logImpression(args: LogImpressionArgs?) {
     guard let args = args else { return }
+    osLog?.debug(args: args)
     metricsLogger?.logImpression(
       content: args.content,
       sourceType: args.impressionSourceType,
@@ -80,6 +104,7 @@ public extension PromotedMetricsModule {
   @objc(logAction:)
   func logAction(_ args: LogActionArgs?) {
     guard let args = args else { return }
+    osLog?.debug(args: args)
     metricsLogger?.logAction(
       type: args.actionType,
       content: args.content,
@@ -92,6 +117,7 @@ public extension PromotedMetricsModule {
   @objc(logView:)
   func logView(_ args: LogViewArgs?) {
     guard let args = args else { return }
+    osLog?.debug(args: args)
     metricsLogger?.logView(
       routeName: args.routeName,
       routeKey: args.routeKey
@@ -101,7 +127,7 @@ public extension PromotedMetricsModule {
   @objc(logAutoView:)
   func logAutoView(_ args: LogAutoViewArgs?) {
     guard let args = args else { return }
-    print("***** \(#function) \(args)")
+    osLog?.debug(args: args)
     metricsLogger?.logAutoView(
       routeName: args.routeName,
       routeKey: args.routeKey,
@@ -123,10 +149,11 @@ public extension PromotedMetricsModule {
     // A load without a previous unmount can be due to a page refresh.
     // Don't recreate the logger in this case.
     if let _ = idToImpressionTracker[id] { return }
-    print("***** \(#function) \(args)")
+    osLog?.debug(args: args)
     let s = args.impressionSourceType
     if let tracker = service?.impressionTracker()?.with(sourceType: s) {
       idToImpressionTracker[id] = tracker
+      tracker.delegate = impressionLogger
     }
   }
 
@@ -140,7 +167,7 @@ public extension PromotedMetricsModule {
       let id = args.collectionID,
       let tracker = idToImpressionTracker[id]
     else { return }
-    print("***** \(#function) collectionID:\(args.collectionID ?? "nil") autoViewID:\(args.autoViewID ?? "nil")")
+    osLog?.debug(args: args)
     tracker.collectionViewDidChangeVisibleContent(
       args.visibleContent,
       autoViewState: args.autoViewState
@@ -164,7 +191,7 @@ public extension PromotedMetricsModule {
     else { return }
     let content = args.content
     let impressionID = tracker.impressionID(for: content)
-    print("***** \(#function) \(args)")
+    osLog?.debug(args: args)
     metricsLogger?.logAction(
       type: args.actionType,
       content: content,
@@ -185,7 +212,7 @@ public extension PromotedMetricsModule {
       let id = args.collectionID,
       let tracker = idToImpressionTracker.removeValue(forKey: id)
     else { return }
-    print("***** \(#function) \(args)")
+    osLog?.debug(args: args)
     tracker.collectionViewDidHideAllContent(autoViewState: args.autoViewState)
   }
 }
@@ -286,5 +313,50 @@ private extension ReactNativeDictionary {
   var visibleContent: [Content] {
     (self["visibleContent"] as? [ReactNativeDictionary] ?? [])
       .map { Content($0) }
+  }
+}
+
+private extension Dictionary {
+  mutating func replaceIfPresent(key: Key, value: (Value) -> Value) {
+    if let v = self[key] {
+      self[key] = value(v)
+    }
+  }
+}
+
+private extension OSLog {
+  func debug(
+    args: @autoclosure () -> ReactNativeDictionary?,
+    function: @autoclosure () -> String = #function
+  ) {
+    var argsCopy = args() ?? [:]
+    // Replace keys for readability.
+    argsCopy.replaceIfPresent(key: "actionType") {
+      guard let n = $0 as? Int else { return $0 }
+      return ActionType(rawValue: n) ?? .unknown
+    }
+    argsCopy.replaceIfPresent(key: "content") {
+      guard let dict = $0 as? ReactNativeDictionary else { return $0 }
+      return Content(dict)
+    }
+    argsCopy.replaceIfPresent(key: "hasSuperimposedViews") {
+      guard let n = $0 as? Int else { return $0 }
+      return (n != 0)
+    }
+    argsCopy.replaceIfPresent(key: "sourceType") {
+      guard let n = $0 as? Int else { return $0 }
+      return ImpressionSourceType(rawValue: n) ?? .unknown
+    }
+    argsCopy.replaceIfPresent(key: "visibleContent") {
+      guard let dict = $0 as? [ReactNativeDictionary] else { return $0 }
+      return "ReactNativeDictionary[\(dict.count)]"
+    }
+    os_log(
+      "%{private}s %{private}s",
+      log: self,
+      type: .debug,
+      function(),
+      argsCopy.debugDescription
+    )
   }
 }
