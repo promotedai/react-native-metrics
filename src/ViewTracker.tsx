@@ -124,6 +124,7 @@ export function useAutoViewState() {
             }
           }
         }
+
         // Generates a new primary key for this.
         const updatedAutoViewState = {
           ...autoViewStateRef.current,

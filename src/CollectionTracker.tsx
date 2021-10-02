@@ -309,6 +309,13 @@ export function CollectionTracker<
       } as CollectionActionState)
       const autoViewStateRef = useAutoViewState()
 
+      // Blur events occur between BEGAN and ACTIVE, so we need to
+      // use the auto view state on BEGAN to accurately determine
+      // the state of hasSuperimposedViews.
+      const tapBeginAutoViewStateRef = React.useRef(
+        autoViewStateRef.current
+      )
+
       // Wrap the rendered item with a TapGestureHandler. This handler
       // will receive events even if child components consume it.
       const _renderItem = ({ item, ...rest }) => {
@@ -328,6 +335,7 @@ export function CollectionTracker<
               actionType: ActionType.Navigate,
               name: null,
             })
+            tapBeginAutoViewStateRef.current = autoViewStateRef.current
             break
           case State.ACTIVE:
             // If an accessory event handler has set `actionType` to
@@ -336,7 +344,7 @@ export function CollectionTracker<
               const {
                 autoViewId,
                 hasSuperimposedViews,
-              } = autoViewStateRef.current
+              } = tapBeginAutoViewStateRef.current
               PromotedMetrics.collectionActionDidOccur({
                 actionName: actionState.name ?? '',
                 actionType: actionState.actionType,

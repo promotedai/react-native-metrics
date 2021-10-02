@@ -57,7 +57,8 @@ public class PromotedMetricsModule: NSObject {
     self.service = optionalMetricsLoggerService
     self.idToImpressionTracker = [:]
     if let service = optionalMetricsLoggerService,
-       service.config.osLogLevel >= .debug {
+       service.config.osLogLevel >= .debug
+    {
       self.osLog = OSLog(
         subsystem: "ai.promoted",
         category: "PromotedMetricsModule"
