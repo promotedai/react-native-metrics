@@ -53,44 +53,32 @@ const App: () => Node = () => {
   const testLogEvents = (recordTestPassed) => {
     const content = { _id: 'foobar'}
 
-    PromotedMetrics.logImpression(content)
+    PromotedMetrics.logImpression({})
     recordTestPassed('logImpression')
 
-    PromotedMetrics.logImpressionWithSourceType(content, ImpressionSourceType.Delivery)
-    recordTestPassed('logImpressionWithSourceType')
-
-    PromotedMetrics.logViewReady('foobar', 'batman')
-    recordTestPassed('logViewReady')
-
-    PromotedMetrics.logViewChange('spaghetti', 'meatballs')
-    recordTestPassed('logViewChange')
-
-    PromotedMetrics.logNavigateAction(content)
-    recordTestPassed('logNavigateAction')
-
-    PromotedMetrics.logNavigateActionWithScreenName(content, 'screen')
-    recordTestPassed('logNavigateActionWithScreenName')
-
-    PromotedMetrics.logAction(ActionType.Share, content)
+    PromotedMetrics.logAction({})
     recordTestPassed('logAction')
 
-    PromotedMetrics.logActionWithName(ActionType.Share, content, 'custom')
-    recordTestPassed('logActionWithName')
+    PromotedMetrics.logView({})
+    recordTestPassed('logView')
+
+    PromotedMetrics.logAutoView({})
+    recordTestPassed('logAutoView')
   }
 
   const testCollectionView = (recordTestPassed) => {
     const content = { _id: 'foobar'}
 
-    PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend)
+    PromotedMetrics.collectionDidMount({})
     recordTestPassed('collectionViewDidMount')
 
-    PromotedMetrics.collectionViewDidChange([], 'hello')
+    PromotedMetrics.collectionDidChange({})
     recordTestPassed('collectionViewDidChange')
 
-    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'ActionName', 'hello')
+    PromotedMetrics.collectionActionDidOccur({})
     recordTestPassed('collectionViewActionDidOccur')
 
-    PromotedMetrics.collectionViewWillUnmount('hello')
+    PromotedMetrics.collectionWillUnmount({})
     recordTestPassed('collectionViewWillUnmount')
   }
 
