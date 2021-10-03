@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { NativeModules } from 'react-native'
-import { v4 as uuidv4 } from 'uuid'
 
 import { ImpressionSourceType } from './ImpressionSourceType'
 import type {
@@ -75,7 +74,6 @@ export class MetricsLogger {
     routeName,
     routeKey,
   }: LogViewArgs): void {
-    const viewId = uuidv4()
     P.logView({ routeName, routeKey })
   }
 }
