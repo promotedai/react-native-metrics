@@ -91,13 +91,13 @@ public extension PromotedMetricsModule {
 
   // MARK: - Impressions
   @objc(logImpression:)
-  func logImpression(args: LogImpressionArgs?) {
+  func logImpression(_ args: LogImpressionArgs?) {
     guard let args = args else { return }
     osLog?.debug(args: args)
     metricsLogger?.logImpression(
       content: args.content,
       sourceType: args.impressionSourceType,
-      viewID: args.autoViewID
+      autoViewState: args.autoViewState
     )
   }
 
@@ -110,7 +110,7 @@ public extension PromotedMetricsModule {
       type: args.actionType,
       content: args.content,
       name: args.destinationScreenName ?? args.actionName,
-      viewID: args.autoViewID
+      autoViewState: args.autoViewState
     )
   }
 
