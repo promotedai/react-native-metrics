@@ -10,6 +10,7 @@ import type { PromotedMetricsType } from './PromotedMetricsType'
 const { PromotedMetrics } = NativeModules
 const P = PromotedMetrics as PromotedMetricsType
 
+/** View tracking state. */
 export type AutoViewState = {
 
   /** navigation.state.routeName */
@@ -38,9 +39,9 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
 
 /**
  * Mapping of recent routeKeys to autoViewId.
- * If a componentis mounted in the background, then it won't ever
- * get focus and so it won't receive an autoViewId. This allows
- * us to re-use the most recent id for that routeKey.
+ * If a component is mounted in the background, then it won't ever
+ * get focus, so it won't receive an autoViewId. This allows us to
+ * re-use the most recent id for that routeKey.
  */
 var routeKeyToAutoViewId = new LRUCache()
 
@@ -118,6 +119,7 @@ export function useAutoViewState() {
         ) {
           autoViewStateRef.current = mostRecentlyLoggedAutoViewState
           return () => {
+            // When focus is lost, set hasSuperimposedViews.
             autoViewStateRef.current = {
               ...autoViewStateRef.current,
               hasSuperimposedViews: true,
@@ -125,22 +127,23 @@ export function useAutoViewState() {
           }
         }
 
-        // Generates a new primary key for this.
+        // Generate a new autoViewId.
         const updatedAutoViewState = {
           ...autoViewStateRef.current,
           autoViewId: uuidv4(),
         }
-        // Sets state for this context.
+        // Set state for this context.
         autoViewStateRef.current = updatedAutoViewState
-        // Logs this view as being topmost.
+        // Log this view as being topmost.
         P.logAutoView(updatedAutoViewState)
-        // Sets state globally for most recent logged view.
+        // Set state globally for most recent logged view.
         mostRecentlyLoggedAutoViewState = updatedAutoViewState
         routeKeyToAutoViewId.set(
           updatedAutoViewState.routeKey,
           updatedAutoViewState.autoViewId
         )
         return () => {
+          // When focus is lost, set hasSuperimposedViews.
           autoViewStateRef.current = {
             ...autoViewStateRef.current,
             hasSuperimposedViews: true,

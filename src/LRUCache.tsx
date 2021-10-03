@@ -1,6 +1,5 @@
 /** LRU cache with bounded size. */
 export class LRUCache {
-
   max: number
   cache: Map<string, string>
 
@@ -9,10 +8,10 @@ export class LRUCache {
     this.cache = new Map();
   }
 
-  get(key: string): string | undefined {
+  get(key: string): string {
     let item = this.cache.get(key);
     if (item) {
-      // refresh key
+      // Refresh position of key.
       this.cache.delete(key);
       this.cache.set(key, item);
     }
@@ -21,16 +20,17 @@ export class LRUCache {
 
   set(key: string, val: string) {
     if (this.cache.has(key)) {
-      // refresh key
+      // Refresh position of key.
       this.cache.delete(key)
     } else if (this.cache.size == this.max) {
-      // evict oldest
+      // Evict oldest.
       this.cache.delete(this.first())
     }
     this.cache.set(key, val);
   }
 
   first(): string {
+    // Map is ordered, so this returns oldest.
     return this.cache.keys().next().value;
   }
 }
