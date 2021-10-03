@@ -129,9 +129,5 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   // Expose transitive dependency for RN consumers
-<<<<<<< HEAD
-  api "ai.promoted:android-metrics-sdk:0.1.5"
-=======
   api "ai.promoted:android-metrics-sdk:0.1.6"
->>>>>>> b68bd38dd4c6df35c030344c0e7db2d8c500ca85
 }
