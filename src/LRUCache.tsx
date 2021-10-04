@@ -8,7 +8,7 @@ export class LRUCache {
     this.cache = new Map();
   }
 
-  get(key: string): string {
+  get(key: string): string | undefined {
     let item = this.cache.get(key);
     if (item) {
       // Refresh position of key.
