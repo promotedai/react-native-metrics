@@ -41,9 +41,9 @@ export interface CollectionActionDidOccurArgs {
   actionType: ActionType
   /** AutoViewId for action */
   autoViewId: string
-  content: Content
   /** Identifier for collection view to track */
   collectionId: string
+  content: Content
   /** Whether this view may not be topmost. */
   hasSuperimposedViews: boolean
 }
