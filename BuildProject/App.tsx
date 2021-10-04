@@ -51,34 +51,80 @@ const App: () => Node = () => {
   }
 
   const testLogEvents = (recordTestPassed) => {
-    const content = { _id: 'foobar'}
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
 
-    PromotedMetrics.logImpression({})
+    PromotedMetrics.logImpression({
+      autoViewId: 'fake-auto-view-id',
+      content,
+      hasSuperimposedViews: false,
+      sourceType: ImpressionSourceType.Delivery,
+    })
     recordTestPassed('logImpression')
 
-    PromotedMetrics.logAction({})
+    PromotedMetrics.logAction({
+      actionName: '',
+      actionType: ActionType.Navigate,
+      autoViewId: 'fake-auto-view-id',
+      content,
+      destinationScreenName: 'Fake Details Screen',
+      hasSuperimposedViews: false,
+    })
     recordTestPassed('logAction')
 
-    PromotedMetrics.logView({})
+    PromotedMetrics.logView({
+      routeKey: 'fake-route-key',
+      routeName: 'Fake Route Name',
+    })
     recordTestPassed('logView')
 
-    PromotedMetrics.logAutoView({})
+    PromotedMetrics.logAutoView({
+      autoViewId: 'fake-auto-view-id',
+      routeKey: 'route-key',
+      routeName: 'Fake Route Name',
+    })
     recordTestPassed('logAutoView')
   }
 
   const testCollectionView = (recordTestPassed) => {
-    const content = { _id: 'foobar'}
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
 
-    PromotedMetrics.collectionDidMount({})
+    PromotedMetrics.collectionDidMount({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      sourceType: ImpressionSourceType.Delivery,
+    })
     recordTestPassed('collectionViewDidMount')
 
-    PromotedMetrics.collectionDidChange({})
+    PromotedMetrics.collectionDidChange({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      hasSuperimposedViews: false,
+      visibleContent: [content],
+    })
     recordTestPassed('collectionViewDidChange')
 
-    PromotedMetrics.collectionActionDidOccur({})
+    PromotedMetrics.collectionActionDidOccur({
+      actionName: '',
+      actionType: ActionType.Navigate,
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      content,
+      hasSuperimposedViews: false,
+    })
     recordTestPassed('collectionViewActionDidOccur')
 
-    PromotedMetrics.collectionWillUnmount({})
+    PromotedMetrics.collectionWillUnmount({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+    })
     recordTestPassed('collectionViewWillUnmount')
   }
 
