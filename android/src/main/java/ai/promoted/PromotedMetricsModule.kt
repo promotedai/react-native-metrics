@@ -236,8 +236,9 @@ class PromotedMetricsModule(
     else -> null
   }
 
-  private fun Any?.impressionSourceType(): String? = when (this) {
-    is ReadableMap -> getInt("impressionSourceType")
+  private fun Any?.impressionSourceType(): ImpressionSourceType? = when (this) {
+    is ReadableMap ->
+      ImpressionSourceType.forNumber(getInt("impressionSourceType"))
     else -> null
   }
 
