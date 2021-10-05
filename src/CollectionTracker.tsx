@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
 import { State, TapGestureHandler } from 'react-native-gesture-handler'
-// It's okay if the import below isn't included in project deps.
+// If you get runtime errors about uuid and crypto.getRandomValues(),
+// add react-native-get-random-values to your project deps. Otherwise,
+// it's okay if you're missing this dep.
 // See https://github.com/uuidjs/uuid/issues/416.
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
