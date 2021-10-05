@@ -45,7 +45,7 @@ class PromotedMetricsModule(
     val content = args.content()
     val name = args.destinationScreenName() ?: args.actionName()
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, content.toActionData()) {}
+    PromotedAi.onAction(name, type, content.toActionData())
   }
 
   @ReactMethod
@@ -236,11 +236,12 @@ class PromotedMetricsModule(
     else -> null
   }
 
-  private fun Any?.impressionSourceType(): ImpressionSourceType? = when (this) {
-    is ReadableMap ->
-      ImpressionSourceType.forNumber(getInt("impressionSourceType"))
-    else -> null
-  }
+  // TODO: Support ImpressionSourceType in android-metrics-sdk.
+  // private fun Any?.impressionSourceType(): ImpressionSourceType? = when (this) {
+  //   is ReadableMap ->
+  //     ImpressionSourceType.forNumber(getInt("impressionSourceType"))
+  //   else -> null
+  // }
 
   private fun Any?.routeName(): String? = when (this) {
     is ReadableMap -> getString("routeName")
