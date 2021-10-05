@@ -1,7 +1,37 @@
 import { NavigationContext } from '@react-navigation/core'
+
+// If the client isn't using React Navigation v5, then the
+// useFocusEffect hook could be in react-navigation-hooks.
+// Since @r-n/core is listed as a dependency in package.json,
+// it's fine to have this require() call without a try/catch.
+let useFocusEffect = require('@react-navigation/core').useFocusEffect
+if (useFocusEffect === undefined) {
+  try {
+    useFocusEffect = require('react-navigation-hooks').useFocusEffect
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(
+        'Import react-navigation-hooks not found. ' +
+        'If you are using React Navigation <5.0.0, then ' +
+        'you must also depend on react-navigation-hooks.'
+      )
+    }
+  }
+  if (
+    useFocusEffect === undefined &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    console.error(
+      'Could not import useFocusEffect from either ' +
+      '@react-navigation/core or react-navigation-hooks. ' +
+      'View tracking will be disabled and Promoted ' +
+      'integration may be degraded.'
+    )
+  }
+}
+
 import * as React from 'react'
 import { NativeModules } from 'react-native'
-import { useFocusEffect } from 'react-navigation-hooks'
 import { v4 as uuidv4 } from 'uuid'
 
 import { LRUCache  } from './LRUCache'
