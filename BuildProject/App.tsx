@@ -5,6 +5,8 @@ import PromotedMetrics, {
   useMetricsLogger
 } from '@promotedai/react-native-metrics'
 import type { AncestorIds } from '@promotedai/react-native-metrics'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react'
 import type { Node } from 'react'
 import {
@@ -22,7 +24,7 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
-const App: () => Node = () => {
+const TestScreen: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark'
 
   const backgroundStyle = {
@@ -233,6 +235,17 @@ const App: () => Node = () => {
         keyExtractor={item => item.contentId}
       />
     </SafeAreaView>
+  )
+}
+
+const Stack = createNativeStackNavigator()
+const App: () => Node = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Test" component={TestScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 
