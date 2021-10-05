@@ -1,13 +1,20 @@
-import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker, useViewTracker } from '@promotedai/react-native-metrics'
+import PromotedMetrics, {
+  ActionType,
+  ImpressionSourceType,
+  useCollectionTracker,
+  useMetricsLogger
+} from '@promotedai/react-native-metrics'
 import type { AncestorIds } from '@promotedai/react-native-metrics'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import type { Node } from 'react'
 import {
   Button,
+  FlatList,
   Platform,
   SafeAreaView,
   StatusBar,
   Text,
+  View,
   useColorScheme,
 } from 'react-native'
 
@@ -141,20 +148,46 @@ const App: () => Node = () => {
     recordTestPassed('setAncestorIds')
   }
 
+  let TrackedList = null
   try {
-    useImpressionTracker(
-      (viewToken) => ({
-        contentId: 'foo',
-        insertionId: 'bar',
-        name: 'batman'
+
+    TrackedList = useCollectionTracker({
+      contentCreator: (item) => ({
+        contentId: item.contentId,
+        insertionId: item.insertionId,
+        name: item.title
       }),
-      'TestCollectionViewName',
-      ImpressionSourceType.Delivery
-    )
-    useViewTracker(useRef())
+      sourceType: ImpressionSourceType.Delivery
+    })(FlatList)
+
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
+
+    const metricsLogger = useMetricsLogger()
+
+    metricsLogger.logImpression({
+      content,
+      sourceType: ImpressionSourceType.ClientBackend
+    })
+
+    metricsLogger.logAction({
+      actionName: 'foo',
+      actionType: ActionType.AddToCart,
+      content,
+      destinationScreenName: ''
+    })
+
+    metricsLogger.logView({
+      routeKey: 'key',
+      routeName: 'name'
+    })
+
     useEffect(() => {
-      setText('Passed: useImpressionTracker\n' +
-              'Passed: useViewTracker\n' +
+      setText('Passed: useCollectionTracker\n' +
+              'Passed: metricsLogger\n' +
               'All hooks passed')
     }, [])
   } catch (err) {
@@ -171,6 +204,15 @@ const App: () => Node = () => {
     }
   )
 
+  const Item = ({ name }) => (
+    <View>
+      <Text>{name}</Text>
+    </View>
+  );
+  const renderItem = ({ item }) => (
+    <Item name={item.name} />
+  );
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -181,6 +223,15 @@ const App: () => Node = () => {
       <Text {...testID('messages-text')}>
         {text}
       </Text>
+      <TrackedList
+        data={[{
+          name: 'batman',
+          contentId: 'robin',
+          insertionId: 'joker'
+        }]}
+        renderItem={renderItem}
+        keyExtractor={item => item.contentId}
+      />
     </SafeAreaView>
   )
 }
