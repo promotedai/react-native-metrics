@@ -21,7 +21,7 @@ build_android_app() {
   react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
 
   echo "$0: [Android] Removing duplicate dirs\n"
-  rm -rf android/app/src/main/res/drawable-mdpi
+  rm -rf android/app/src/main/res/drawable-*
   rm -rf android/app/src/main/res/raw
 
   echo "$0: [Android] Building apk\n"
