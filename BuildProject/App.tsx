@@ -208,7 +208,7 @@ const TestScreen: () => Node = () => {
 
   const Item = ({ name }) => (
     <View>
-      <Text>{name}</Text>
+      <Text>[[[{name}]]]</Text>
     </View>
   );
   const renderItem = ({ item }) => (
@@ -225,6 +225,7 @@ const TestScreen: () => Node = () => {
       <Text {...testID('messages-text')}>
         {text}
       </Text>
+      <Text>List</Text>
       <TrackedList
         data={[{
           name: 'batman',
