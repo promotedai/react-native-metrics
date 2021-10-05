@@ -36,6 +36,7 @@ if (useNavigation === undefined || useFocusEffect === undefined) {
         key: '',
       },
     })
+    // @ts-ignore (TS6133: 'any' is declared but its value is never read)
     useFocusEffect = (any) => {}
     isReactNavigation5OrLater = false
   }
