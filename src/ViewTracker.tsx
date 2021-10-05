@@ -77,6 +77,22 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
  */
 var routeKeyToAutoViewId = new LRUCache()
 
+function getStateReactNavigation5OrLater(navigation) {
+  const state = navigation.getState()
+  const route = state.routes[state.index]
+  return {
+    routeName: route.name,
+    routeKey: route.key,
+  }
+}
+
+function getStateReactNavigation4OrEarlier(navigation) {
+  return {
+    routeName: navigation.state.routeName,
+    routeKey: navigation.state.key,
+  }
+}
+
 /**
  * Creates a reference to an `AutoViewState` and automatically logs a
  * Promoted view when it receives navigation focus. The reference will
@@ -117,17 +133,10 @@ var routeKeyToAutoViewId = new LRUCache()
  */
 export function useAutoViewState() {
   const navigation = useNavigation()
-  console.log('*****', navigation.state)
   const { routeName, routeKey } = (
     isReactNavigation5OrLater ?
-    {
-      routeName: 'hello',
-      routeKey: 'world',
-    } :
-    {
-      routeName: navigation?.state?.routeName,
-      routeKey: navigation?.state?.key,
-    }
+    getStateReactNavigation5OrLater(navigation) :
+    getStateReactNavigation4OrEarlier(navigation)
   )
   const autoViewStateRef = React.useRef({
     routeName,
