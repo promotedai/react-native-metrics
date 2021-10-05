@@ -177,12 +177,6 @@ public extension PromotedMetricsModule {
 
   /// Logs actions for content in a given collection view.
   /// Call this method when an action occurs within a tracked collection view.
-  ///
-  /// - Parameters:
-  ///   - actionType: As defined by `ActionType`.
-  ///   - content: Content involved in action
-  ///   - name: Action name, mostly used if `actionType` is `Custom`
-  ///   - id: Identifier for collection view to track.
   @objc(collectionActionDidOccur:)
   func collectionActionDidOccur(_ args: CollectionActionDidOccurArgs?) {
     guard
@@ -204,8 +198,6 @@ public extension PromotedMetricsModule {
 
   /// Ends tracking session for given collection view.
   /// Drops all associated impression logging state.
-  ///
-  /// - Parameter id: Identifier for collection view to track.
   @objc(collectionWillUnmount:)
   func collectionWillUnmount(_ args: CollectionWillUnmountArgs?) {
     guard
@@ -299,7 +291,12 @@ private extension ReactNativeDictionary {
 
   var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
 
-  var hasSuperimposedViews: Bool { valueForCalledPropertyNameAsKey() ?? false }
+  var hasSuperimposedViews: Bool {
+    guard
+      let value: Int? = valueForCalledPropertyNameAsKey()
+    else { return false }
+    return (value != 0 )
+  }
 
   var impressionSourceType: ImpressionSourceType {
     ImpressionSourceType(
