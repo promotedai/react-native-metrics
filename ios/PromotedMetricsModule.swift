@@ -295,7 +295,7 @@ private extension ReactNativeDictionary {
     guard
       let value: Int? = valueForCalledPropertyNameAsKey()
     else { return false }
-    return (value != 0 )
+    return (value != 0)
   }
 
   var impressionSourceType: ImpressionSourceType {
