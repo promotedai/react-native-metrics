@@ -25,11 +25,19 @@ if (useNavigation === undefined || useFocusEffect === undefined) {
     process.env.NODE_ENV !== 'production'
   ) {
     console.error(
-      'Could not import useFocusEffect from either ' +
+      'Could not import navigation hooks from either ' +
       '@react-navigation/core or react-navigation-hooks. ' +
       'View tracking will be disabled and Promoted ' +
       'integration may be degraded.'
     )
+    useNavigation = () => ({
+      state: {
+        routeName: '',
+        key: '',
+      },
+    })
+    useFocusEffect = (any) => {}
+    isReactNavigation5OrLater = false
   }
 }
 
