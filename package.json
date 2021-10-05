@@ -54,11 +54,11 @@
     ]
   },
   "peerDependencies": {
-    "@react-navigation/core": ">=5.0.0",
-    "react": ">=16.14.0",
-    "react-native": ">=0.64.2",
+    "@react-navigation/core": ">= 5.0.0",
+    "react": ">= 16.14.0",
+    "react-native": ">= 0.64.2",
     "react-native-gesture-handler": "^1.10.3",
-    "uuid": ">=3.0.0"
+    "react-native-uuid": ">= 1.0.0"
   },
   "devDependencies": {
     "react": "^16.14.0",

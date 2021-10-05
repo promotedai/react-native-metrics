@@ -1,13 +1,15 @@
-import { NavigationContext } from '@react-navigation/core'
-
 // If the client isn't using React Navigation v5, then the
 // useFocusEffect hook could be in react-navigation-hooks.
 // Since @r-n/core is listed as a dependency in package.json,
 // it's fine to have this require() call without a try/catch.
+let useNavigation = require('@react-navigation/core').useNavigation
 let useFocusEffect = require('@react-navigation/core').useFocusEffect
-if (useFocusEffect === undefined) {
+let isReactNavigation5OrLater = true
+if (useNavigation === undefined || useFocusEffect === undefined) {
   try {
+    useNavigation = require('react-navigation-hooks').useNavigation
     useFocusEffect = require('react-navigation-hooks').useFocusEffect
+    isReactNavigation5OrLater = false
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
       console.error(
@@ -18,7 +20,7 @@ if (useFocusEffect === undefined) {
     }
   }
   if (
-    useFocusEffect === undefined &&
+    (useNavigation === undefined || useFocusEffect === undefined) &&
     process.env.NODE_ENV !== 'production'
   ) {
     console.error(
@@ -32,7 +34,7 @@ if (useFocusEffect === undefined) {
 
 import * as React from 'react'
 import { NativeModules } from 'react-native'
-import { v4 as uuidv4 } from 'uuid'
+import uuid from 'react-native-uuid'
 
 import LRUCache from './LRUCache'
 import type { PromotedMetricsType } from './PromotedMetricsType'
@@ -114,12 +116,23 @@ var routeKeyToAutoViewId = new LRUCache()
  * @returns Reference to `AutoViewState`
  */
 export function useAutoViewState() {
-  const navigation = React.useContext(NavigationContext)
-  const { routeName, key } = navigation?.state
+  const navigation = useNavigation()
+  console.log('*****', navigation.state)
+  const { routeName, routeKey } = (
+    isReactNavigation5OrLater ?
+    {
+      routeName: 'hello',
+      routeKey: 'world',
+    } :
+    {
+      routeName: navigation?.state?.routeName,
+      routeKey: navigation?.state?.key,
+    }
+  )
   const autoViewStateRef = React.useRef({
-    routeName: routeName,
-    routeKey: key,
-    autoViewId: routeKeyToAutoViewId.get(key),
+    routeName,
+    routeKey,
+    autoViewId: routeKeyToAutoViewId.get(routeKey),
     hasSuperimposedViews: true,
   } as AutoViewState)
 
@@ -160,7 +173,7 @@ export function useAutoViewState() {
         // Generate a new autoViewId.
         const updatedAutoViewState = {
           ...autoViewStateRef.current,
-          autoViewId: uuidv4(),
+          autoViewId: uuid.v4(),
         }
         // Set state for this context.
         autoViewStateRef.current = updatedAutoViewState

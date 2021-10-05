@@ -1,12 +1,7 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
 import { State, TapGestureHandler } from 'react-native-gesture-handler'
-// If you get runtime errors about uuid and crypto.getRandomValues(),
-// add react-native-get-random-values to your project deps. Otherwise,
-// it's okay if you're missing this dep.
-// See https://github.com/uuidjs/uuid/issues/416.
-import 'react-native-get-random-values'
-import { v4 as uuidv4 } from 'uuid'
+import uuid from 'react-native-uuid'
 
 import { ActionType } from './ActionType'
 import type { Content } from './Content'
@@ -273,7 +268,7 @@ export function CollectionTracker<
       ...rest
     } : P) : React.ReactElement => {
 
-      const collectionId = React.useRef(uuidv4())
+      const collectionId = React.useRef(uuid.v4())
 
       const {
         _viewabilityConfig,
