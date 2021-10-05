@@ -34,7 +34,7 @@ import * as React from 'react'
 import { NativeModules } from 'react-native'
 import { v4 as uuidv4 } from 'uuid'
 
-import { LRUCache  } from './LRUCache'
+import LRUCache from './LRUCache'
 import type { PromotedMetricsType } from './PromotedMetricsType'
 
 const { PromotedMetrics } = NativeModules

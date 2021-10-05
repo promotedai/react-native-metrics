@@ -1,5 +1,5 @@
 /** LRU cache with bounded size. */
-export class LRUCache {
+export default class LRUCache {
   max: number
   cache: Map<string, string>
 
