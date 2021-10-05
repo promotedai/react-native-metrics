@@ -1,6 +1,9 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
 import { State, TapGestureHandler } from 'react-native-gesture-handler'
+// It's okay if the import below isn't included in project deps.
+// See https://github.com/uuidjs/uuid/issues/416.
+import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ActionType } from './ActionType'
