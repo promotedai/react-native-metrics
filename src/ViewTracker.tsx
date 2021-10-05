@@ -1,7 +1,8 @@
 // If the client isn't using React Navigation v5, then the
-// useFocusEffect hook could be in react-navigation-hooks.
+// useNavigation/useFocusEffect hooks could be in
+// react-navigation-hooks.
 // Since @r-n/core is listed as a dependency in package.json,
-// it's fine to have this require() call without a try/catch.
+// it's fine to have this outer require() without a try/catch.
 let useNavigation = require('@react-navigation/core').useNavigation
 let useFocusEffect = require('@react-navigation/core').useFocusEffect
 let isReactNavigation5OrLater = true
