@@ -19,7 +19,6 @@
     "react": "^17.0.1",
     "react-native": "^0.64.2",
     "react-native-gesture-handler": "^1.10.3",
-    "react-navigation-hooks": "^1.1.0",
     "wd": "^1.14.0"
   },
   "devDependencies": {
