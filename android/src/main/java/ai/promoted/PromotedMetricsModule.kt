@@ -43,7 +43,7 @@ class PromotedMetricsModule(
   fun logAction(args: ReadableMap) {
     val type = args.actionType() ?: return
     val content = args.content()
-    val name = args.destinationScreenName() ?: args.actionName()
+    val name = args.destinationScreenName() ?: args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
     PromotedAi.onAction(name, type, content.toActionData())
   }
@@ -93,9 +93,9 @@ class PromotedMetricsModule(
     // val id = args.collectionId() ?: return
     val content = args.content() ?: return
     val type = args.actionType() ?: return
-    val name = args.actionName()
+    val name = args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, content.toActionData()) {}
+    PromotedAi.onAction(name, type, content.toActionData())
   }
 
   @ReactMethod
@@ -231,9 +231,9 @@ class PromotedMetricsModule(
     else -> null
   }
 
-  private fun Any?.hasSuperimposedViews(): String? = when (this) {
+  private fun Any?.hasSuperimposedViews(): Boolean = when (this) {
     is ReadableMap -> getBoolean("hasSuperimposedViews")
-    else -> null
+    else -> false
   }
 
   // TODO: Support ImpressionSourceType in android-metrics-sdk.
