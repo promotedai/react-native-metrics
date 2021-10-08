@@ -6,7 +6,7 @@
 let useNavigation = require('@react-navigation/core').useNavigation
 let useFocusEffect = require('@react-navigation/core').useFocusEffect
 let isReactNavigation5OrLater = true
-if (useNavigation === undefined || useFocusEffect === undefined) {
+if (!useNavigation || !useFocusEffect) {
   try {
     useNavigation = require('react-navigation-hooks').useNavigation
     useFocusEffect = require('react-navigation-hooks').useFocusEffect
