@@ -32,69 +32,48 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun logImpression(content: ReadableMap?) {
-    PromotedAi.onImpression(content.toImpressionData())
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  // TODO: Support ImpressionSourceType in android-metrics-sdk
-  fun logImpressionWithSourceType(content: ReadableMap?, sourceType: Int) {
-    PromotedAi.onImpression(content.toImpressionData())
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logNavigateAction(content: ReadableMap) =
-    PromotedAi.onAction(ActionType.NAVIGATE.toString(), ActionType.NAVIGATE, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logNavigateActionWithScreenName(content: ReadableMap, screenName: String) =
-    PromotedAi.onAction(screenName, ActionType.NAVIGATE, content.toActionData())
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logAction(type: Int, content: ReadableMap) {
-    val actionType = ActionType.forNumber(type) ?: return
-    PromotedAi.onAction(actionType.toString(), actionType, content.toActionData())
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logActionWithName(type: Int, content: ReadableMap, name: String) {
-    val actionType = ActionType.forNumber(type) ?: return
-    PromotedAi.onAction(name, actionType, content.toActionData())
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logViewReady(routeName: String?, routeKey: String?) {
-    routeName ?: return
-    PromotedAi.onViewVisible(routeName)
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun logViewChange(routeName: String?, routeKey: String?) {
-    routeName ?: return
-    PromotedAi.onViewVisible(routeName)
-  }
-
-  @ReactMethod
-  @Suppress("Unused")
-  fun collectionViewDidMount(id: String?, sourceType: Int) {
+  fun logImpression(args: ReadableMap) {
+    val content = args.content() ?: return
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    id ?: return
+    PromotedAi.onImpression(args.content().toImpressionData())
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logAction(args: ReadableMap) {
+    val type = args.actionType() ?: return
+    val content = args.content()
+    val name = args.destinationScreenName() ?: args.actionName() ?: ""
+    // TODO: Support AutoView in android-metrics-sdk
+    PromotedAi.onAction(name, type, content.toActionData())
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logView(args: ReadableMap) {
+    val routeName = args.routeName() ?: return
+    PromotedAi.onViewVisible(routeName)
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun logAutoView(args: ReadableMap) {
+    // TODO: Support AutoView in android-metrics-sdk
+  }
+
+  @ReactMethod
+  @Suppress("Unused")
+  fun collectionDidMount(args: ReadableMap) {
+    val id = args.collectionId() ?: return
+    // TODO: Support ImpressionSourceType in android-metrics-sdk
     PromotedAi.onCollectionVisible(id, emptyList())
   }
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewDidChange(visibleContent: ReadableArray?,
-                              id: String?) {
-    id ?: return
-    visibleContent ?: return
+  fun collectionDidChange(args: ReadableMap) {
+    val id = args.collectionId() ?: return
+    val visibleContent = args.visibleContent() ?: return
 
     val visibleContentForSdk =
       visibleContent
@@ -108,20 +87,21 @@ class PromotedMetricsModule(
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewActionDidOccur(type: Int,
-                                   content: ReadableMap,
-                                   name: String?,
-                                   id: String?) {
-    id ?: return
-    val actionType = ActionType.forNumber(type) ?: return
-    // TODO: Map impressionId for content.
-    PromotedAi.onAction(name ?: "", actionType, content.toActionData())
+  fun collectionActionDidOccur(args: ReadableMap) {
+    // TODO: Use the collectionId to read impressionId
+    // for content from collection tracker.
+    // val id = args.collectionId() ?: return
+    val content = args.content() ?: return
+    val type = args.actionType() ?: return
+    val name = args.actionName() ?: ""
+    // TODO: Support AutoView in android-metrics-sdk
+    PromotedAi.onAction(name, type, content.toActionData())
   }
 
   @ReactMethod
   @Suppress("Unused")
-  fun collectionViewWillUnmount(id: String?) {
-    id ?: return
+  fun collectionWillUnmount(args: ReadableMap) {
+    val id = args.collectionId() ?: return
     PromotedAi.onCollectionHidden(id)
   }
 
@@ -172,7 +152,7 @@ class PromotedMetricsModule(
   }
 
   /**
-   * Convert an RN [ReadableMap] to an [ActionData].
+   * Convert an RN [ReadableMap] to an [ImpressionData].
    */
   private fun Any?.toImpressionData(): ImpressionData {
     val insertionId = insertionId()
@@ -216,6 +196,65 @@ class PromotedMetricsModule(
         ?: this["contentId"] as? String?
         ?: this["_id"] as? String?
     }
+    else -> null
+  }
+
+  // Argument to logging methods
+
+  private fun Any?.actionName(): String? = when (this) {
+    is ReadableMap -> getString("actionName")
+    else -> null
+  }
+
+  private fun Any?.actionType(): ActionType? = when (this) {
+    is ReadableMap -> ActionType.forNumber(getInt("actionType"))
+    else -> null
+  }
+
+  private fun Any?.autoViewId(): String? = when (this) {
+    is ReadableMap -> getString("autoViewId")
+    else -> null
+  }
+
+  private fun Any?.collectionId(): String? = when (this) {
+    is ReadableMap -> getString("collectionId")
+    else -> null
+  }
+
+  private fun Any?.content(): ReadableMap? = when (this) {
+    is ReadableMap -> getMap("content")
+    else -> null
+  }
+
+  private fun Any?.destinationScreenName(): String? = when (this) {
+    is ReadableMap -> getString("destinationScreenName")
+    else -> null
+  }
+
+  private fun Any?.hasSuperimposedViews(): Boolean = when (this) {
+    is ReadableMap -> getBoolean("hasSuperimposedViews")
+    else -> false
+  }
+
+  // TODO: Support ImpressionSourceType in android-metrics-sdk.
+  // private fun Any?.impressionSourceType(): ImpressionSourceType? = when (this) {
+  //   is ReadableMap ->
+  //     ImpressionSourceType.forNumber(getInt("impressionSourceType"))
+  //   else -> null
+  // }
+
+  private fun Any?.routeName(): String? = when (this) {
+    is ReadableMap -> getString("routeName")
+    else -> null
+  }
+
+  private fun Any?.routeKey(): String? = when (this) {
+    is ReadableMap -> getString("routeKey")
+    else -> null
+  }
+
+  private fun Any?.visibleContent(): ReadableArray? = when (this) {
+    is ReadableMap -> getArray("visibleContent")
     else -> null
   }
 }

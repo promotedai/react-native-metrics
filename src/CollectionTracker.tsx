@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
 import { State, TapGestureHandler } from 'react-native-gesture-handler'
-import { v4 as uuidv4 } from 'uuid'
+import uuid from 'react-native-uuid'
 
 import { ActionType } from './ActionType'
-import type { Content } from './PromotedMetricsType'
+import type { Content } from './Content'
 import { ImpressionSourceType } from './ImpressionSourceType'
+import { useAutoViewState } from './ViewTracker'
 import { useImpressionTracker } from './useImpressionTracker'
 
 const { PromotedMetrics } = NativeModules
@@ -55,7 +56,7 @@ export interface CollectionActionState {
 }
 
 /** React.Context used to send the state-setting function to children. */
-const TrackerContext = React.createContext({
+const CollectionTrackerContext = React.createContext({
   // @ts-ignore (TS6133: CollectionActionState declared but not used)
   setActionState: (CollectionActionState) => {},
 })
@@ -78,13 +79,12 @@ const TrackerContext = React.createContext({
  *
  * ## Functional Components
  *
- * Suppose you have a list item with a "Like" button and a "More Like This"
- * button, and tapping on these buttons should record `ActionType.Like` and
- * `ActionType.Custom` respectively. In your `renderItem` function, add the
- * following to the event handlers for your "Like" and "More Like This" buttons:
+ * Suppose you have a list item with a "Like" button, and tapping on this
+ * button should record `ActionType.Like/Unlike`. In your `renderItem`
+ * function, add the following to the event handler for your "Like" button:
  * ```
  * const renderItem = ({ item }) => {
- *   const setActionState = useCollectionActionState()
+ *   const { setActionState } = useCollectionActionState()
  *   const likeButtonHandler = () => {
  *     // Report this tap is ActionType.Like to Promoted.
  *     // The rest of the details are automatically filled in.
@@ -146,12 +146,14 @@ const TrackerContext = React.createContext({
  * @returns setter function for `actionType` and `name`
  */
 export function useCollectionActionState() {
-  const context = React.useContext(TrackerContext)
-  return ({
-    actionType,
-    name = '',
-  }: CollectionActionState) => {
-    context.setActionState({ actionType, name })
+  const context = React.useContext(CollectionTrackerContext)
+  return {
+    setActionState: ({
+      actionType,
+      name = '',
+    }: CollectionActionState) => {
+      context.setActionState({ actionType, name })
+    }
   }
 }
 
@@ -223,11 +225,6 @@ export function useCollectionActionState() {
  * })(FlatList)
  *
  * class MyItemList extends PureComponent<...> {
- *   public render() {
- *     return (
- *       <TrackedList>...</TrackedList>
- *     )
- *   }
  *   private renderItem = ({ item, setActionState }) => {
  *     return (
  *       <MyListItem data={item}>
@@ -256,28 +253,31 @@ export function useCollectionActionState() {
  *
  * @returns Wrapped component to use as list component
  */
-export function CollectionTracker<P extends CollectionTrackerProps>({
+export function CollectionTracker<
+  P extends CollectionTrackerProps
+>({
   contentCreator,
   sourceType = ImpressionSourceType.Unknown,
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
-    const trackerId = uuidv4()
-
-    const WrappedComponent = ({
+    const CollectionTrackerComponent = ({
       onViewableItemsChanged,
       renderItem,
       viewabilityConfig,
       viewabilityConfigCallbackPairs,
       ...rest
     } : P) : React.ReactElement => {
+
+      const collectionId = React.useRef(uuid.v4())
+
       const {
         _viewabilityConfig,
         _onViewableItemsChanged,
-      } = useImpressionTracker(
-        ({ item }) => contentCreator(item),
-        trackerId,
+      } = useImpressionTracker({
+        contentCreator: ({ item }) => contentCreator(item),
+        collectionId: collectionId.current,
         sourceType,
-      )
+      })
 
       // Merge existing viewability configs with our own if needed.
       // Otherwise, just use our viewability config.
@@ -307,6 +307,14 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
         actionType: ActionType.Unknown,
         name: '',
       } as CollectionActionState)
+      const autoViewStateRef = useAutoViewState()
+
+      // Blur events occur between BEGAN and ACTIVE, so we need to
+      // use the auto view state on BEGAN to accurately determine
+      // the state of hasSuperimposedViews.
+      const tapBeginAutoViewStateRef = React.useRef(
+        autoViewStateRef.current
+      )
 
       // Wrap the rendered item with a TapGestureHandler. This handler
       // will receive events even if child components consume it.
@@ -327,17 +335,24 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
               actionType: ActionType.Navigate,
               name: null,
             })
+            tapBeginAutoViewStateRef.current = autoViewStateRef.current
             break
           case State.ACTIVE:
             // If an accessory event handler has set `actionType` to
             // `null`, do not log.
             if (actionState.actionType) {
-              PromotedMetrics.collectionViewActionDidOccur(
-                actionState.actionType,
-                contentCreator(item),
-                actionState.name ?? '',
-                trackerId
-              )
+              const {
+                autoViewId,
+                hasSuperimposedViews,
+              } = tapBeginAutoViewStateRef.current
+              PromotedMetrics.collectionActionDidOccur({
+                actionName: actionState.name ?? '',
+                actionType: actionState.actionType,
+                autoViewId,
+                content: contentCreator(item),
+                collectionId: collectionId.current,
+                hasSuperimposedViews,
+              })
             }
             break
           }
@@ -355,7 +370,7 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
       }
 
       return (
-        <TrackerContext.Provider
+        <CollectionTrackerContext.Provider
           value={{setActionState: args => { setActionState(args) }}}
         >
           <Component
@@ -363,15 +378,15 @@ export function CollectionTracker<P extends CollectionTrackerProps>({
             {...viewabilityArgs}
             {...rest}
           />
-        </TrackerContext.Provider>
+        </CollectionTrackerContext.Provider>
       )
     }
 
-    WrappedComponent.displayName = `CollectionTracker(${
+    CollectionTrackerComponent.displayName = `CollectionTracker(${
       Component.displayName || Component.name
     })`
 
-    return WrappedComponent
+    return CollectionTrackerComponent
   }
 }
 

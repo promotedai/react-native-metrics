@@ -1,21 +1,58 @@
 import type { ActionType } from './ActionType'
+import type { Content } from './Content'
 import type { ImpressionSourceType } from './ImpressionSourceType'
-
-/**
- * Marketplace content (saleable item, partner) involved with
- * Promoted delivery.
- */
-export interface Content {
-  contentId?: string
-  insertionId?: string
-  name?: string
-}
+import type {
+  InternalLogImpressionArgs,
+  InternalLogActionArgs,
+  LogAutoViewArgs,
+  LogViewArgs,
+} from './LoggerArgs'
 
 /** Provides session context for Promoted integration points. */
 export interface AncestorIds {
   logUserId?: string
   sessionId?: string
   viewId?: string
+}
+
+export interface CollectionDidMountArgs {
+  /** AutoViewId for impression */
+  autoViewId: string
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** Origin of impressed content */
+  sourceType: ImpressionSourceType
+}
+
+export interface CollectionDidChangeArgs {
+  /** AutoViewId for impression */
+  autoViewId: string
+  /** Identifier for collection view to track */
+  collectionId: string
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
+  /** List of currently visible content */
+  visibleContent: Array<Content>
+}
+
+export interface CollectionActionDidOccurArgs {
+  /** Action name, used if `actionType` is Custom */
+  actionName: string
+  actionType: ActionType
+  /** AutoViewId for action */
+  autoViewId: string
+  /** Identifier for collection view to track */
+  collectionId: string
+  content: Content
+  /** Whether this view may not be topmost. */
+  hasSuperimposedViews: boolean
+}
+
+export interface CollectionWillUnmountArgs {
+  /** AutoViewId for impression */
+  autoViewId: string
+  /** Identifier for collection view to track */
+  collectionId: string
 }
 
 // Maintainers:
@@ -40,154 +77,104 @@ export type PromotedMetricsType = {
    */
   startSessionAndLogSignedOutUser(): void
 
-  // Impression logging
-
   /**
    * Logs an impression for given content.
    * Typically, you would call withCollectionTracker() for use with
    * SectionLists and FlatLists. This method should only be used
    * outside of those components.
    */
-  logImpression(
-    content: Object
-  ): void
-
-  /**
-   * Logs an impression for given content.
-   * Typically, you would call withCollectionTracker() for use with
-   * SectionLists and FlatLists. This method should only be used
-   * outside of those components.
-   */
-  logImpressionWithSourceType(
-    content: Object,
-    sourceType: ImpressionSourceType
-  ): void
-
-  // Action logging
-
-  /**
-   * Logs a clickthrough for details about given content.
-   *
-   * @param content content whose details are requested
-   */
-  logNavigateAction(
-    content: Object
-  ): void
-
-  /**
-   * Logs a clickthrough for details about given content.
-   *
-   * @param content content whose details are requested
-   * @param screenName name of screen that will display content details
-   */
-  logNavigateActionWithScreenName(
-    content: Object,
-    screenName: string
-  ): void
-
-  /**
-   * Logs an action on given content.
-   *
-   * @param type Semantic meaning of action in marketplace.
-   *   If you use CustomActionType, provide a name for the action
-   *   using logActionWithName.
-   * @param content content whose details are requested
-   */
-  logAction(
-    type: ActionType,
-    content: Object
-  ): void
+  logImpression({
+    autoViewId,
+    content,
+    hasSuperimposedViews,
+    sourceType,
+  } : InternalLogImpressionArgs): void
 
   /**
    * Logs an action on given content.
    * Any action type can have a custom name to distinguish different
    * actions in the same class. If you use ActionType.CustomActionType,
    * use this method and provide a name for the action.
-   *
-   * @param type semantic meaning of action in marketplace
-   * @param content content whose details are requested
-   * @param name custom name for action
    */
-  logActionWithName(
-    type: ActionType,
-    content: Object,
-    name: string
-  ): void
+  logAction({
+    content,
+    actionName,
+    actionType,
+    autoViewId,
+    destinationScreenName,
+    hasSuperimposedViews,
+  } : InternalLogActionArgs): void
 
   // View logging
 
   /**
-   * Logs a screen view. Use with NavigationContainer's onReady handler
-   * to provide the name and key from the current navigation route.
+   * Logs a screen view. Prefer to use `CollectionTracker` and
+   * `ViewTracker` if you can. In situations where you cannot do so,
+   * such as logging a view for a screen that generates no impressions
+   * or action, use this method.
    */
-  logViewReady(
-    routeName: string,
-    routeKey: string
-  ): void
+  logView({
+    routeName,
+    routeKey,
+  } : LogViewArgs): void
 
   /**
-   * Logs a screen view. Use with NavigationContainer's onChange handler
-   * to provide the name and key from the current navigation route.
+   * Used internally to log auto views.
+   * Don't call this method from outside the `@promotedai` library.
    */
-  logViewChange(
-    routeName: string,
-    routeKey: string
-  ): void
+  logAutoView({
+    routeName,
+    routeKey,
+    autoViewId,
+  } : LogAutoViewArgs): void
 
-  // Impression logging
+  // Collection tracking
 
   /**
    * Begins tracking session for given collection view.
    * Can be called multiple times in succession, such as when a collection
    * view reloads on a timer. In these cases, the impression logging state
    * from the previous session will persist.
-   *
-   * @param id identifier for collection view to track
-   * @param sourceType origin of impressed content
    */
-  collectionViewDidMount(
-    id: string,
-    sourceType: ImpressionSourceType
-  ): void
+  collectionDidMount({
+    autoViewId,
+    collectionId,
+    sourceType,
+  } : CollectionDidMountArgs): void
 
   /**
    * Logs impressions for changed content.
    * Call this method with currently visible content and the underlying
    * `ImpressionLogger` will calculate deltas and log appropriate events.
-   *
-   * @param visibleContent list of currently visible content
-   * @param id identifier for collection view to track
    */
-  collectionViewDidChange(
-    visibleContent: Array<Object>,
-    id: string
-  ): void
+  collectionDidChange({
+    autoViewId,
+    collectionId,
+    hasSuperimposedViews,
+    visibleContent,
+  } : CollectionDidChangeArgs): void
 
   /**
    * Logs actions for content in a given collection view.
-   * Call this method when an action occurs within a tracked collection view.
-   *
-   * @param actionType see `ActionType`
-   * @param content content for which action occurred
-   * @param name action name, if `actionType` is Custom
-   * @param id identifier for collection view to track
+   * Call this method when an action occurs within a tracked collection.
    */
-  collectionViewActionDidOccur(
-    actionType: ActionType,
-    content: Object,
-    name: string,
-    id: string
-  ): void
+  collectionActionDidOccur({
+    actionName,
+    actionType,
+    autoViewId,
+    collectionId,
+    content,
+    hasSuperimposedViews,
+  } : CollectionActionDidOccurArgs): void
 
   /**
-   * Ends tracking session for given collection view.
+   * Ends tracking session for given collection.
    * Drops all associated impression logging state.
-   *
-   * @param id identifier for collection view to track
    */
-  collectionViewWillUnmount(
-    id: string
-  ): void
+  collectionWillUnmount({
+    autoViewId,
+    collectionId,
+  } : CollectionWillUnmountArgs): void
 
   // Ancestor IDs
 

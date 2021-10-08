@@ -1,7 +1,10 @@
-import { useCallback, useEffect } from 'react'
+import * as React from 'react'
 import { NativeModules } from 'react-native'
 import type { ViewToken } from 'react-native'
+
+import type { Content } from './Content'
 import { ImpressionSourceType } from './ImpressionSourceType'
+import { useAutoViewState } from './ViewTracker'
 
 const { PromotedMetrics } = NativeModules
 
@@ -12,29 +15,60 @@ export const promotedViewabilityConfig = {
   itemVisiblePercentThreshold: 50
 }
 
+export interface UseImpressionTrackerArgs {
+  /** Function to map list items to Promoted Content. */
+  contentCreator: (viewToken: ViewToken) => Content
+  /** UUID for tracked collection. */
+  collectionId: string
+  /** Source of presented list content. Default: ClientBackend. */
+  sourceType: ImpressionSourceType
+}
+
 /**
  * Returns handlers for use with onViewableItemsChanged and
  * viewabilityConfig for FlatLists and SectionLists.
  */
-export const useImpressionTracker = (
-  contentCreator: (viewToken: ViewToken) => Object,
-  collectionViewName: string,
-  sourceType: ImpressionSourceType = ImpressionSourceType.Unknown
-) => {
+export const useImpressionTracker = ({
+  contentCreator,
+  collectionId,
+  sourceType = ImpressionSourceType.Unknown,
+} : UseImpressionTrackerArgs) => {
 
   const _viewabilityConfig = promotedViewabilityConfig
+  const autoViewStateRef = useAutoViewState()
+  const _onViewableItemsChanged = React.useCallback(
+    ({viewableItems}) => {
+      const contentList = viewableItems.map(contentCreator)
+      const {
+        autoViewId,
+        hasSuperimposedViews,
+      } = autoViewStateRef.current
+      PromotedMetrics.collectionDidChange({
+        autoViewId,
+        collectionId,
+        hasSuperimposedViews,
+        visibleContent: contentList,
+      })
+    },
+    [],
+  )
 
-  const _onViewableItemsChanged = useCallback(({viewableItems}) => {
-    const contentList = viewableItems.map(contentCreator)
-    PromotedMetrics.collectionViewDidChange(contentList, collectionViewName)
-  }, [])
-
-  useEffect(() => {
-    PromotedMetrics.collectionViewDidMount(collectionViewName, sourceType)
-    return () => {
-      PromotedMetrics.collectionViewWillUnmount(collectionViewName)
-    }
-  }, [])
+  React.useEffect(
+    () => {
+      PromotedMetrics.collectionDidMount({
+        autoViewId: autoViewStateRef.current.autoViewId,
+        collectionId,
+        sourceType,
+      })
+      return () => {
+        PromotedMetrics.collectionWillUnmount({
+          autoViewId: autoViewStateRef.current.autoViewId,
+          collectionId,
+        })
+      }
+    },
+    [],
+  )
 
   return { _viewabilityConfig, _onViewableItemsChanged }
 }

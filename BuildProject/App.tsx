@@ -1,13 +1,22 @@
-import PromotedMetrics, { ActionType, ImpressionSourceType, useImpressionTracker, useViewTracker } from '@promotedai/react-native-metrics'
+import PromotedMetrics, {
+  ActionType,
+  ImpressionSourceType,
+  useCollectionTracker,
+  useMetricsLogger
+} from '@promotedai/react-native-metrics'
 import type { AncestorIds } from '@promotedai/react-native-metrics'
-import React, { useEffect, useRef, useState } from 'react'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react'
 import type { Node } from 'react'
 import {
   Button,
+  FlatList,
   Platform,
   SafeAreaView,
   StatusBar,
   Text,
+  View,
   useColorScheme,
 } from 'react-native'
 
@@ -15,7 +24,7 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
-const App: () => Node = () => {
+const TestScreen: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark'
 
   const backgroundStyle = {
@@ -51,46 +60,80 @@ const App: () => Node = () => {
   }
 
   const testLogEvents = (recordTestPassed) => {
-    const content = { _id: 'foobar'}
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
 
-    PromotedMetrics.logImpression(content)
+    PromotedMetrics.logImpression({
+      autoViewId: 'fake-auto-view-id',
+      content,
+      hasSuperimposedViews: false,
+      sourceType: ImpressionSourceType.Delivery,
+    })
     recordTestPassed('logImpression')
 
-    PromotedMetrics.logImpressionWithSourceType(content, ImpressionSourceType.Delivery)
-    recordTestPassed('logImpressionWithSourceType')
-
-    PromotedMetrics.logViewReady('foobar', 'batman')
-    recordTestPassed('logViewReady')
-
-    PromotedMetrics.logViewChange('spaghetti', 'meatballs')
-    recordTestPassed('logViewChange')
-
-    PromotedMetrics.logNavigateAction(content)
-    recordTestPassed('logNavigateAction')
-
-    PromotedMetrics.logNavigateActionWithScreenName(content, 'screen')
-    recordTestPassed('logNavigateActionWithScreenName')
-
-    PromotedMetrics.logAction(ActionType.Share, content)
+    PromotedMetrics.logAction({
+      actionName: '',
+      actionType: ActionType.Navigate,
+      autoViewId: 'fake-auto-view-id',
+      content,
+      destinationScreenName: 'Fake Details Screen',
+      hasSuperimposedViews: false,
+    })
     recordTestPassed('logAction')
 
-    PromotedMetrics.logActionWithName(ActionType.Share, content, 'custom')
-    recordTestPassed('logActionWithName')
+    PromotedMetrics.logView({
+      routeKey: 'fake-route-key',
+      routeName: 'Fake Route Name',
+    })
+    recordTestPassed('logView')
+
+    PromotedMetrics.logAutoView({
+      autoViewId: 'fake-auto-view-id',
+      routeKey: 'route-key',
+      routeName: 'Fake Route Name',
+    })
+    recordTestPassed('logAutoView')
   }
 
   const testCollectionView = (recordTestPassed) => {
-    const content = { _id: 'foobar'}
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
 
-    PromotedMetrics.collectionViewDidMount('hello', ImpressionSourceType.ClientBackend)
+    PromotedMetrics.collectionDidMount({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      sourceType: ImpressionSourceType.Delivery,
+    })
     recordTestPassed('collectionViewDidMount')
 
-    PromotedMetrics.collectionViewDidChange([], 'hello')
+    PromotedMetrics.collectionDidChange({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      hasSuperimposedViews: false,
+      visibleContent: [content],
+    })
     recordTestPassed('collectionViewDidChange')
 
-    PromotedMetrics.collectionViewActionDidOccur(ActionType.AddToCart, content, 'ActionName', 'hello')
+    PromotedMetrics.collectionActionDidOccur({
+      actionName: '',
+      actionType: ActionType.Navigate,
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+      content,
+      hasSuperimposedViews: false,
+    })
     recordTestPassed('collectionViewActionDidOccur')
 
-    PromotedMetrics.collectionViewWillUnmount('hello')
+    PromotedMetrics.collectionWillUnmount({
+      autoViewId: 'fake-auto-view-id',
+      collectionId: 'fake-collection-id',
+    })
     recordTestPassed('collectionViewWillUnmount')
   }
 
@@ -107,20 +150,46 @@ const App: () => Node = () => {
     recordTestPassed('setAncestorIds')
   }
 
+  let TrackedList = null
   try {
-    useImpressionTracker(
-      (viewToken) => ({
-        contentId: 'foo',
-        insertionId: 'bar',
-        name: 'batman'
+
+    TrackedList = useCollectionTracker({
+      contentCreator: (item) => ({
+        contentId: item.contentId,
+        insertionId: item.insertionId,
+        name: item.title
       }),
-      'TestCollectionViewName',
-      ImpressionSourceType.Delivery
-    )
-    useViewTracker(useRef())
+      sourceType: ImpressionSourceType.Delivery
+    })(FlatList)
+
+    const content = {
+      contentId: 'foobar',
+      insertionId: 'batman',
+      name: 'Dick Greyson',
+    }
+
+    const metricsLogger = useMetricsLogger()
+
+    metricsLogger.logImpression({
+      content,
+      sourceType: ImpressionSourceType.ClientBackend
+    })
+
+    metricsLogger.logAction({
+      actionName: 'foo',
+      actionType: ActionType.AddToCart,
+      content,
+      destinationScreenName: ''
+    })
+
+    metricsLogger.logView({
+      routeKey: 'key',
+      routeName: 'name'
+    })
+
     useEffect(() => {
-      setText('Passed: useImpressionTracker\n' +
-              'Passed: useViewTracker\n' +
+      setText('Passed: useCollectionTracker\n' +
+              'Passed: metricsLogger\n' +
               'All hooks passed')
     }, [])
   } catch (err) {
@@ -137,6 +206,15 @@ const App: () => Node = () => {
     }
   )
 
+  const Item = ({ name }) => (
+    <View>
+      <Text>[[[{name}]]]</Text>
+    </View>
+  );
+  const renderItem = ({ item }) => (
+    <Item name={item.name} />
+  );
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -147,7 +225,28 @@ const App: () => Node = () => {
       <Text {...testID('messages-text')}>
         {text}
       </Text>
+      <Text>List</Text>
+      <TrackedList
+        data={[{
+          name: 'batman',
+          contentId: 'robin',
+          insertionId: 'joker'
+        }]}
+        renderItem={renderItem}
+        keyExtractor={item => item.contentId}
+      />
     </SafeAreaView>
+  )
+}
+
+const Stack = createNativeStackNavigator()
+const App: () => Node = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Test" component={TestScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@promotedai/react-native-metrics",
-  "version": "0.5.1",
+  "version": "0.7.0",
   "description": "Promoted metrics logging library for React Native.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -54,10 +54,11 @@
     ]
   },
   "peerDependencies": {
-    "react": "^16.14.0",
-    "react-native": "^0.64.2",
+    "@react-navigation/core": ">= 5.0.0",
+    "react": ">= 16.14.0",
+    "react-native": ">= 0.64.2",
     "react-native-gesture-handler": "^1.10.3",
-    "react-navigation-hooks": "^1.1.0"
+    "react-native-uuid": ">= 1.0.0"
   },
   "devDependencies": {
     "react": "^16.14.0",
