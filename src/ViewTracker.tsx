@@ -20,16 +20,15 @@ if (useNavigation === undefined || useFocusEffect === undefined) {
       )
     }
   }
-  if (
-    (useNavigation === undefined || useFocusEffect === undefined) &&
-    process.env.NODE_ENV !== 'production'
-  ) {
-    console.error(
-      'Could not import navigation hooks from either ' +
-      '@react-navigation/core or react-navigation-hooks. ' +
-      'View tracking will be disabled and Promoted ' +
-      'integration may be degraded.'
-    )
+  if (!useNavigation  || !useFocusEffect) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(
+        'Could not import navigation hooks from either ' +
+        '@react-navigation/core or react-navigation-hooks. ' +
+        'View tracking will be disabled and Promoted ' +
+        'integration may be degraded.'
+      )
+    }
     useNavigation = () => ({
       state: {
         routeName: '',
