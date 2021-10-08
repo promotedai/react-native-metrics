@@ -109,6 +109,7 @@ public extension PromotedMetricsModule {
     metricsLogger?.logAction(
       type: args.actionType,
       content: args.content,
+      // TODO: Use the NavigateAction sub-message for destination.
       name: args.destinationScreenName ?? args.actionName,
       autoViewState: args.autoViewState
     )
