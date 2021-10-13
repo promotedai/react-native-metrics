@@ -148,11 +148,11 @@ class PromotedMetricsModule(
   private fun Any?.toActionData(): ActionData {
     val insertionId = insertionId()
     val contentId = contentId()
-    val hasSuperImposedViews =  hasSuperImposedViews()
+    val hasSuperimposedViews =  hasSuperimposedViews()
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      this.hasSuperImposedViews = hasSuperImposedViews
+      this.hasSuperImposedViews = hasSuperimposedViews
     }.build(null)
   }
 
@@ -162,11 +162,11 @@ class PromotedMetricsModule(
   private fun Any?.toImpressionData(): ImpressionData {
     val insertionId = insertionId()
     val contentId = contentId()
-    val hasSuperImposedViews = hasSuperImposedViews()
+    val hasSuperimposedViews = hasSuperimposedViews()
     return ImpressionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      this.hasSuperImposedViews = hasSuperImposedViews
+      this.hasSuperImposedViews = hasSuperimposedViews
     }.build(null)
   }
 
@@ -238,8 +238,8 @@ class PromotedMetricsModule(
     else -> null
   }
 
-  private fun Any?.hasSuperImposedViews(): Boolean = when (this) {
-    is ReadableMap -> getBoolean("hasSuperImposedViews")
+  private fun Any?.hasSuperimposedViews(): Boolean = when (this) {
+    is ReadableMap -> getBoolean("hasSuperimposedViews")
     else -> false
   }
 
