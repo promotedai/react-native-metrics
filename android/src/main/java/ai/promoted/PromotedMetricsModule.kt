@@ -52,17 +52,16 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun logView(args: ReadableMap) {
     val routeName = args.routeName() ?: return
-    PromotedAi.onViewVisible(routeName)
+    PromotedAi.logView(routeName)
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun logAutoView(args: ReadableMap) {
-    // TODO: Support AutoView in android-metrics-sdk
-    // val autoViewId = args.autoViewId() ?: return
-    // val routeKey = args.routeKey() ?: ""
-    // val routeName = args.routeName() ?: ""
-    // PromotedAi.logAutoView(autoViewId, routeKey, routeName)
+    val autoViewId = args.autoViewId() ?: return
+    val routeName = args.routeName() ?: ""
+    val routeKey = args.routeKey() ?: ""
+    PromotedAi.logAutoView(autoViewId, routeName, routeKey)
   }
 
   @ReactMethod
@@ -70,7 +69,7 @@ class PromotedMetricsModule(
   fun collectionDidMount(args: ReadableMap) {
     val id = args.collectionId() ?: return
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    PromotedAi.onCollectionVisible(id, emptyList())
+    PromotedAi.onCollectionVisible(null, id, emptyList())
   }
 
   @ReactMethod
@@ -86,7 +85,7 @@ class PromotedMetricsModule(
           arrayItem.toContent()
         }
 
-    PromotedAi.onCollectionUpdated(id, visibleContentForSdk)
+    PromotedAi.onCollectionUpdated(null, id, visibleContentForSdk)
   }
 
   @ReactMethod
@@ -106,7 +105,7 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun collectionWillUnmount(args: ReadableMap) {
     val id = args.collectionId() ?: return
-    PromotedAi.onCollectionHidden(id)
+    PromotedAi.onCollectionHidden(null, id)
   }
 
   @ReactMethod
@@ -149,12 +148,12 @@ class PromotedMetricsModule(
   private fun Any?.toActionData(): ActionData {
     val insertionId = insertionId()
     val contentId = contentId()
+    val hasSuperImposedViews =  hasSuperImposedViews()
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      // TODO
-      // this.hasSuperImposedViews = hasSuperImposedViews()
-    }.build()
+      this.hasSuperImposedViews = hasSuperImposedViews
+    }.build(null)
   }
 
   /**
@@ -163,12 +162,12 @@ class PromotedMetricsModule(
   private fun Any?.toImpressionData(): ImpressionData {
     val insertionId = insertionId()
     val contentId = contentId()
+    val hasSuperImposedViews = hasSuperImposedViews()
     return ImpressionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      // TODO
-      // this.hasSuperImposedViews = hasSuperImposedViews()
-    }.build()
+      this.hasSuperImposedViews = hasSuperImposedViews
+    }.build(null)
   }
 
   private fun Any?.name(): String = when (this) {
@@ -239,8 +238,8 @@ class PromotedMetricsModule(
     else -> null
   }
 
-  private fun Any?.hasSuperimposedViews(): Boolean = when (this) {
-    is ReadableMap -> getBoolean("hasSuperimposedViews")
+  private fun Any?.hasSuperImposedViews(): Boolean = when (this) {
+    is ReadableMap -> getBoolean("hasSuperImposedViews")
     else -> false
   }
 

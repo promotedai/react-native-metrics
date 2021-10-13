@@ -54,6 +54,7 @@ repositories {
   mavenCentral()
   jcenter()
   google()
+  mavenLocal()
 
   def found = false
   def defaultDir = null
