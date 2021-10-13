@@ -59,6 +59,10 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun logAutoView(args: ReadableMap) {
     // TODO: Support AutoView in android-metrics-sdk
+    // val autoViewId = args.autoViewId() ?: return
+    // val routeKey = args.routeKey() ?: ""
+    // val routeName = args.routeName() ?: ""
+    // PromotedAi.logAutoView(autoViewId, routeKey, routeName)
   }
 
   @ReactMethod
@@ -148,6 +152,8 @@ class PromotedMetricsModule(
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
+      // TODO
+      // this.hasSuperImposedViews = hasSuperImposedViews()
     }.build()
   }
 
@@ -160,6 +166,8 @@ class PromotedMetricsModule(
     return ImpressionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
+      // TODO
+      // this.hasSuperImposedViews = hasSuperImposedViews()
     }.build()
   }
 
