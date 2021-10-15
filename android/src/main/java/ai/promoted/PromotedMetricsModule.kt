@@ -66,8 +66,12 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun collectionDidMount(args: ReadableMap) {
     val id = args.collectionId() ?: return
+    val autoViewState = AutoViewState(
+      args.autoViewId(),
+      args.hasSuperimposedViews()
+    )
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    PromotedAi.onCollectionVisible(null, id, emptyList())
+    PromotedAi.onCollectionVisible(null, id, emptyList(), autoViewState)
   }
 
   @ReactMethod
@@ -83,7 +87,12 @@ class PromotedMetricsModule(
           arrayItem.toContent()
         }
 
-    PromotedAi.onCollectionUpdated(null, id, visibleContentForSdk)
+    val autoViewState = AutoViewState(
+      args.autoViewId(),
+      args.hasSuperimposedViews()
+    )
+
+    PromotedAi.onCollectionUpdated(null, id, visibleContentForSdk, autoViewState)
   }
 
   @ReactMethod
@@ -92,7 +101,7 @@ class PromotedMetricsModule(
     // TODO: Use the collectionId to read impressionId
     // for content from collection tracker.
     // val id = args.collectionId() ?: return
-    val content = args.content() ?: return
+    args.content() ?: return
     val type = args.actionType() ?: return
     val name = args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
@@ -103,7 +112,11 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun collectionWillUnmount(args: ReadableMap) {
     val id = args.collectionId() ?: return
-    PromotedAi.onCollectionHidden(null, id)
+    val autoViewState = AutoViewState(
+      args.autoViewId(),
+      args.hasSuperimposedViews()
+    )
+    PromotedAi.onCollectionHidden(null, id, autoViewState)
   }
 
   @ReactMethod
