@@ -33,19 +33,17 @@ class PromotedMetricsModule(
   @ReactMethod
   @Suppress("Unused")
   fun logImpression(args: ReadableMap) {
-    val content = args.content() ?: return
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    PromotedAi.onImpression(args.content().toImpressionData())
+    PromotedAi.onImpression(args.toImpressionData())
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun logAction(args: ReadableMap) {
     val type = args.actionType() ?: return
-    val content = args.content()
     val name = args.destinationScreenName() ?: args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, content.toActionData())
+    PromotedAi.onAction(name, type, args.toActionData())
   }
 
   @ReactMethod
@@ -98,7 +96,7 @@ class PromotedMetricsModule(
     val type = args.actionType() ?: return
     val name = args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, content.toActionData())
+    PromotedAi.onAction(name, type, args.toActionData())
   }
 
   @ReactMethod
@@ -146,13 +144,16 @@ class PromotedMetricsModule(
    * Convert an RN [ReadableMap] to an [ActionData].
    */
   private fun Any?.toActionData(): ActionData {
-    val insertionId = insertionId()
-    val contentId = contentId()
+    val content = content()
+    val insertionId = content?.insertionId() ?: insertionId()
+    val contentId = content?.contentId() ?: contentId()
+    val autoViewId = autoViewId()
     val hasSuperimposedViews =  hasSuperimposedViews()
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      this.hasSuperImposedViews = hasSuperimposedViews
+      this.autoViewId = autoViewId
+      this.hasSuperimposedViews = hasSuperimposedViews
     }.build(null)
   }
 
@@ -160,13 +161,16 @@ class PromotedMetricsModule(
    * Convert an RN [ReadableMap] to an [ImpressionData].
    */
   private fun Any?.toImpressionData(): ImpressionData {
-    val insertionId = insertionId()
-    val contentId = contentId()
+    val content = content()
+    val insertionId = content?.insertionId() ?: insertionId()
+    val contentId = content?.contentId() ?: contentId()
+    val autoViewId = autoViewId()
     val hasSuperimposedViews = hasSuperimposedViews()
     return ImpressionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
-      this.hasSuperImposedViews = hasSuperimposedViews
+      this.autoViewId = autoViewId
+      this.hasSuperimposedViews = hasSuperimposedViews
     }.build(null)
   }
 
@@ -214,8 +218,11 @@ class PromotedMetricsModule(
   }
 
   private fun Any?.actionType(): ActionType? = when (this) {
-    is ReadableMap -> ActionType.forNumber(getInt("actionType"))
-    else -> null
+    is ReadableMap -> {
+      if (hasKey("actionType"))
+        ActionType.forNumber(getInt("actionType"))
+      else ActionType.UNKNOWN_ACTION_TYPE
+    } else -> null
   }
 
   private fun Any?.autoViewId(): String? = when (this) {
@@ -239,14 +246,19 @@ class PromotedMetricsModule(
   }
 
   private fun Any?.hasSuperimposedViews(): Boolean = when (this) {
-    is ReadableMap -> getBoolean("hasSuperimposedViews")
-    else -> false
+    is ReadableMap -> {
+      if (hasKey("hasSuperimposedViews"))
+        getBoolean("hasSuperimposedViews")
+      else false
+    } else -> false
   }
 
   // TODO: Support ImpressionSourceType in android-metrics-sdk.
   // private fun Any?.impressionSourceType(): ImpressionSourceType? = when (this) {
-  //   is ReadableMap ->
-  //     ImpressionSourceType.forNumber(getInt("impressionSourceType"))
+  //   is ReadableMap -> {
+  //     if (hasKey("impressionSourceType"))
+  //       ImpressionSourceType.forNumber(getInt("impressionSourceType"))
+  //     else ImpressionSourceType.UNKNOWN_IMPRESSION_SOURCE_TYPE
   //   else -> null
   // }
 
