@@ -311,10 +311,11 @@ export function CollectionTracker<
       }, [actionState])
       const autoViewStateRef = useAutoViewState()
 
-      // Wrap the rendered item with a TapGestureHandler. This handler
-      // will receive events even if child components consume it.
+      // Wrap the rendered item with a View that has custom event
+      // handlers. These handlers will receive events even if child
+      // components consume them.
       const _renderItem = ({ item, ...rest }) => {
-        const r = (event) => {
+        const r = () => {
           // Clear any context from previous event.
           // Default to Navigate action if this ends up being a tap.
           setActionState({
@@ -322,7 +323,7 @@ export function CollectionTracker<
             name: null,
           })
         }
-        const s = (event) => {
+        const s = () => {
           // If an accessory event handler has set `actionType` to
           // `null`, do not log.
           if (actionState.current.actionType) {
