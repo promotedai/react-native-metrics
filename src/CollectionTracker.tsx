@@ -323,7 +323,6 @@ export function CollectionTracker<
           })
         }
         const s = (event) => {
-          console.log('***** osssr onTouchEnd',  contentCreator(item))
           // If an accessory event handler has set `actionType` to
           // `null`, do not log.
           if (actionState.current.actionType) {
