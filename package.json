@@ -8,11 +8,11 @@
   "react-native": "src/index",
   "source": "src/index",
   "files": [
-    "src",
-    "lib",
     "android",
     "ios",
+    "lib",
     "react-native-metrics.podspec",
+    "src",
     "!android/build",
     "!ios/build",
     "!**/__tests__",
