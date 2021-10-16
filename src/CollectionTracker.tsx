@@ -315,7 +315,7 @@ export function CollectionTracker<
       // handlers. These handlers will receive events even if child
       // components consume them.
       const _renderItem = ({ item, ...rest }) => {
-        const r = () => {
+        const startHandler = () => {
           // Clear any context from previous event.
           // Default to Navigate action if this ends up being a tap.
           setActionState({
@@ -323,7 +323,7 @@ export function CollectionTracker<
             name: null,
           })
         }
-        const s = () => {
+        const endHandler = () => {
           // If an accessory event handler has set `actionType` to
           // `null`, do not log.
           if (actionState.current.actionType) {
@@ -343,8 +343,8 @@ export function CollectionTracker<
         }
         return (
           <View
-            onTouchEnd={s}
-            onTouchStart={r}
+            onTouchStart={startHandler}
+            onTouchEnd={endHandler}
             pointerEvents={'box-none'}
           >
             {renderItem({ item, setActionState, ...rest })}
