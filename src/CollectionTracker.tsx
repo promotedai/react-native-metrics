@@ -315,7 +315,7 @@ export function CollectionTracker<
       // handlers. These handlers will receive events even if child
       // components consume them.
       const _renderItem = ({ item, ...rest }) => {
-        const startHandler = () => {
+        const touchStartHandler = () => {
           // Clear any context from previous event.
           // Default to Navigate action if this ends up being a tap.
           setActionState({
@@ -323,17 +323,21 @@ export function CollectionTracker<
             name: null,
           })
         }
-        const endHandler = () => {
+        const touchEndHandler = () => {
           // If an accessory event handler has set `actionType` to
           // `null`, do not log.
           if (actionState.current.actionType) {
+            const {
+              name,
+              actionType,
+            } = actionState.current
             const {
               autoViewId,
               hasSuperimposedViews,
             } = autoViewStateRef.current
             PromotedMetrics.collectionActionDidOccur({
-              actionName: actionState.current.name ?? '',
-              actionType: actionState.current.actionType,
+              actionName: name ?? '',
+              actionType,
               autoViewId,
               content: contentCreator(item),
               collectionId: collectionId.current,
@@ -343,8 +347,8 @@ export function CollectionTracker<
         }
         return (
           <View
-            onTouchStart={startHandler}
-            onTouchEnd={endHandler}
+            onTouchStart={touchStartHandler}
+            onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
             {renderItem({ item, setActionState, ...rest })}
