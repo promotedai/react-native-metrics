@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
-import { State, TapGestureHandler } from 'react-native-gesture-handler'
 import uuid from 'react-native-uuid'
 
 import { ActionType } from './ActionType'
@@ -303,75 +302,63 @@ export function CollectionTracker<
 
       // Set up a state in which accessory view event handlers can
       // set action type and name.
-      const [actionState, setActionState] = React.useState({
+      const actionState = React.useRef({
         actionType: ActionType.Unknown,
         name: '',
       } as CollectionActionState)
+      const setActionState = React.useCallback((newActionState) => {
+        actionState.current = newActionState
+      }, [actionState])
       const autoViewStateRef = useAutoViewState()
 
-      // Blur events occur between BEGAN and ACTIVE, so we need to
-      // use the auto view state on BEGAN to accurately determine
-      // the state of hasSuperimposedViews.
-      const tapBeginAutoViewStateRef = React.useRef(
-        autoViewStateRef.current
-      )
-
-      // Wrap the rendered item with a TapGestureHandler. This handler
-      // will receive events even if child components consume it.
+      // Wrap the rendered item with a View that has custom event
+      // handlers. These handlers will receive events even if child
+      // components consume them.
       const _renderItem = ({ item, ...rest }) => {
-        const _onTapForItem = (item) => (event) => {
-          // State machine will always give BEGAN and END on taps and
-          // drags. For drags, it will be only BEGAN -> END.
-          // ACTIVE only happens when it's an actual tap. When there's
-          // an accessory event handler, it gets called before ACTIVE:
-          // BEGAN -> (accessory event handler) -> ACTIVE -> END.
-          // Any action state set by accessory event handlers must be
-          // in place before the ACTIVE state.
-          switch (event.nativeEvent.state) {
-          case State.BEGAN:
-            // Clear any context from previous event.
-            // Default to Navigate action if this ends up being a tap.
-            setActionState({
-              actionType: ActionType.Navigate,
-              name: null,
+        const touchStartHandler = () => {
+          // Clear any context from previous event.
+          // Default to Navigate action if this ends up being a tap.
+          setActionState({
+            actionType: ActionType.Navigate,
+            name: null,
+          })
+        }
+        const touchEndHandler = () => {
+          // If an accessory event handler has set `actionType` to
+          // `null`, do not log.
+          if (actionState.current.actionType) {
+            const {
+              name,
+              actionType,
+            } = actionState.current
+            const {
+              autoViewId,
+              hasSuperimposedViews,
+            } = autoViewStateRef.current
+            PromotedMetrics.collectionActionDidOccur({
+              actionName: name ?? '',
+              actionType,
+              autoViewId,
+              content: contentCreator(item),
+              collectionId: collectionId.current,
+              hasSuperimposedViews,
             })
-            tapBeginAutoViewStateRef.current = autoViewStateRef.current
-            break
-          case State.ACTIVE:
-            // If an accessory event handler has set `actionType` to
-            // `null`, do not log.
-            if (actionState.actionType) {
-              const {
-                autoViewId,
-                hasSuperimposedViews,
-              } = tapBeginAutoViewStateRef.current
-              PromotedMetrics.collectionActionDidOccur({
-                actionName: actionState.name ?? '',
-                actionType: actionState.actionType,
-                autoViewId,
-                content: contentCreator(item),
-                collectionId: collectionId.current,
-                hasSuperimposedViews,
-              })
-            }
-            break
           }
         }
         return (
-          <TapGestureHandler
-            onGestureEvent={_onTapForItem(item)}
-            onHandlerStateChange={_onTapForItem(item)}
+          <View
+            onTouchStart={touchStartHandler}
+            onTouchEnd={touchEndHandler}
+            pointerEvents={'box-none'}
           >
-            <View>
-              {renderItem({ item, setActionState, ...rest })}
-            </View>
-          </TapGestureHandler>
+            {renderItem({ item, setActionState, ...rest })}
+          </View>
         )
       }
 
       return (
         <CollectionTrackerContext.Provider
-          value={{setActionState: args => { setActionState(args) }}}
+          value={{setActionState: args => {setActionState(args)}}}
         >
           <Component
             renderItem={_renderItem}

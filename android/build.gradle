@@ -54,6 +54,7 @@ repositories {
   mavenCentral()
   jcenter()
   google()
+  mavenLocal()
 
   def found = false
   def defaultDir = null
@@ -129,5 +130,5 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   // Expose transitive dependency for RN consumers
-  api "ai.promoted:android-metrics-sdk:0.1.6"
+  api "ai.promoted:android-metrics-sdk:0.7.3"
 }
