@@ -87,7 +87,11 @@ var mostRecentlyLoggedAutoViewState: AutoViewState = {
 var routeKeyToAutoViewId = new LRUCache()
 
 function getStateReactNavigation5OrLater(navigation) {
-  const state = navigation.getState()
+  const state = (
+    typeof(navigation.getState) == 'function' ?
+    navigation.getState() :
+    navigation.dangerouslyGetState()
+  )
   const route = state.routes[state.index]
   return {
     routeName: route.name,
