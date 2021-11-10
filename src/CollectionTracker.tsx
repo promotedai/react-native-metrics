@@ -376,11 +376,9 @@ export function CollectionTracker<
       Component.displayName || Component.name
     })`
 
-    return React.forwardRef((props, ref) => {
-      return (
-        <CollectionTrackerComponent forwardedRef={ref} {...props}/>
-      )
-    })
+    return React.forwardRef((props, ref) => (
+      <CollectionTrackerComponent forwardedRef={ref} {...props}/>
+    ))
   }
 }
 
