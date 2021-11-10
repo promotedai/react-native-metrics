@@ -33,6 +33,7 @@ const { PromotedMetrics } = NativeModules
  * @see CollectionTracker
  */
 export interface CollectionTrackerProps {
+  forwardedRef?: React.Ref<any>
   onViewableItemsChanged: (any) => void
   renderItem: (any) => any
   viewabilityConfig: any
@@ -260,6 +261,7 @@ export function CollectionTracker<
 } : CollectionTrackerArgs) {
   return (Component: React.ComponentType<P>) => {
     const CollectionTrackerComponent = ({
+      forwardedRef,
       onViewableItemsChanged,
       renderItem,
       viewabilityConfig,
@@ -361,6 +363,7 @@ export function CollectionTracker<
           value={{setActionState: args => {setActionState(args)}}}
         >
           <Component
+            ref={forwardedRef}
             renderItem={_renderItem}
             {...viewabilityArgs}
             {...rest}
@@ -373,7 +376,9 @@ export function CollectionTracker<
       Component.displayName || Component.name
     })`
 
-    return CollectionTrackerComponent
+    return React.forwardRef((props, ref) => (
+      <CollectionTrackerComponent forwardedRef={ref} {...props}/>
+    ))
   }
 }
 
