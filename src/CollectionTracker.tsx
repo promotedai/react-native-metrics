@@ -34,8 +34,8 @@ const { PromotedMetrics } = NativeModules
  */
 export interface CollectionTrackerProps {
   forwardedRef?: React.Ref<any>
-  onViewableItemsChanged?: (arg: any) => void
-  renderItem: (arg: any) => any
+  onViewableItemsChanged?: (args: any) => void
+  renderItem: (args: any) => any
   viewabilityConfig?: any
   viewabilityConfigCallbackPairs?: Array<any>
 }
