@@ -325,6 +325,12 @@ export function CollectionTracker<
             name: null,
           })
         }
+        const touchMoveHandler = () => {
+          setActionState({
+            actionType: null,
+            name: null,
+          })
+        }
         const touchEndHandler = () => {
           // If an accessory event handler has set `actionType` to
           // `null`, do not log.
@@ -350,6 +356,7 @@ export function CollectionTracker<
         return (
           <View
             onTouchStart={touchStartHandler}
+            onTouchMove={touchMoveHandler}
             onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
