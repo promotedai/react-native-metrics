@@ -145,14 +145,14 @@ const CollectionTrackerContext = React.createContext({
  *
  * @returns setter function for `actionType` and `name`
  */
-export function useCollectionActionState() {
+export function useCollectionActionLogger() {
   const context = React.useContext(CollectionTrackerContext)
   return {
-    setActionState: ({
+    logCollectionAction: ({
       actionType,
       name = '',
     }: CollectionActionState) => {
-      context.setActionState({ actionType, name })
+      context.logCollectionAction({ actionType, name })
     }
   }
 }
