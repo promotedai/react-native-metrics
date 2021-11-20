@@ -16,7 +16,7 @@ export {
 export {
   CollectionActionState,
   CollectionTracker,
-  useCollectionActionState,
+  useCollectionActionLogger,
   useCollectionTracker,
 } from './CollectionTracker'
 
