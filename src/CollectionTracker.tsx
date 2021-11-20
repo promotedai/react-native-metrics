@@ -34,16 +34,16 @@ const { PromotedMetrics } = NativeModules
  */
 export interface CollectionTrackerProps {
   forwardedRef?: React.Ref<any>
-  onViewableItemsChanged: (any) => void
-  renderItem: (any) => any
-  viewabilityConfig: any
-  viewabilityConfigCallbackPairs: Array<any>
+  onViewableItemsChanged?: (arg: any) => void
+  renderItem: (arg: any) => any
+  viewabilityConfig?: any
+  viewabilityConfigCallbackPairs?: Array<any>
 }
 
 /** Arguments to configure CollectionTracker. */
 export interface CollectionTrackerArgs {
   /** Function to map list items to Promoted Content. */
-  contentCreator: (any) => Content
+  contentCreator: (item: any) => Content
 
   /** Source of presented list content. Default: ClientBackend. */
   sourceType: ImpressionSourceType
@@ -57,8 +57,8 @@ export interface CollectionActionState {
 
 /** React.Context used to send the state-setting function to children. */
 const CollectionTrackerContext = React.createContext({
-  // @ts-ignore (TS6133: CollectionActionState declared but not used)
-  setActionState: (CollectionActionState) => {},
+  // @ts-ignore (TS6133: state declared but not used)
+  logCollectionAction: (state: CollectionActionState) => {},
 })
 
 /**
@@ -262,6 +262,7 @@ export function CollectionTracker<
   return (Component: React.ComponentType<P>) => {
     const CollectionTrackerComponent = ({
       forwardedRef,
+      onScroll,
       onViewableItemsChanged,
       renderItem,
       viewabilityConfig,
@@ -313,6 +314,14 @@ export function CollectionTracker<
       }, [actionState])
       const autoViewStateRef = useAutoViewState()
 
+      const _onScroll = React.useCallback((event) => {
+        setActionState({
+          actionType: null,
+          name: null,
+        })
+        if (onScroll) onScroll(event)
+      }, [setActionState])
+
       // Wrap the rendered item with a View that has custom event
       // handlers. These handlers will receive events even if child
       // components consume them.
@@ -322,12 +331,6 @@ export function CollectionTracker<
           // Default to Navigate action if this ends up being a tap.
           setActionState({
             actionType: ActionType.Navigate,
-            name: null,
-          })
-        }
-        const touchMoveHandler = () => {
-          setActionState({
-            actionType: null,
             name: null,
           })
         }
@@ -356,7 +359,6 @@ export function CollectionTracker<
         return (
           <View
             onTouchStart={touchStartHandler}
-            onTouchMove={touchMoveHandler}
             onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
@@ -370,6 +372,7 @@ export function CollectionTracker<
           value={{setActionState: args => {setActionState(args)}}}
         >
           <Component
+            onScroll={_onScroll}
             ref={forwardedRef}
             renderItem={_renderItem}
             {...viewabilityArgs}
