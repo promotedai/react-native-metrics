@@ -262,7 +262,6 @@ export function CollectionTracker<
   return (Component: React.ComponentType<P>) => {
     const CollectionTrackerComponent = ({
       forwardedRef,
-      onScroll,
       onViewableItemsChanged,
       renderItem,
       viewabilityConfig,
@@ -303,58 +302,37 @@ export function CollectionTracker<
         viewabilityConfig: _viewabilityConfig,
       }
 
-      // Set up a state in which accessory view event handlers can
-      // set action type and name.
-      const actionState = React.useRef({
-        actionType: ActionType.Unknown,
-        name: '',
-      } as CollectionActionState)
-      const setActionState = React.useCallback((newActionState) => {
-        actionState.current = newActionState
-      }, [actionState])
+      // Callback to log actions associated with this collection.
       const autoViewStateRef = useAutoViewState()
-
-      const _onScroll = React.useCallback((event) => {
-        setActionState({
-          actionType: null,
-          name: null,
+      const itemRef = React.useRef({})
+      const logCollectionAction = React.useCallback((actionState) => {
+        const {
+          name,
+          actionType,
+        } = actionState
+        const {
+          autoViewId,
+          hasSuperimposedViews,
+        } = autoViewStateRef.current
+        PromotedMetrics.collectionActionDidOccur({
+          actionName: name ?? '',
+          actionType,
+          autoViewId,
+          content: contentCreator(itemRef.current),
+          collectionId: collectionId.current,
+          hasSuperimposedViews,
         })
-        if (onScroll) onScroll(event)
-      }, [setActionState])
+      }, [])
 
-      // Wrap the rendered item with a View that has custom event
-      // handlers. These handlers will receive events even if child
-      // components consume them.
+      // Wrap the rendered item with a View that captures a reference
+      // to the rendered content. This ensures that action logging uses
+      // content consistent with impression logging.
       const _renderItem = ({ item, ...rest }) => {
         const touchStartHandler = () => {
-          // Clear any context from previous event.
-          // Default to Navigate action if this ends up being a tap.
-          setActionState({
-            actionType: ActionType.Navigate,
-            name: null,
-          })
+          itemRef.current = item
         }
         const touchEndHandler = () => {
-          // If an accessory event handler has set `actionType` to
-          // `null`, do not log.
-          if (actionState.current.actionType) {
-            const {
-              name,
-              actionType,
-            } = actionState.current
-            const {
-              autoViewId,
-              hasSuperimposedViews,
-            } = autoViewStateRef.current
-            PromotedMetrics.collectionActionDidOccur({
-              actionName: name ?? '',
-              actionType,
-              autoViewId,
-              content: contentCreator(item),
-              collectionId: collectionId.current,
-              hasSuperimposedViews,
-            })
-          }
+          itemRef.current = {}
         }
         return (
           <View
@@ -362,17 +340,16 @@ export function CollectionTracker<
             onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
-            {renderItem({ item, setActionState, ...rest })}
+            {renderItem({ item, logCollectionAction, ...rest })}
           </View>
         )
       }
 
       return (
         <CollectionTrackerContext.Provider
-          value={{setActionState: args => {setActionState(args)}}}
+          value={{logCollectionAction: args => {logCollectionAction(args)}}}
         >
           <Component
-            onScroll={_onScroll}
             ref={forwardedRef}
             renderItem={_renderItem}
             {...viewabilityArgs}
