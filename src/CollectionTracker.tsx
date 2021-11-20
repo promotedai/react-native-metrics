@@ -52,7 +52,7 @@ export interface CollectionTrackerArgs {
 /** Arguments for function returned by `useCollectionActionLogger()`. */
 export interface CollectionActionState {
   actionType?: ActionType
-  name?: string
+  name?: string | null
 }
 
 /** React.Context used to send the action logger function to children. */
@@ -66,9 +66,10 @@ const CollectionTrackerContext = React.createContext({
  * tracked collection. The content for the action is determined using
  * the `data` property of the list.
  *
- * The type of action is required. The name is optional for all action
- * types except Custom. If you provide ActionType.Custom, you must provide
- * a name for the action.
+ * The type of action defaults to `ActionType.Navigate` if you call this
+ * function with no arguments. The name is optional for all action types
+ * except Custom. If you provide ActionType.Custom, you must provide a
+ * name for the action.
  *
  * Class components using CollectionTracker will pass a function named
  * `logCollectionAction` as a parameter to `renderItem`. You can use that
@@ -175,6 +176,9 @@ export function useCollectionActionLogger() {
  * CollectionTracker does a drop-in replacement of the list component and
  * requires minimal configuration. Just supply a `contentCreator` and a
  * source for the content, and use it in place of your list component.
+ *
+ * In your event handlers for list items, use `logCollectionAction` to
+ * log user actions. See `useCollectionActionLogger()`.
  * ```
  * const TrackedList = CollectionTracker({
  *   contentCreator: (item) => ({
@@ -205,10 +209,11 @@ export function useCollectionActionLogger() {
  * ## Action Tracking
  *
  * Action tracking wraps your `renderItem` function to return a
- * `TapGestureHandler` to surround the component that you render. This
- * handler listens for tap events and records them as Promoted actions.
- * The content for these actions is derived by applying `contentCreator`
- * to the argument of `renderItem`.
+ * `View` with tap handlers to surround the component that you render.
+ * This* handler listens for tap events and records the content in the
+ * selected list item. This ensures that content is consistent between
+ * impressions and actions. The content for these actions is derived by
+ * applying `contentCreator` to the argument of `renderItem`.
  *
  * This handler does not consume the tap event or alter the existing
  * behavior of your rendered items in any other way.
@@ -216,8 +221,8 @@ export function useCollectionActionLogger() {
  * ### Accessory Views and Other Action Types
  *
  * In class components, the `renderItem` function of your component will
- * be called with an additional parameter named `setActionState` of type
- * `(CollectionActionState) => void`. Use that parameter to set different
+ * be called with an additional parameter named `logCollectionAction` of
+ *  type `(CollectionActionState) => void`. Use that parameter to log
  * action types and names in class components.
  * For example:
  * ```
@@ -230,21 +235,25 @@ export function useCollectionActionLogger() {
  * })(FlatList)
  *
  * class MyItemList extends PureComponent<...> {
- *   private renderItem = ({ item, setActionState }) => {
+ *   private renderItem = ({ item, logCollectionAction }) => {
  *     return (
- *       <MyListItem data={item}>
+ *       <MyListItem
+ *         data={item}
+ *         onPress={() => {
+ *           logCollectionAction()  // Defaults to ActionType.Navigate
+ *           this.handleListSelection({ item })
+ *         }}
+ *       >
  *         <LikeButton onClick={() => {
- *           // This causes Promoted to log a Like instead of a Navigate.
- *           setActionState({ actionType: ActionType.Like })
- *           this.handleLikeButton({ item, setActionState })
+ *           // This causes Promoted to log a Like.
+ *           logCollectionAction({ actionType: ActionType.Like })
+ *           this.handleLikeButton({ item, logCollectionAction })
  *         }} />
  *       </MyListItem>
  *     )
  *   }
  * }
  * ```
- * If your list items in a functional component contain accessory views
- * that perform different actions, see `useCollectionActionState()`.
  *
  * ## Impression Tracking
  *
@@ -256,7 +265,7 @@ export function useCollectionActionLogger() {
  * property will include both viewability tracking for Promoted impressions
  * and your existing viewability tracking.
  *
- * @returns Wrapped component to use as list component
+ * @returns wrapped component to use as list component
  */
 export function CollectionTracker<
   P extends CollectionTrackerProps
@@ -411,7 +420,7 @@ export function CollectionTracker<
  *
  * @see CollectionTracker
  * @see CollectionTrackerProps
- * @returns Wrapped component to use as list component
+ * @returns wrapped component to use as list component
  */
 export function useCollectionTracker<P extends CollectionTrackerProps>({
   contentCreator,
