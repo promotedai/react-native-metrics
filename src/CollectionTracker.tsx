@@ -319,11 +319,16 @@ export function CollectionTracker<
       // Callback to log actions associated with this collection.
       const autoViewStateRef = useAutoViewState()
       const itemRef = React.useRef({})
-      const logCollectionAction = React.useCallback((actionState) => {
+      const logCollectionAction = React.useCallback((
+        args: CollectionActionState = {
+          actionType: ActionType.Navigate,
+          name: null,
+        }
+      ) => {
         const {
           name,
           actionType,
-        } = actionState
+        } = args
         const {
           autoViewId,
           hasSuperimposedViews,
