@@ -31,6 +31,8 @@ export interface CollectionDidChangeArgs {
   collectionId: string
   /** Whether this view may not be topmost. */
   hasSuperimposedViews: boolean
+  /** Index paths for visible content. */
+  indexPaths: Array<Array<number>>
   /** List of currently visible content */
   visibleContent: Array<Content>
 }
@@ -46,6 +48,8 @@ export interface CollectionActionDidOccurArgs {
   content: Content
   /** Whether this view may not be topmost. */
   hasSuperimposedViews: boolean
+  /** Index path for content. */
+  indexPath: Array<number>
 }
 
 export interface CollectionWillUnmountArgs {
@@ -151,6 +155,7 @@ export type PromotedMetricsType = {
     autoViewId,
     collectionId,
     hasSuperimposedViews,
+    indexPaths,
     visibleContent,
   } : CollectionDidChangeArgs): void
 
@@ -165,6 +170,7 @@ export type PromotedMetricsType = {
     collectionId,
     content,
     hasSuperimposedViews,
+    indexPath,
   } : CollectionActionDidOccurArgs): void
 
   /**
