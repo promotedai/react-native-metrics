@@ -1,6 +1,6 @@
 {
   "name": "@promotedai/react-native-metrics",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Promoted metrics logging library for React Native.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -29,7 +29,7 @@
     "android"
   ],
   "repository": "https://github.com/promotedai/react-native-metrics",
-  "author": "Yu-Hong Wang <yu-hong@promoted.ai> (https://github.com/rockapot)",
+  "author": "Yuhong Wang <yuhong@promoted.ai> (https://github.com/rockapot)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/promotedai/react-native-metrics/issues"
