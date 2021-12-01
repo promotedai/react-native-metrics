@@ -363,7 +363,12 @@ export function CollectionTracker<
             onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
-            {renderItem({ item, logCollectionAction, ...rest })}
+            {renderItem({
+              item,
+              index,
+              logCollectionAction,
+              ...rest
+            })}
           </View>
         )
       }
