@@ -33,12 +33,12 @@ export const useImpressionTracker = ({
   collectionId,
   sourceType = ImpressionSourceType.Unknown,
 } : UseImpressionTrackerArgs) => {
-
   const _viewabilityConfig = promotedViewabilityConfig
   const autoViewStateRef = useAutoViewState()
   const _onViewableItemsChanged = React.useCallback(
     ({viewableItems}) => {
       const contentList = viewableItems.map(contentCreator)
+      const indexPaths = viewableItems.map(item => [item.index])
       const {
         autoViewId,
         hasSuperimposedViews,
@@ -47,6 +47,7 @@ export const useImpressionTracker = ({
         autoViewId,
         collectionId,
         hasSuperimposedViews,
+        indexPaths: indexPaths,
         visibleContent: contentList,
       })
     },

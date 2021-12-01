@@ -97,7 +97,8 @@ public extension PromotedMetricsModule {
     metricsLogger?.logImpression(
       content: args.content,
       sourceType: args.impressionSourceType,
-      autoViewState: args.autoViewState
+      autoViewState: args.autoViewState,
+      collectionInteraction: collectionInteraction(args: args)
     )
   }
 
@@ -111,7 +112,8 @@ public extension PromotedMetricsModule {
       content: args.content,
       // TODO: Use the NavigateAction sub-message for destination.
       name: args.destinationScreenName ?? args.actionName,
-      autoViewState: args.autoViewState
+      autoViewState: args.autoViewState,
+      collectionInteraction: collectionInteraction(args: args)
     )
   }
 
@@ -153,7 +155,7 @@ public extension PromotedMetricsModule {
     if let _ = idToImpressionTracker[id] { return }
     osLog?.debug(args: args)
     let s = args.impressionSourceType
-    if let tracker = service?.impressionTracker()?.with(sourceType: s) {
+    if let tracker = service?.impressionTracker(sourceType: s) {
       idToImpressionTracker[id] = tracker
       tracker.delegate = impressionLogger
     }
@@ -170,10 +172,22 @@ public extension PromotedMetricsModule {
       let tracker = idToImpressionTracker[id]
     else { return }
     osLog?.debug(args: args)
-    tracker.collectionViewDidChangeVisibleContent(
-      args.visibleContent,
-      autoViewState: args.autoViewState
-    )
+    if let interactionArray = collectionInteractionArray(args: args) {
+      let contentsAndCollectionInteractions =
+        zip(args.visibleContentArray, interactionArray)
+          .reduce(into: [Content: CollectionInteraction]()) {
+            $0[$1.0] = $1.1
+          }
+      tracker.collectionViewDidChangeVisibleContent(
+        contentsAndCollectionInteractions,
+        autoViewState: args.autoViewState
+      )
+    } else {
+      tracker.collectionViewDidChangeVisibleContent(
+        args.visibleContentArray,
+        autoViewState: args.autoViewState
+      )
+    }
   }
 
   /// Logs actions for content in a given collection view.
@@ -193,6 +207,7 @@ public extension PromotedMetricsModule {
       content: content,
       name: args.actionName,
       autoViewState: args.autoViewState,
+      collectionInteraction: collectionInteraction(args: args),
       impressionID: impressionID
     )
   }
@@ -208,6 +223,26 @@ public extension PromotedMetricsModule {
     else { return }
     osLog?.debug(args: args)
     tracker.collectionViewDidHideAllContent(autoViewState: args.autoViewState)
+  }
+
+  private func collectionInteraction(
+    args: ReactNativeDictionary
+  ) -> CollectionInteraction? {
+    guard
+      let service = service,
+      service.config.eventsIncludeClientPositions
+    else { return nil }
+    return args.collectionInteraction
+  }
+
+  private func collectionInteractionArray(
+    args: ReactNativeDictionary
+  ) -> [CollectionInteraction]? {
+    guard
+      let service = service,
+      service.config.eventsIncludeClientPositions
+    else { return nil }
+    return args.collectionInteractionArray
   }
 }
 
@@ -309,7 +344,21 @@ private extension ReactNativeDictionary {
 
   var routeKey: String? { valueForCalledPropertyNameAsKey() }
 
-  var visibleContent: [Content] {
+  var collectionInteraction: CollectionInteraction? {
+    guard let indexPath = self["indexPath"] as? [Int] else {
+      return nil
+    }
+    return CollectionInteraction(indexPath: indexPath)
+  }
+
+  var collectionInteractionArray: [CollectionInteraction]? {
+    guard let indexPaths = self["indexPaths"] as? [[Int]] else {
+      return nil
+    }
+    return indexPaths.map { CollectionInteraction(indexPath: $0) }
+  }
+
+  var visibleContentArray: [Content] {
     (self["visibleContent"] as? [ReactNativeDictionary] ?? [])
       .map { Content($0) }
   }
@@ -341,6 +390,14 @@ private extension OSLog {
     argsCopy.replaceIfPresent(key: "hasSuperimposedViews") {
       guard let n = $0 as? Int else { return $0 }
       return (n != 0)
+    }
+    argsCopy.replaceIfPresent(key: "indexPath") {
+      guard let a = $0 as? [Int] else { return $0 }
+      return String(describing: a)
+    }
+    argsCopy.replaceIfPresent(key: "indexPaths") {
+      guard let a = $0 as? [[Int]] else { return $0 }
+      return String(describing: a)
     }
     argsCopy.replaceIfPresent(key: "sourceType") {
       guard let n = $0 as? Int else { return $0 }

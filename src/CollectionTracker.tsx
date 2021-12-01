@@ -319,6 +319,7 @@ export function CollectionTracker<
       // Callback to log actions associated with this collection.
       const autoViewStateRef = useAutoViewState()
       const itemRef = React.useRef({})
+      const indexRef = React.useRef(-1)
       const logCollectionAction = React.useCallback((
         args: CollectionActionState = {
           actionType: ActionType.Navigate,
@@ -326,8 +327,8 @@ export function CollectionTracker<
         }
       ) => {
         const {
-          name,
           actionType,
+          name,
         } = args
         const {
           autoViewId,
@@ -340,18 +341,21 @@ export function CollectionTracker<
           content: contentCreator(itemRef.current),
           collectionId: collectionId.current,
           hasSuperimposedViews,
+          indexPath: [indexRef.current]
         })
       }, [])
 
       // Wrap the rendered item with a View that captures a reference
       // to the rendered content. This ensures that action logging uses
       // content consistent with impression logging.
-      const _renderItem = ({ item, ...rest }) => {
+      const _renderItem = ({ item, index, ...rest }) => {
         const touchStartHandler = () => {
           itemRef.current = item
+          indexRef.current = index
         }
         const touchEndHandler = () => {
           itemRef.current = {}
+          indexRef.current = -1
         }
         return (
           <View
@@ -359,7 +363,12 @@ export function CollectionTracker<
             onTouchEnd={touchEndHandler}
             pointerEvents={'box-none'}
           >
-            {renderItem({ item, logCollectionAction, ...rest })}
+            {renderItem({
+              item,
+              index,
+              logCollectionAction,
+              ...rest
+            })}
           </View>
         )
       }
