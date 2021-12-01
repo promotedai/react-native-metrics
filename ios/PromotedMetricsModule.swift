@@ -98,7 +98,7 @@ public extension PromotedMetricsModule {
       content: args.content,
       sourceType: args.impressionSourceType,
       autoViewState: args.autoViewState,
-      userInteraction: userInteraction(args: args)
+      collectionInteraction: collectionInteraction(args: args)
     )
   }
 
@@ -113,7 +113,7 @@ public extension PromotedMetricsModule {
       // TODO: Use the NavigateAction sub-message for destination.
       name: args.destinationScreenName ?? args.actionName,
       autoViewState: args.autoViewState,
-      userInteraction: userInteraction(args: args)
+      collectionInteraction: collectionInteraction(args: args)
     )
   }
 
@@ -155,7 +155,7 @@ public extension PromotedMetricsModule {
     if let _ = idToImpressionTracker[id] { return }
     osLog?.debug(args: args)
     let s = args.impressionSourceType
-    if let tracker = service?.impressionTracker()?.with(sourceType: s) {
+    if let tracker = service?.impressionTracker(sourceType: s) {
       idToImpressionTracker[id] = tracker
       tracker.delegate = impressionLogger
     }
@@ -172,12 +172,14 @@ public extension PromotedMetricsModule {
       let tracker = idToImpressionTracker[id]
     else { return }
     osLog?.debug(args: args)
-    if let userInteractionArray = userInteractionArray(args: args) {
-      let contentsAndUserInteractions =
-        zip(args.visibleContentArray, userInteractionArray)
-          .reduce(into: [Content: UserInteraction]()) { $0[$1.0] = $1.1 }
+    if let interactionArray = collectionInteractionArray(args: args) {
+      let contentsAndCollectionInteractions =
+        zip(args.visibleContentArray, interactionArray)
+          .reduce(into: [Content: CollectionInteraction]()) {
+            $0[$1.0] = $1.1
+          }
       tracker.collectionViewDidChangeVisibleContent(
-        contentsAndUserInteractions,
+        contentsAndCollectionInteractions,
         autoViewState: args.autoViewState
       )
     } else {
@@ -205,7 +207,7 @@ public extension PromotedMetricsModule {
       content: content,
       name: args.actionName,
       autoViewState: args.autoViewState,
-      userInteraction: userInteraction(args: args),
+      collectionInteraction: collectionInteraction(args: args),
       impressionID: impressionID
     )
   }
@@ -223,24 +225,24 @@ public extension PromotedMetricsModule {
     tracker.collectionViewDidHideAllContent(autoViewState: args.autoViewState)
   }
 
-  private func userInteraction(
+  private func collectionInteraction(
     args: ReactNativeDictionary
-  ) -> UserInteraction? {
+  ) -> CollectionInteraction? {
     guard
       let service = service,
       service.config.eventsIncludeClientPositions
     else { return nil }
-    return args.userInteraction
+    return args.collectionInteraction
   }
 
-  private func userInteractionArray(
+  private func collectionInteractionArray(
     args: ReactNativeDictionary
-  ) -> [UserInteraction]? {
+  ) -> [CollectionInteraction]? {
     guard
       let service = service,
       service.config.eventsIncludeClientPositions
     else { return nil }
-    return args.userInteractionArray
+    return args.collectionInteractionArray
   }
 }
 
@@ -342,18 +344,18 @@ private extension ReactNativeDictionary {
 
   var routeKey: String? { valueForCalledPropertyNameAsKey() }
 
-  var userInteraction: UserInteraction? {
+  var collectionInteraction: CollectionInteraction? {
     guard let indexPath = self["indexPath"] as? [Int] else {
       return nil
     }
-    return UserInteraction(indexPath: indexPath)
+    return CollectionInteraction(indexPath: indexPath)
   }
 
-  var userInteractionArray: [UserInteraction]? {
+  var collectionInteractionArray: [CollectionInteraction]? {
     guard let indexPaths = self["indexPaths"] as? [[Int]] else {
       return nil
     }
-    return indexPaths.map { UserInteraction(indexPath: $0) }
+    return indexPaths.map { CollectionInteraction(indexPath: $0) }
   }
 
   var visibleContentArray: [Content] {
