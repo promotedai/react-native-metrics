@@ -14,6 +14,9 @@ export type LogImpressionArgs = {
   /** Content involved in the impression. */
   content: Content
 
+  /** Index path for visible content. */
+  indexPath?: Array<number>
+
   /** Source type of impressed content. */
   sourceType?: ImpressionSourceType
 }
@@ -48,6 +51,9 @@ export type LogActionArgs = {
    * name for the action using `actionName`.
    */
   actionName?: string
+
+  /** Index path for visible content. */
+  indexPath?: Array<number>
 }
 
 export type InternalLogActionArgs = (

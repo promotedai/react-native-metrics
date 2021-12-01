@@ -97,7 +97,8 @@ public extension PromotedMetricsModule {
     metricsLogger?.logImpression(
       content: args.content,
       sourceType: args.impressionSourceType,
-      autoViewState: args.autoViewState
+      autoViewState: args.autoViewState,
+      userInteraction: userInteraction(args: args)
     )
   }
 
@@ -111,7 +112,8 @@ public extension PromotedMetricsModule {
       content: args.content,
       // TODO: Use the NavigateAction sub-message for destination.
       name: args.destinationScreenName ?? args.actionName,
-      autoViewState: args.autoViewState
+      autoViewState: args.autoViewState,
+      userInteraction: userInteraction(args: args)
     )
   }
 
@@ -170,10 +172,20 @@ public extension PromotedMetricsModule {
       let tracker = idToImpressionTracker[id]
     else { return }
     osLog?.debug(args: args)
-    tracker.collectionViewDidChangeVisibleContent(
-      args.visibleContent,
-      autoViewState: args.autoViewState
-    )
+    if let userInteractionArray = userInteractionArray(args: args) {
+      let contentsAndUserInteractions =
+        zip(args.visibleContentArray, userInteractionArray)
+          .reduce(into: [Content: UserInteraction]()) { $0[$1.0] = $1.1 }
+      tracker.collectionViewDidChangeVisibleContent(
+        contentsAndUserInteractions,
+        autoViewState: args.autoViewState
+      )
+    } else {
+      tracker.collectionViewDidChangeVisibleContent(
+        args.visibleContentArray,
+        autoViewState: args.autoViewState
+      )
+    }
   }
 
   /// Logs actions for content in a given collection view.
@@ -193,6 +205,7 @@ public extension PromotedMetricsModule {
       content: content,
       name: args.actionName,
       autoViewState: args.autoViewState,
+      userInteraction: userInteraction(args: args),
       impressionID: impressionID
     )
   }
@@ -208,6 +221,26 @@ public extension PromotedMetricsModule {
     else { return }
     osLog?.debug(args: args)
     tracker.collectionViewDidHideAllContent(autoViewState: args.autoViewState)
+  }
+
+  private func userInteraction(
+    args: ReactNativeDictionary
+  ) -> UserInteraction? {
+    guard
+      let service = service,
+      service.config.eventsIncludeClientPositions
+    else { return nil }
+    return args.userInteraction
+  }
+
+  private func userInteractionArray(
+    args: ReactNativeDictionary
+  ) -> [UserInteraction]? {
+    guard
+      let service = service,
+      service.config.eventsIncludeClientPositions
+    else { return nil }
+    return args.userInteractionArray
   }
 }
 
@@ -309,7 +342,21 @@ private extension ReactNativeDictionary {
 
   var routeKey: String? { valueForCalledPropertyNameAsKey() }
 
-  var visibleContent: [Content] {
+  var userInteraction: UserInteraction? {
+    guard let indexPath = self["indexPath"] as? [Int] else {
+      return nil
+    }
+    return UserInteraction(indexPath: indexPath)
+  }
+
+  var userInteractionArray: [UserInteraction]? {
+    guard let indexPaths = self["indexPaths"] as? [[Int]] else {
+      return nil
+    }
+    return indexPaths.map { UserInteraction(indexPath: $0) }
+  }
+
+  var visibleContentArray: [Content] {
     (self["visibleContent"] as? [ReactNativeDictionary] ?? [])
       .map { Content($0) }
   }
@@ -341,6 +388,14 @@ private extension OSLog {
     argsCopy.replaceIfPresent(key: "hasSuperimposedViews") {
       guard let n = $0 as? Int else { return $0 }
       return (n != 0)
+    }
+    argsCopy.replaceIfPresent(key: "indexPath") {
+      guard let a = $0 as? [Int] else { return $0 }
+      return String(describing: a)
+    }
+    argsCopy.replaceIfPresent(key: "indexPaths") {
+      guard let a = $0 as? [[Int]] else { return $0 }
+      return String(describing: a)
     }
     argsCopy.replaceIfPresent(key: "sourceType") {
       guard let n = $0 as? Int else { return $0 }
