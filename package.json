@@ -54,7 +54,7 @@
     ]
   },
   "peerDependencies": {
-    "@react-navigation/core": ">= 5.0.0",
+    "@react-navigation/native": ">= 5.0.0",
     "react": ">= 16.13.1",
     "react-native": ">= 0.63.4",
     "react-native-uuid": ">= 1.0.0"
