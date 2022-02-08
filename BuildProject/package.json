@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@promotedai/react-native-metrics": "file:../",
-    "@react-navigation/core": "^6.0.2",
+    "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.0.2",
     "appium": "^1.21.0",
     "appium-doctor": "^1.16.0",

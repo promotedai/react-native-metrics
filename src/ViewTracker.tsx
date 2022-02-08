@@ -3,13 +3,15 @@
 // react-navigation-hooks.
 // Since @r-n/core is listed as a dependency in package.json,
 // it's fine to have this outer require() without a try/catch.
-let useNavigation = require('@react-navigation/core').useNavigation
-let useFocusEffect = require('@react-navigation/core').useFocusEffect
+let navigation5OrLater = require('@react-navigation/native')
+let useNavigation = navigation5OrLater?.useNavigation
+let useFocusEffect = navigation5OrLater?.useFocusEffect
 let isReactNavigation5OrLater = true
 if (!useNavigation || !useFocusEffect) {
   try {
-    useNavigation = require('react-navigation-hooks').useNavigation
-    useFocusEffect = require('react-navigation-hooks').useFocusEffect
+    let navigation4OrEarlier = require('react-navigation-hooks')
+    useNavigation = navigation4OrEarlier?.useNavigation
+    useFocusEffect = navigation4OrEarlier?.useFocusEffect
     isReactNavigation5OrLater = false
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
@@ -24,7 +26,7 @@ if (!useNavigation || !useFocusEffect) {
     if (process.env.NODE_ENV !== 'production') {
       console.error(
         'Could not import navigation hooks from either ' +
-        '@react-navigation/core or react-navigation-hooks. ' +
+        '@react-navigation/native or react-navigation-hooks. ' +
         'View tracking will be disabled and Promoted ' +
         'integration may be degraded.'
       )
@@ -35,8 +37,7 @@ if (!useNavigation || !useFocusEffect) {
         key: '',
       },
     })
-    // @ts-ignore (TS6133: 'any' is declared but its value is never read)
-    useFocusEffect = (any) => {}
+    useFocusEffect = (_: any) => {}
     isReactNavigation5OrLater = false
   }
 }
