@@ -24,6 +24,10 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libPromotedMetrics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPromotedMetrics.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEC248B528822D4E001D8464 /* OSLog+ReactNativeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OSLog+ReactNativeMetrics.swift"; sourceTree = "<group>"; };
+		AEC248B628822DCD001D8464 /* ReactNativeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactNativeDictionary.swift; sourceTree = "<group>"; };
+		AEC248B728822E2E001D8464 /* Content+ReactNativeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Content+ReactNativeMetrics.swift"; sourceTree = "<group>"; };
+		AEC248B828822ED5001D8464 /* AnomalyHandler+ReactNativeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnomalyHandler+ReactNativeMetrics.swift"; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* PromotedMetricsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromotedMetricsModule.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* PromotedMetricsModule-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PromotedMetricsModule-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* PromotedMetricsModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotedMetricsModule.swift; sourceTree = "<group>"; };
@@ -51,6 +55,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				AEC248B828822ED5001D8464 /* AnomalyHandler+ReactNativeMetrics.swift */,
+				AEC248B728822E2E001D8464 /* Content+ReactNativeMetrics.swift */,
+				AEC248B628822DCD001D8464 /* ReactNativeDictionary.swift */,
+				AEC248B528822D4E001D8464 /* OSLog+ReactNativeMetrics.swift */,
 				F4FF95D6245B92E800C19C63 /* PromotedMetricsModule.swift */,
 				B3E7B5891CC2AC0600A0062D /* PromotedMetricsModule.m */,
 				F4FF95D5245B92E700C19C63 /* PromotedMetricsModule-Bridging-Header.h */,
