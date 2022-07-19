@@ -25,7 +25,11 @@ public class PromotedMetricsModule: NSObject {
   public typealias CollectionWillUnmountArgs = ReactNativeDictionary
 
   private let service: MetricsLoggerService?
-  private var metricsLogger: MetricsLogger? { service?.metricsLogger }
+  private var metricsLogger: MetricsLogger? {
+    validateModuleInitialized()
+    return service?.metricsLogger
+  }
+  private var didPresentAnomalyVC: Bool
   private var idToImpressionTracker: [String: ImpressionTracker]
 
   private let osLog: OSLog?
@@ -56,6 +60,7 @@ public class PromotedMetricsModule: NSObject {
   ) {
     self.service = optionalMetricsLoggerService
     self.idToImpressionTracker = [:]
+    self.didPresentAnomalyVC = false
     if let service = optionalMetricsLoggerService,
        service.config.osLogLevel >= .debug
     {
@@ -280,9 +285,20 @@ public extension PromotedMetricsModule {
   }
 }
 
+// MARK: - Anomaly Handling
+private extension PromotedMetricsModule {
+  private func validateModuleInitialized() {
+    if service == nil && !didPresentAnomalyVC {
+      AnomalyModalViewController.presentForModuleNotInitialized()
+      didPresentAnomalyVC = true
+    }
+  }
+}
+
 private typealias ReactNativeDictionary =
   PromotedMetricsModule.ReactNativeDictionary
 
+// MARK: - Content
 private extension Content {
 
   static let nameKeys = ["name"]
@@ -299,6 +315,7 @@ private extension Content {
   }
 }
 
+// MARK: - ReactNativeDictionary
 private extension ReactNativeDictionary {
   func valueForCalledPropertyNameAsKey<T>(
     function: String = #function
@@ -372,6 +389,7 @@ private extension Dictionary {
   }
 }
 
+// MARK: - OSLog
 private extension OSLog {
   func debug(
     args: @autoclosure () -> ReactNativeDictionary?,
