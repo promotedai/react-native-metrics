@@ -1,6 +1,8 @@
 package ai.promoted
 
+import ai.promoted.metrics.usecases.anomaly.ModalAnomalyActivity
 import ai.promoted.proto.event.ActionType
+import android.content.Context
 import com.facebook.react.bridge.*
 
 class PromotedMetricsModule(
@@ -10,7 +12,11 @@ class PromotedMetricsModule(
   ReactContextBaseJavaModule(reactContext) {
 
   init {
-    configDependencies?.let { PromotedAi.initialize(it.application, it.clientConfig) }
+    if (configDependencies == null) {
+      showInitializationAnomaly(reactContext, ClientConfig.LoggingAnomalyHandling.default)
+    } else {
+      PromotedAi.initialize(configDependencies.application, configDependencies.clientConfigBuilder)
+    }
   }
 
   override fun getName(): String {
@@ -144,6 +150,15 @@ class PromotedMetricsModule(
     if (viewId != null) PromotedAi.viewId = viewId
   }
 
+  private fun showInitializationAnomaly(
+    context: Context, anomalyHandling: ClientConfig
+    .LoggingAnomalyHandling
+  ) {
+    if(anomalyHandling == ClientConfig.LoggingAnomalyHandling.ModalDialog) {
+      ModalAnomalyActivity.showInitializationAnomaly(context, null, "help@promoted.ai")
+    }
+  }
+
   /**
    * Convert a [HashMap] to an [AbstractContent.Content].
    */
@@ -161,7 +176,7 @@ class PromotedMetricsModule(
     val insertionId = content?.insertionId() ?: insertionId()
     val contentId = content?.contentId() ?: contentId()
     val autoViewId = autoViewId()
-    val hasSuperimposedViews =  hasSuperimposedViews()
+    val hasSuperimposedViews = hasSuperimposedViews()
     return ActionData.Builder().apply {
       this.insertionId = insertionId
       this.contentId = contentId
@@ -235,7 +250,8 @@ class PromotedMetricsModule(
       if (hasKey("actionType"))
         ActionType.forNumber(getInt("actionType"))
       else ActionType.UNKNOWN_ACTION_TYPE
-    } else -> null
+    }
+    else -> null
   }
 
   private fun Any?.autoViewId(): String? = when (this) {
@@ -263,7 +279,8 @@ class PromotedMetricsModule(
       if (hasKey("hasSuperimposedViews"))
         getBoolean("hasSuperimposedViews")
       else false
-    } else -> false
+    }
+    else -> false
   }
 
   // TODO: Support ImpressionSourceType in android-metrics-sdk.
