@@ -11,12 +11,20 @@ class PromotedMetricsModule(
 ) :
   ReactContextBaseJavaModule(reactContext) {
 
-  init {
-    if (configDependencies == null) {
-      showInitializationAnomaly(reactContext, ClientConfig.LoggingAnomalyHandling.default)
-    } else {
-      PromotedAi.initialize(configDependencies.application, configDependencies.clientConfigBuilder)
+  private val initializedPromotedAi: PromotedAi?
+    get() {
+      return if (PromotedAi.isInitialized) PromotedAi
+      else {
+        showInitializationAnomaly(
+          reactApplicationContext,
+          ClientConfig.LoggingAnomalyHandling.default
+        )
+        null
+      }
     }
+
+  init {
+    configDependencies?.let { PromotedAi.initialize(it.application, it.clientConfigBuilder) }
   }
 
   override fun getName(): String {
@@ -27,20 +35,20 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun startSessionAndLogUser(userId: String?) {
     val nullSafeUserId = userId ?: ""
-    PromotedAi.startSession(nullSafeUserId)
+    initializedPromotedAi?.startSession(nullSafeUserId)
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun startSessionAndLogSignedOutUser() {
-    PromotedAi.startSession()
+    initializedPromotedAi?.startSession()
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun logImpression(args: ReadableMap) {
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    PromotedAi.onImpression(args.toImpressionData())
+    initializedPromotedAi?.onImpression(args.toImpressionData())
   }
 
   @ReactMethod
@@ -49,14 +57,14 @@ class PromotedMetricsModule(
     val type = args.actionType() ?: return
     val name = args.destinationScreenName() ?: args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, args.toActionData())
+    initializedPromotedAi?.onAction(name, type, args.toActionData())
   }
 
   @ReactMethod
   @Suppress("Unused")
   fun logView(args: ReadableMap) {
     val routeName = args.routeName() ?: return
-    PromotedAi.logView(routeName)
+    initializedPromotedAi?.logView(routeName)
   }
 
   @ReactMethod
@@ -65,7 +73,7 @@ class PromotedMetricsModule(
     val autoViewId = args.autoViewId() ?: return
     val routeName = args.routeName() ?: ""
     val routeKey = args.routeKey() ?: ""
-    PromotedAi.logAutoView(autoViewId, routeName, routeKey)
+    initializedPromotedAi?.logAutoView(autoViewId, routeName, routeKey)
   }
 
   @ReactMethod
@@ -77,7 +85,7 @@ class PromotedMetricsModule(
       args.hasSuperimposedViews()
     )
     // TODO: Support ImpressionSourceType in android-metrics-sdk
-    PromotedAi.onCollectionVisible(null, id, emptyList(), autoViewState)
+    initializedPromotedAi?.onCollectionVisible(null, id, emptyList(), autoViewState)
   }
 
   @ReactMethod
@@ -98,7 +106,7 @@ class PromotedMetricsModule(
       args.hasSuperimposedViews()
     )
 
-    PromotedAi.onCollectionUpdated(null, id, visibleContentForSdk, autoViewState)
+    initializedPromotedAi?.onCollectionUpdated(null, id, visibleContentForSdk, autoViewState)
   }
 
   @ReactMethod
@@ -111,7 +119,7 @@ class PromotedMetricsModule(
     val type = args.actionType() ?: return
     val name = args.actionName() ?: ""
     // TODO: Support AutoView in android-metrics-sdk
-    PromotedAi.onAction(name, type, args.toActionData())
+    initializedPromotedAi?.onAction(name, type, args.toActionData())
   }
 
   @ReactMethod
@@ -122,7 +130,7 @@ class PromotedMetricsModule(
       args.autoViewId(),
       args.hasSuperimposedViews()
     )
-    PromotedAi.onCollectionHidden(null, id, autoViewState)
+    initializedPromotedAi?.onCollectionHidden(null, id, autoViewState)
   }
 
   @ReactMethod
@@ -130,9 +138,9 @@ class PromotedMetricsModule(
   fun getCurrentOrPendingAncestorIds(promise: Promise) {
     promise.resolve(
       Arguments.createMap().apply {
-        putString("logUserId", PromotedAi.logUserId)
-        putString("sessionId", PromotedAi.sessionId)
-        putString("viewId", PromotedAi.viewId)
+        putString("logUserId", initializedPromotedAi?.logUserId ?: "")
+        putString("sessionId", initializedPromotedAi?.sessionId ?: "")
+        putString("viewId", initializedPromotedAi?.viewId ?: "")
       }
     )
   }
@@ -141,20 +149,20 @@ class PromotedMetricsModule(
   @Suppress("Unused")
   fun setAncestorIds(ancestorIds: ReadableMap) {
     val logUserId = ancestorIds.getString("logUserId")
-    if (logUserId != null) PromotedAi.logUserId = logUserId
+    if (logUserId != null) initializedPromotedAi?.logUserId = logUserId
 
     val sessionId = ancestorIds.getString("sessionId")
-    if (sessionId != null) PromotedAi.sessionId = sessionId
+    if (sessionId != null) initializedPromotedAi?.sessionId = sessionId
 
     val viewId = ancestorIds.getString("viewId")
-    if (viewId != null) PromotedAi.viewId = viewId
+    if (viewId != null) initializedPromotedAi?.viewId = viewId
   }
 
   private fun showInitializationAnomaly(
     context: Context, anomalyHandling: ClientConfig
     .LoggingAnomalyHandling
   ) {
-    if(anomalyHandling == ClientConfig.LoggingAnomalyHandling.ModalDialog) {
+    if (anomalyHandling == ClientConfig.LoggingAnomalyHandling.ModalDialog) {
       ModalAnomalyActivity.showInitializationAnomaly(context, null, "help@promoted.ai")
     }
   }
