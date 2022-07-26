@@ -285,9 +285,13 @@ public extension PromotedMetricsModule {
 // MARK: - Anomaly Handling
 private extension PromotedMetricsModule {
   private func validateModuleInitialized() {
+    #if DEBUG
     if service == nil && !didPresentAnomalyVC {
-      AnomalyModalViewController.presentForModuleNotInitialized()
+      ErrorModalViewController.presentForReactNativeError(
+        error: ReactNativeError.moduleNotInitialized
+      )
       didPresentAnomalyVC = true
     }
+    #endif
   }
 }

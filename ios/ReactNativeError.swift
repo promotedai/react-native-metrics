@@ -5,6 +5,7 @@ enum ReactNativeError: Error {
   case moduleNotInitialized
 }
 
+#if DEBUG
 extension ReactNativeError: ErrorDetails {
   var details: String {
     switch self {
@@ -15,3 +16,4 @@ extension ReactNativeError: ErrorDetails {
     }
   }
 }
+#endif

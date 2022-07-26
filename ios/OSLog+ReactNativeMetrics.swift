@@ -46,3 +46,11 @@ extension OSLog {
     )
   }
 }
+
+private extension Dictionary {
+  mutating func replaceIfPresent(key: Key, value: (Value) -> Value) {
+    if let v = self[key] {
+      self[key] = value(v)
+    }
+  }
+}
