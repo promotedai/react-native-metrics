@@ -12,13 +12,13 @@ class PromotedMetricsPackage : ReactPackage {
     configDependencies = null
   }
 
-  constructor(application: Application, clientConfig: ClientConfig) {
-    configDependencies = ConfigDependencies(application, clientConfig)
+  constructor(application: Application, clientConfigBuilder: ClientConfig.Builder) {
+    configDependencies = ConfigDependencies(application, clientConfigBuilder)
   }
 
   data class ConfigDependencies(
     val application: Application,
-    val clientConfig: ClientConfig
+    val clientConfigBuilder: ClientConfig.Builder
   )
 
   private val configDependencies: ConfigDependencies?
