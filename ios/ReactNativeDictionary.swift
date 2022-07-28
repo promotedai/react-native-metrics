@@ -26,9 +26,25 @@ extension ReactNativeDictionary {
     )
   }
 
+  var cart: Cart? { Cart(valueForCalledPropertyNameAsKey()) }
+
   var collectionID: String? { self["collectionId"] as? String }
 
-  var content: Content { Content(valueForCalledPropertyNameAsKey()) }
+  var collectionInteraction: CollectionInteraction? {
+    guard let indexPath = self["indexPath"] as? [Int] else {
+      return nil
+    }
+    return CollectionInteraction(indexPath: indexPath)
+  }
+
+  var collectionInteractionArray: [CollectionInteraction]? {
+    guard let indexPaths = self["indexPaths"] as? [[Int]] else {
+      return nil
+    }
+    return indexPaths.map { CollectionInteraction(indexPath: $0) }
+  }
+
+  var content: Content? { Content(valueForCalledPropertyNameAsKey()) }
 
   var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
 
@@ -49,22 +65,8 @@ extension ReactNativeDictionary {
 
   var routeKey: String? { valueForCalledPropertyNameAsKey() }
 
-  var collectionInteraction: CollectionInteraction? {
-    guard let indexPath = self["indexPath"] as? [Int] else {
-      return nil
-    }
-    return CollectionInteraction(indexPath: indexPath)
-  }
-
-  var collectionInteractionArray: [CollectionInteraction]? {
-    guard let indexPaths = self["indexPaths"] as? [[Int]] else {
-      return nil
-    }
-    return indexPaths.map { CollectionInteraction(indexPath: $0) }
-  }
-
   var visibleContentArray: [Content] {
     (self["visibleContent"] as? [ReactNativeDictionary] ?? [])
-      .map { Content($0) }
+      .compactMap { Content($0) }
   }
 }
