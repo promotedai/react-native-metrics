@@ -62,3 +62,4 @@ lib/
 
 # Build output
 BuildProject/build/
+/BuildProject/android/app/src/main/assets
