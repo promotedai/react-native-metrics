@@ -11,7 +11,6 @@ const config =
     platformVersion: "15.2",
     deviceName: "iPhone 12",
     app: "build/BuildProject.ipa",
-    automationName: "XCUITest",
   } :
   (TEST_PLATFORM == 'android') ? {
     platformName: "Android",
