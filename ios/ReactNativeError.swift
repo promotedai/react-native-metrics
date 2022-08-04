@@ -5,6 +5,16 @@ enum ReactNativeError: Error {
   case moduleNotInitialized
 }
 
+extension ReactNativeError: NSErrorProperties {
+
+  public var code: Int {
+    switch self {
+    case .moduleNotInitialized:
+      return 70001
+    }
+  }
+}
+
 #if DEBUG
 extension ReactNativeError: ErrorDetails {
   var details: String {
