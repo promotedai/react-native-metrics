@@ -6,6 +6,7 @@ async function retry(fn, errorClassesToIgnore, driver, opt_retryCount, opt_sleep
       await driver.sleep(sleep)
       return await fn()
     } catch (err) {
+      console.log("Retry encountered error.", err)
       // Ignore Webdriver code 7 (element not found).
       if (err.code === 7) continue
       // Check for known error to ignore.
