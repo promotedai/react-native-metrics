@@ -8,7 +8,7 @@ async function retry(fn, errorClassesToIgnore, driver, opt_retryCount, opt_sleep
     } catch (err) {
       console.log("Retry encountered error.", err)
       // Ignore Webdriver code 7 (element not found).
-      if (err.code === 7) continue
+      if (err.code === 7 || err.status === 7) continue
       // Check for known error to ignore.
       var foundIgnore = false
       for (const errorClass of errorClassesToIgnore) {
