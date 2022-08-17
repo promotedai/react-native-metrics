@@ -100,7 +100,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation "ai.promoted:android-metrics-sdk:0.1.6"
+    implementation "ai.promoted:android-metrics-sdk:1.1.5"
 }
 
 // Run this once to be able to run the application with BUCK
