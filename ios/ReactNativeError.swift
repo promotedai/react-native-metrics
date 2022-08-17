@@ -15,7 +15,7 @@ extension ReactNativeError: NSErrorProperties {
   }
 }
 
-#if DEBUG
+#if DEBUG || PROMOTED_ERROR_HANDLING
 extension ReactNativeError: ErrorDetails {
   var details: String {
     switch self {
