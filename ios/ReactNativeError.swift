@@ -21,7 +21,7 @@ extension ReactNativeError: ErrorDetails {
     switch self {
     case .moduleNotInitialized:
       return """
-      PromotedMetricsModule was not initialized correctly. This may be due to a recent change to AppDelegate. Make sure that PromotedMetricsModule is included in -extraModulesForBridge:.
+      PromotedMetricsModule was not initialized correctly. This may be due to a recent change to AppDelegate. Make sure that PromotedMetricsModule is included in -[AppDelegate extraModulesForBridge:].
       """
     }
   }
