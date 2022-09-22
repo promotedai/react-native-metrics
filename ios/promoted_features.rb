@@ -25,4 +25,3 @@ def use_promoted_error_handling(installer, build_configurations: [])
     build_flag: 'PROMOTED_ERROR_HANDLING'
   )
 end
-
