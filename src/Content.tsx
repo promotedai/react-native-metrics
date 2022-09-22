@@ -4,6 +4,7 @@
  */
  export type Content = {
   contentId?: string
+  heroImageUrl?: string
   insertionId?: string
   name?: string
 }

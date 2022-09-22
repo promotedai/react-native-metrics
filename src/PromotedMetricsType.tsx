@@ -59,6 +59,10 @@ export interface CollectionWillUnmountArgs {
   collectionId: string
 }
 
+export interface ShowItemIntrospectionArgs {
+  content: Content
+}
+
 // Maintainers:
 // IF YOU CHANGE THIS FILE, also update BuildProject/App.tsx
 // to include a test for your change.
@@ -191,4 +195,9 @@ export type PromotedMetricsType = {
   setAncestorIds(
     ancestorIds: AncestorIds
   ): void
+
+  // Introspection
+
+  /** Shows item introspection for selected item. */
+  showItemIntrospection({} : ShowItemIntrospectionArgs): void
 }

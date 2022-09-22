@@ -30,6 +30,11 @@ extension ReactNativeDictionary {
 
   var content: Content { Content(valueForCalledPropertyNameAsKey()) }
 
+  var contentHeroImageURL: String? {
+    let rawContent = self["content"] as? ReactNativeDictionary ?? [:]
+    return rawContent["heroImageUrl"] as? String
+  }
+
   var destinationScreenName: String? { valueForCalledPropertyNameAsKey() }
 
   var hasSuperimposedViews: Bool {

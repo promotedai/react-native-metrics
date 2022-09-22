@@ -26,7 +26,7 @@ public class PromotedMetricsModule: NSObject {
     validateModuleInitialized()
     return service?.metricsLogger
   }
-  private var didPresentAnomalyVC: Bool
+  private var shouldShowAnomalyVC: Bool
   private var idToImpressionTracker: [String: ImpressionTracker]
 
   private let osLog: OSLog?
@@ -57,7 +57,7 @@ public class PromotedMetricsModule: NSObject {
   ) {
     self.service = optionalMetricsLoggerService
     self.idToImpressionTracker = [:]
-    self.didPresentAnomalyVC = false
+    self.shouldShowAnomalyVC = true
     if let service = optionalMetricsLoggerService,
        service.config.osLogLevel >= .debug
     {
@@ -282,16 +282,43 @@ public extension PromotedMetricsModule {
   }
 }
 
-// MARK: - Anomaly Handling
-private extension PromotedMetricsModule {
+// MARK: - Introspection
+public extension PromotedMetricsModule {
+  @objc(showItemIntrospection:)
+  func showItemIntrospection(args: ReactNativeDictionary) {
+    print("!!!!!! item introspection: \(args.contentHeroImageURL ?? "<no hero image>") !!!!!!")
+    let content = args.content
+    let itemVC = ItemIntrospectionViewController(
+      content: content,
+      contentHeroImageURL: args.contentHeroImageURL,
+      userID: metricsLogger?.userID,
+      logUserID: metricsLogger?.logUserID
+    )
+    itemVC.presentAboveKeyWindowRootVC()
+  }
+}
+
+// MARK: - Error Handling
+extension PromotedMetricsModule: ErrorModalViewControllerDelegate {
+
   private func validateModuleInitialized() {
     #if DEBUG || PROMOTED_ERROR_HANDLING
-    if service == nil && !didPresentAnomalyVC {
-      ErrorModalViewController.presentForReactNativeError(
-        error: ReactNativeError.moduleNotInitialized
+    if service == nil && shouldShowAnomalyVC {
+      let errorVC = ErrorModalViewController(
+        partner: "your marketplace",
+        contactInfo: ["Email: help@promoted.ai"],
+        error: ReactNativeError.moduleNotInitialized,
+        delegate: self
       )
-      didPresentAnomalyVC = true
+      errorVC.presentAboveKeyWindowRootVC()
     }
     #endif
+  }
+
+  public func errorModalVCDidDismiss(
+    _ vc: ErrorModalViewController,
+    shouldShowAgain: Bool
+  ) {
+    shouldShowAnomalyVC = shouldShowAgain
   }
 }

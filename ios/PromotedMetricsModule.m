@@ -40,4 +40,8 @@ RCT_EXTERN_METHOD(getCurrentOrPendingAncestorIds:(RCTPromiseResolveBlock)resolve
 
 RCT_EXTERN_METHOD(setAncestorIds:(nullable NSDictionary *)ancestorIDs)
 
+#pragma mark - Introspection
+
+RCT_EXTERN_METHOD(showItemIntrospection:(nullable NSDictionary *)args)
+
 @end

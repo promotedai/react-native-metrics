@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { NativeModules, View } from 'react-native'
+import { LongPressGestureHandler } from 'react-native-gesture-handler'
 import uuid from 'react-native-uuid'
 
 import { ActionType } from './ActionType'
@@ -352,24 +353,33 @@ export function CollectionTracker<
         const touchStartHandler = () => {
           itemRef.current = item
           indexRef.current = index
+          console.log('!!!!! touch (oof) !!!!!')
         }
         const touchEndHandler = () => {
           itemRef.current = {}
           indexRef.current = -1
         }
+        const longPressHandler = () => {
+          console.log('!!!!! long touch (ouch) !!!!!')
+          PromotedMetrics.showItemIntrospection({
+            content: contentCreator(itemRef.current),
+          })
+        }
         return (
-          <View
-            onTouchStart={touchStartHandler}
-            onTouchEnd={touchEndHandler}
-            pointerEvents={'box-none'}
-          >
-            {renderItem({
-              item,
-              index,
-              logCollectionAction,
-              ...rest
-            })}
-          </View>
+          <LongPressGestureHandler onGestureEvent={longPressHandler}>
+            <View
+              onTouchStart={touchStartHandler}
+              onTouchEnd={touchEndHandler}
+              pointerEvents={'box-none'}
+            >
+              {renderItem({
+                item,
+                index,
+                logCollectionAction,
+                ...rest
+              })}
+            </View>
+          </LongPressGestureHandler>
         )
       }
 
