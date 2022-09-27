@@ -207,5 +207,5 @@ export type PromotedMetricsType = {
 
   isShadowbanned({
     content,
-  } : IsShadowbannedArgs): Promise<boolean>
+  } : IsShadowbannedArgs): boolean
 }

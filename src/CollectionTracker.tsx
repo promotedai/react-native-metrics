@@ -345,15 +345,6 @@ export function CollectionTracker<
           indexPath: [indexRef.current]
         })
       }, [])
-      // const [isShadowbanned, setIsShadowbanned] = React.useState(false)
-      // React.useEffect(() => {
-      //   console.log('!!!!! isShadowbanned !!!!!', contentCreator(itemRef.current))
-      //   PromotedMetrics.isShadowbanned({
-      //     content: contentCreator(itemRef.current)
-      //   }).then((response) => {
-      //     setIsShadowbanned(response)
-      //   })
-      // }, [])
 
       // Wrap the rendered item with a View that captures a reference
       // to the rendered content. This ensures that action logging uses
