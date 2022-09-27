@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { NativeModules, View } from 'react-native'
+import { NativeModules, Text, View } from 'react-native'
 import { LongPressGestureHandler } from 'react-native-gesture-handler'
 import uuid from 'react-native-uuid'
 
@@ -345,6 +345,15 @@ export function CollectionTracker<
           indexPath: [indexRef.current]
         })
       }, [])
+      // const [isShadowbanned, setIsShadowbanned] = React.useState(false)
+      // React.useEffect(() => {
+      //   console.log('!!!!! isShadowbanned !!!!!', contentCreator(itemRef.current))
+      //   PromotedMetrics.isShadowbanned({
+      //     content: contentCreator(itemRef.current)
+      //   }).then((response) => {
+      //     setIsShadowbanned(response)
+      //   })
+      // }, [])
 
       // Wrap the rendered item with a View that captures a reference
       // to the rendered content. This ensures that action logging uses
@@ -353,25 +362,59 @@ export function CollectionTracker<
         const touchStartHandler = () => {
           itemRef.current = item
           indexRef.current = index
-          console.log('!!!!! touch (oof) !!!!!')
         }
         const touchEndHandler = () => {
           itemRef.current = {}
           indexRef.current = -1
         }
         const longPressHandler = () => {
-          console.log('!!!!! long touch (ouch) !!!!!')
           PromotedMetrics.showItemIntrospection({
             content: contentCreator(itemRef.current),
           })
         }
+        const isShadowbanned = PromotedMetrics.isShadowbanned({
+          content: contentCreator(item)
+        })
+
         return (
           <LongPressGestureHandler onGestureEvent={longPressHandler}>
             <View
               onTouchStart={touchStartHandler}
               onTouchEnd={touchEndHandler}
               pointerEvents={'box-none'}
+              style={{
+                position: 'relative',
+              }}
             >
+              {isShadowbanned &&
+                <View
+                  style={{
+                    backgroundColor: 'black',
+                    flex: 1,
+                    height: '100%',
+                    left: 0,
+                    opacity: 0.7,
+                    position: 'absolute',
+                    top: 0,
+                    width: '100%',
+                    zIndex: 1000,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      flex: 1,
+                      fontSize: 20,
+                      margin: 10,
+                      textAlign: 'center',
+                      textAlignVertical: 'center',
+                      zIndex: 1001,
+                    }}
+                  >
+                    Shadowbanned
+                  </Text>
+                </View>
+              }
               {renderItem({
                 item,
                 index,

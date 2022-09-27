@@ -28,6 +28,8 @@ public class PromotedMetricsModule: NSObject {
   }
   private var shouldShowAnomalyVC: Bool
   private var idToImpressionTracker: [String: ImpressionTracker]
+  private var shadowbannedContentIDs: Set<String>
+  private let introspectionController: IntrospectionController
 
   private let osLog: OSLog?
   private let impressionLogger: ImpressionTrackerDebugLogger?
@@ -57,6 +59,8 @@ public class PromotedMetricsModule: NSObject {
   ) {
     self.service = optionalMetricsLoggerService
     self.idToImpressionTracker = [:]
+    self.shadowbannedContentIDs = Set()
+    self.introspectionController = IntrospectionController()
     self.shouldShowAnomalyVC = true
     if let service = optionalMetricsLoggerService,
        service.config.osLogLevel >= .debug
@@ -72,6 +76,8 @@ public class PromotedMetricsModule: NSObject {
       self.osLog = nil
       self.impressionLogger = nil
     }
+    super.init()
+    self.introspectionController.delegate = self
   }
 
   @objc public var methodQueue: DispatchQueue { DispatchQueue.main }
@@ -286,15 +292,25 @@ public extension PromotedMetricsModule {
 public extension PromotedMetricsModule {
   @objc(showItemIntrospection:)
   func showItemIntrospection(args: ReactNativeDictionary) {
-    print("!!!!!! item introspection: \(args.contentHeroImageURL ?? "<no hero image>") !!!!!!")
-    let content = args.content
-    let itemVC = ItemIntrospectionViewController(
-      content: content,
-      contentHeroImageURL: args.contentHeroImageURL,
-      userID: metricsLogger?.userID,
-      logUserID: metricsLogger?.logUserID
+    introspectionController.showIntrospectionActionSelectorSheet(
+      IntrospectionParams(
+        content: args.content,
+        contentHeroImageURL: args.contentHeroImageURL,
+        userID: metricsLogger?.userID,
+        logUserID: metricsLogger?.logUserID,
+        scopeFilter: nil
+      )
     )
-    itemVC.presentAboveKeyWindowRootVC()
+  }
+
+  @objc(isShadowbanned:)
+  func isShadowbanned(args: ReactNativeDictionary) -> Any {
+    print("!!!!! \(args.content)")
+    guard let contentID = args.content.contentID else {
+      return NSNumber(booleanLiteral: false)
+    }
+    print("!!!!!! \(args.content.contentID ?? "<no content id>") \(shadowbannedContentIDs.contains(contentID))")
+    return NSNumber(booleanLiteral: shadowbannedContentIDs.contains(contentID))
   }
 }
 
@@ -320,5 +336,21 @@ extension PromotedMetricsModule: ErrorModalViewControllerDelegate {
     shouldShowAgain: Bool
   ) {
     shouldShowAnomalyVC = shouldShowAgain
+  }
+}
+
+// MARK: - Introspection
+extension PromotedMetricsModule: IntrospectionControllerDelegate {
+
+  public func introspectionController(
+    _ ic: IntrospectionController,
+    didModifyModeration logEntries: [ModerationLogEntry]
+  ) {
+    shadowbannedContentIDs = Set(
+      logEntries
+        .filter({ $0.action == .shadowban })
+        .compactMap({ $0.content.contentID })
+    )
+    print("!!!!! didModify \(shadowbannedContentIDs)")
   }
 }

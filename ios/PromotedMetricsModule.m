@@ -44,4 +44,8 @@ RCT_EXTERN_METHOD(setAncestorIds:(nullable NSDictionary *)ancestorIDs)
 
 RCT_EXTERN_METHOD(showItemIntrospection:(nullable NSDictionary *)args)
 
+RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(
+  isShadowbanned:(nullable NSDictionary *)args
+)
+
 @end
