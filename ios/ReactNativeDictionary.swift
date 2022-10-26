@@ -29,7 +29,7 @@ extension ReactNativeDictionary {
   var cart: Cart? {
     guard
       let cartDict: ReactNativeDictionary = valueForCalledPropertyNameAsKey(),
-      let cartContent: [ReactNativeDictionary] = cartDict["contents"]
+      let cartContent: [ReactNativeDictionary] = cartDict["contents"] as? [ReactNativeDictionary]
     else { return nil }
     return Cart(contents: cartContent.compactMap { CartContent($0) })
   }
