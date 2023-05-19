@@ -8,7 +8,7 @@ const PORT = 4723
 const config =
   (TEST_PLATFORM == 'ios') ? {
     platformName: "iOS",
-    platformVersion: "16.0",
+    platformVersion: "16.2",
     deviceName: "iPhone 14",
     app: "build/BuildProject.ipa",
     automationName: "XCUITest",
