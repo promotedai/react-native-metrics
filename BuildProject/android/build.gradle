@@ -1,6 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['PromotedMetrics_kotlinVersion']
+
     ext {
         buildToolsVersion = "29.0.3"
         minSdkVersion = 21
@@ -16,6 +18,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:4.1.0")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
