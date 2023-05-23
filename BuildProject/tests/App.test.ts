@@ -1,7 +1,7 @@
 import wd from 'wd'
 import { retry } from './retry.ts'
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000
+// jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000
 const TEST_PLATFORM = process.env.TEST_PLATFORM
 const PORT = 4723
 
@@ -19,7 +19,7 @@ const config =
     app: "build/app-release.apk",
   } :
   null
-
+ 
 const driver = wd.promiseChainRemote('localhost', PORT)
 
 beforeAll(async () => {
