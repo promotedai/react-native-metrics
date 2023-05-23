@@ -61,3 +61,15 @@ const contentList = myViewableItems.map(i => ({
 }));
 PromotedMetrics.collectionViewDidChange(contentList, "MyListIdentifier");
 ~~~
+
+# Internal
+
+## Running tests
+
+You'll need to:
+```
+cd BuildProject
+export TEST_PLATFORM=android
+export NODE_OPTIONS=--openssl-legacy-provider
+npm run test
+```
