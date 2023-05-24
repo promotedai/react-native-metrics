@@ -9,7 +9,7 @@ const config =
   (TEST_PLATFORM == 'ios') ? {
     platformName: "iOS",
     platformVersion: "16.4",
-    deviceName: "iPhone 14 Pro Max",
+    deviceName: "iPhone 14",
     app: "build/BuildProject.ipa",
     automationName: "XCUITest",
   } :
@@ -19,12 +19,12 @@ const config =
     app: "build/app-release.apk",
   } :
   null
- 
+
 const driver = wd.promiseChainRemote('localhost', PORT)
 
 beforeAll(async () => {
   if (config == null) fail(`Unknown TEST_PLATFORM: ${TEST_PLATFORM}`)
-  await driver.init(config)
+  await driver.init(config).setAsyncScriptTimeout(60000);
 })
 
 test(`Test All Promoted Logging Calls (${TEST_PLATFORM})`, async () => {
