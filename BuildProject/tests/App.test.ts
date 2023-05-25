@@ -1,15 +1,15 @@
 import wd from 'wd'
 import { retry } from './retry.ts'
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000
+// jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000
 const TEST_PLATFORM = process.env.TEST_PLATFORM
 const PORT = 4723
 
 const config =
   (TEST_PLATFORM == 'ios') ? {
     platformName: "iOS",
-    platformVersion: "14.4",
-    deviceName: "iPhone 11",
+    platformVersion: "16.4",
+    deviceName: "iPhone 14",
     app: "build/BuildProject.ipa",
     automationName: "XCUITest",
   } :
@@ -24,7 +24,7 @@ const driver = wd.promiseChainRemote('localhost', PORT)
 
 beforeAll(async () => {
   if (config == null) fail(`Unknown TEST_PLATFORM: ${TEST_PLATFORM}`)
-  await driver.init(config)
+  await driver.init(config).setAsyncScriptTimeout(60000);
 })
 
 test(`Test All Promoted Logging Calls (${TEST_PLATFORM})`, async () => {
