@@ -7,7 +7,7 @@ jobs:
   build:
     strategy:
       matrix:
-        macos: [macos-latest]
+        macos: ['macos-13']
         xcode: ['14.3']
     runs-on: ${{ matrix.macos }}
     steps:
