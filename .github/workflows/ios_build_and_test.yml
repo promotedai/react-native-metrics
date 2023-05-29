@@ -19,21 +19,24 @@ jobs:
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
+    - name: npm install (appium)
+      run: npm install appium@2.0.0-beta.53 -g
     - name: npm install (react-native-metrics)
       run: npm install
-    - name: npm install (BuildProject)
+    - name: npm install (TestProject)
       run: npm install
-      working-directory: BuildProject
+      working-directory: TestProject
+    - name: Appium install XCUITest
+      run: appium driver install xcuitest
     - name: Cocoapod install
       run: pod install
-      working-directory: BuildProject/ios
+      working-directory: TestProject/ios
+    - name: yarn ios
+      run: yarn ios
+      working-directory: TestProject
     - name: Run Appium
-      run: node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
-      working-directory: BuildProject
-    - name: xcrun simctl list
-      run: xcrun simctl list
-    - name: npm run test
-      run: npm run test
-      working-directory: BuildProject
-      env:
-        TEST_PLATFORM: ios
+      run: yarn start:appium > appium.log &
+      working-directory: TestProject
+    - name: yarn test:e2e:ios
+      run: yarn test:e2e:ios
+      working-directory: TestProject
