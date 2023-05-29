@@ -14,7 +14,7 @@ const android = {
 
 const ios = {
   platformName: 'iOS',
-  'appium:platformVersion': '16.2',
+  'appium:platformVersion': '16.4',
   'appium:deviceName': 'iPhone 14',
   'appium:automationName': 'XCUITest',
   'appium:bundleId': 'org.reactjs.native.example.TestForE2E',
