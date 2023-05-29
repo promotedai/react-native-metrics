@@ -41,6 +41,9 @@ jobs:
     - name: Run Appium
       run: yarn start:appium > appium.log &
       working-directory: TestProject
+    - name: yarn android
+      run: yarn android
+      working-directory: TestProject
     - name: yarn test:e2e:android
       run: yarn test:e2e:android
       working-directory: TestProject
