@@ -24,6 +24,10 @@ end
 target 'TestForE2E' do
   config = use_native_modules!
 
+  # Promoted build points to GitHub head.
+  pod 'GTMSessionFetcher/Core', :modular_headers => true
+  pod 'PromotedAIMetricsSDK', :git => 'https://github.com/promotedai/ios-metrics-sdk'
+
   # Flags change depending on the env values.
   flags = get_default_flags()
 
