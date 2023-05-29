@@ -29,10 +29,10 @@ jobs:
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
-    - name: npm install (react-native-metrics)
-      run: npm install
     - name: npm install (appium)
       run: npm install appium@2.0.0-beta.53 -g
+    - name: npm install (react-native-metrics)
+      run: npm install
     - name: npm install (TestProject)
       run: npm install
       working-directory: TestProject
