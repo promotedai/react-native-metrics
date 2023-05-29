@@ -14,8 +14,11 @@
     "test:e2e:ios": "E2E_DEVICE=\"ios\" yarn test"
   },
   "dependencies": {
+    "@promotedai/react-native-metrics": "file:../",
+    "@react-navigation/native": "^5.0.0",
     "react": "18.2.0",
-    "react-native": "0.71.4"
+    "react-native": "0.71.6",
+    "react-native-uuid": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
