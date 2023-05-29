@@ -2,9 +2,6 @@ name: android_build_and_test
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -34,11 +31,11 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - name: npm install (react-native-metrics)
       run: npm install
+    - name: npm install (appium)
+      run: npm install appium@2.0.0-beta.53 -g
     - name: npm install (TestProject)
       run: npm install
       working-directory: TestProject
-    - name: npm install (appium)
-      run: npm install appium@2.0.0-beta.53 -g
     - name: Appium install UIAutomator2
       run: appium driver install uiautomator2
     - name: Appium install XCUITest
