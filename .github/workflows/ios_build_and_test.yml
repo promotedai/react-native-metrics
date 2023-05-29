@@ -26,8 +26,6 @@ jobs:
     - name: npm install (TestProject)
       run: npm install
       working-directory: TestProject
-    - name: Appium install UIAutomator2
-      run: appium driver install uiautomator2
     - name: Appium install XCUITest
       run: appium driver install xcuitest
     - name: Cocoapod install
