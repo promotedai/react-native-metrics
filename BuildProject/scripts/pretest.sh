@@ -3,7 +3,7 @@ set -e
 
 build_ios_app() {
   echo "$0: [iOS] Building archive\n"
-  xcodebuild -workspace ios/BuildProject.xcworkspace -scheme BuildProject -archivePath build/ReactNativeMetricsBuildProject archive -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
+  xcodebuild -workspace ios/BuildProject.xcworkspace -scheme BuildProject -archivePath build/ReactNativeMetricsBuildProject archive -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14' -allowProvisioningUpdates
 
   echo "$0: [iOS] Copy archive to build/Payload dir\n"
   cp -R build/ReactNativeMetricsBuildProject.xcarchive/Products/Applications/BuildProject.app build/Payload
