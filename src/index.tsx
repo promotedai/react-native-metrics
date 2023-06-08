@@ -45,3 +45,7 @@ export {
   useUnscopedMetricsLogger,
   withMetricsLogger,
 } from './MetricsLogger'
+
+export {
+  useImpressionTracker,
+} from './useImpressionTracker'
